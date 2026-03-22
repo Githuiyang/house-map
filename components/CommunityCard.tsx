@@ -70,7 +70,7 @@ export default function CommunityCard({ community, onClose }: CommunityCardProps
         )}
 
         <div className={styles.footer}>
-          <span className={styles.contributor}>贡献者: {community.contributor || '匿名'}</span>
+          <span className={styles.contributor}>数据来源: 即刻社区</span>
           <span className={styles.updatedAt}>更新于 {community.updatedAt || '未知'}</span>
         </div>
       </div>

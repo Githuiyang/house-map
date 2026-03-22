@@ -22,11 +22,29 @@ interface MapViewProps {
 
 // 公司坐标：杨浦区淞沪路303号 创智天地 11号楼
 const COMPANY_COORDS: [number, number] = [121.5144, 31.2988];
+const RECOMMEND_RADIUS = 3000; // 推荐范围3公里（米）
+
+// 计算两点之间的距离（米）- 使用 Haversine 公式
+function calculateDistance(coord1: [number, number], coord2: [number, number]): number {
+  const R = 6371000; // 地球半径（米）
+  const lat1 = (coord1[1] * Math.PI) / 180;
+  const lat2 = (coord2[1] * Math.PI) / 180;
+  const deltaLat = ((coord2[1] - coord1[1]) * Math.PI) / 180;
+  const deltaLon = ((coord2[0] - coord1[0]) * Math.PI) / 180;
+
+  const a =
+    Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+    Math.cos(lat1) * Math.cos(lat2) * Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c;
+}
 
 export default function MapView({ communities, onSelectCommunity }: MapViewProps) {
   const mapRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const markersRef = useRef<any[]>([]);
+  const circleRef = useRef<any>(null);
   const [mapReady, setMapReady] = useState(false);
   const AMapRef = useRef<any>(null);
   const isInitializedRef = useRef(false);
@@ -64,18 +82,32 @@ export default function MapView({ communities, onSelectCommunity }: MapViewProps
         AMapRef.current = AMap;
 
         const map = new AMap.Map(containerRef.current, {
-          zoom: 14,
+          zoom: 14, // 3km范围的合适缩放级别
           center: COMPANY_COORDS,
-          // 不使用自定义样式，避免样式加载问题
         });
+
+        // 添加3公里推荐范围圆圈
+        const circle = new AMap.Circle({
+          center: COMPANY_COORDS,
+          radius: RECOMMEND_RADIUS,
+          strokeColor: '#4CAF50',
+          strokeWeight: 2,
+          strokeOpacity: 0.8,
+          fillColor: '#4CAF50',
+          fillOpacity: 0.1,
+          zIndex: 10,
+        });
+        circle.setMap(map);
+        circleRef.current = circle;
 
         // 添加公司标记
         const companyMarker = new AMap.Marker({
           position: COMPANY_COORDS,
           title: '公司',
           content: `<div class="${styles.companyMarker}">🏢</div>`,
+          zIndex: 100,
         });
-        map.add(companyMarker);
+        companyMarker.setMap(map);
 
         // 添加缩放控件
         map.addControl(new AMap.Scale());
@@ -118,10 +150,23 @@ export default function MapView({ communities, onSelectCommunity }: MapViewProps
 
     // 添加新标记
     communities.forEach(community => {
+      const distance = calculateDistance(community.coordinates, COMPANY_COORDS);
+      const isRecommended = distance <= RECOMMEND_RADIUS;
+
+      // 根据是否在推荐范围内选择不同的标记样式
+      const markerContent = isRecommended
+        ? `<div class="${styles.recommendedMarker}" title="3公里范围内推荐">
+             <span class="${styles.coin}">🪙</span>
+             <span>🏠</span>
+           </div>`
+        : `<div class="${styles.communityMarker}">🏠</div>`;
+
       const marker = new AMapRef.current.Marker({
         position: community.coordinates,
-        title: community.name,
-        content: `<div class="${styles.communityMarker}" data-id="${community.id}">🏠</div>`,
+        title: community.name + (isRecommended ? ' (推荐)' : ''),
+        content: markerContent,
+        offset: new AMapRef.current.Pixel(-15, -15),
+        zIndex: isRecommended ? 50 : 30,
       });
 
       marker.on('click', () => {

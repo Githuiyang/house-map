@@ -34,6 +34,34 @@
   transform: scale(1.2);
 }
 
+/* 推荐范围内的小区标记 */
+.recommendedMarker {
+  font-size: 24px;
+  filter: drop-shadow(0 2px 4px rgba(76, 175, 80, 0.4));
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.recommendedMarker:hover {
+  transform: scale(1.2);
+}
+
+.coin {
+  font-size: 14px;
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
+  animation: coinBounce 1s ease infinite;
+}
+
+@keyframes coinBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
 /* 像素皮肤 */
 :global([data-theme="pixel"]) .companyMarker,
 :global([data-theme="pixel"]) .communityMarker {
