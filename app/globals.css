@@ -1,26 +1,100 @@
-@import "tailwindcss";
+/* 全局样式 + 皮肤变量 */
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* 简约文艺皮肤（默认） */
+:root,
+[data-theme="minimal"] {
+  /* 色彩 */
+  --color-bg: #F8FAFB;
+  --color-map-bg: #EEF2F5;
+  --color-primary: #5B8FA8;
+  --color-primary-dark: #3D7A94;
+  --color-text: #2C3E50;
+  --color-text-secondary: #7F8C9A;
+  --color-card-bg: #FFFFFF;
+  --color-border: #E1E8ED;
+  --color-recommend: #4A90A4;
+  --color-warning: #C9A87C;
+
+  /* 字体 */
+  --font-display: "Noto Sans SC", "思源黑体", sans-serif;
+  --font-body: "Noto Serif SC", "思源宋体", serif;
+  --font-mono: "JetBrains Mono", "SF Mono", monospace;
+
+  /* 组件 */
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 4px 20px rgba(0, 0, 0, 0.1);
+  --spacing: 20px;
+  --line-height: 1.6;
+
+  /* 动效 */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration: 200ms;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* 复古像素皮肤 */
+[data-theme="pixel"] {
+  /* 色彩 - NES 调色板 */
+  --color-bg: #1A1C2C;
+  --color-map-bg: #263040;
+  --color-primary: #41A6F6;
+  --color-primary-dark: #29ADFF;
+  --color-text: #E8E8E8;
+  --color-text-secondary: #9BADB7;
+  --color-card-bg: #2C3E50;
+  --color-border: #5B6EE1;
+  --color-recommend: #29ADFF;
+  --color-warning: #FFEC27;
+
+  /* 字体 */
+  --font-display: "Press Start 2P", "Zpix", monospace;
+  --font-body: "VT323", "Zpix", monospace;
+  --font-mono: "VT323", monospace;
+
+  /* 组件 */
+  --radius: 0px;
+  --radius-sm: 0px;
+  --shadow: 4px 4px 0px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 8px 8px 0px rgba(0, 0, 0, 0.5);
+  --spacing: 16px;
+  --line-height: 1.4;
+
+  /* 动效 */
+  --ease: steps(4);
+  --duration: 0ms;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* 基础样式 */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+html, body {
+  height: 100%;
+  font-family: var(--font-body);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: var(--line-height);
+  transition: background-color var(--duration) var(--ease),
+              color var(--duration) var(--ease);
+}
+
+/* 像素字体加载 */
+@font-face {
+  font-family: 'Press Start 2P';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://fonts.gstatic.com/s/pressstart2p/v15/e3t4euO8T-267oIAQAu6jDQyK3nVivM.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'VT323';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://fonts.gstatic.com/s/vt323/v17/pxiKyp0ihIEF2isfFJA.woff2') format('woff2');
 }
