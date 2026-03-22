@@ -49,6 +49,7 @@ export default function MapView({ communities, onSelectCommunity }: MapViewProps
   const AMapRef = useRef<any>(null);
   const isInitializedRef = useRef(false);
   const isDestroyedRef = useRef(false);
+  const legendRef = useRef<HTMLDivElement | null);
 
   // 初始化地图
   useEffect(() => {
@@ -82,20 +83,20 @@ export default function MapView({ communities, onSelectCommunity }: MapViewProps
         AMapRef.current = AMap;
 
         const map = new AMap.Map(containerRef.current, {
-          zoom: 14, // 3km范围的合适缩放级别
+          zoom: 13, // zoom=13 显示约4-5km 范围
           center: COMPANY_COORDS,
         });
 
-        // 添加3公里推荐范围圆圈
+        // 添加3公里推荐范围圆圈（淡色虚线)
         const circle = new AMap.Circle({
           center: COMPANY_COORDS,
           radius: RECOMMEND_RADIUS,
-          strokeColor: '#4CAF50',
-          strokeWeight: 2,
-          strokeOpacity: 0.8,
+          strokeColor: '#888888',
+          strokeWeight: 1,
+          strokeOpacity: 0.5,
+          strokeStyle: 'dashed',
           fillColor: '#4CAF50',
-          fillOpacity: 0.1,
-          zIndex: 10,
+          fillOpacity: 0.05,
         });
         circle.setMap(map);
         circleRef.current = circle;
@@ -105,9 +106,19 @@ export default function MapView({ communities, onSelectCommunity }: MapViewProps
           position: COMPANY_COORDS,
           title: '公司',
           content: `<div class="${styles.companyMarker}">🏢</div>`,
-          zIndex: 100,
+          offset: new AMap.Pixel(-15, -15),
         });
         companyMarker.setMap(map);
+
+        // 添加图例
+        const legendDiv = document.createElement('div');
+        legendDiv.className = styles.legend;
+        legendDiv.innerHTML = `
+          <div class="${styles.legendItem} ${styles.legendDot} ${styles.recommendedMarker}"></div>
+          <span>🟢 推荐 (3km内)</span>
+        `;
+        map.getContainer().appendChild(legendDiv);
+        legendRef.current = legendDiv;
 
         // 添加缩放控件
         map.addControl(new AMap.Scale());
@@ -121,6 +132,9 @@ export default function MapView({ communities, onSelectCommunity }: MapViewProps
 
     return () => {
       isDestroyedRef.current = true;
+      if (legendRef.current) {
+        legendRef.current.remove();
+      }
       if (mapRef.current) {
         try {
           mapRef.current.destroy();
@@ -148,31 +162,22 @@ export default function MapView({ communities, onSelectCommunity }: MapViewProps
     });
     markersRef.current = [];
 
-    // 添加新标记
+    // 添加新标记 - 统一使用绿色圆点，不区分是否推荐
     communities.forEach(community => {
       const distance = calculateDistance(community.coordinates, COMPANY_COORDS);
       const isRecommended = distance <= RECOMMEND_RADIUS;
 
-      // 根据是否在推荐范围内选择不同的标记样式
-      const markerContent = isRecommended
-        ? `<div class="${styles.recommendedMarker}" title="3公里范围内推荐">
-             <span class="${styles.coin}">🪙</span>
-             <span>🏠</span>
-           </div>`
-        : `<div class="${styles.communityMarker}">🏠</div>`;
 
       const marker = new AMapRef.current.Marker({
         position: community.coordinates,
-        title: community.name + (isRecommended ? ' (推荐)' : ''),
-        content: markerContent,
-        offset: new AMapRef.current.Pixel(-15, -15),
-        zIndex: isRecommended ? 50 : 30,
+        title: community.name,
+        content: `<div class="${styles.communityMarker}" style="background: ${isRecommended ? '#4CAF50' : '#ccc'}"></div>`,
+        offset: new AMapRef.current.Pixel(-10, -10),
       });
 
       marker.on('click', () => {
         onSelectCommunity(community);
       });
-
       marker.setMap(mapRef.current);
       markersRef.current.push(marker);
     });

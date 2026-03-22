@@ -23,48 +23,70 @@
   cursor: pointer;
 }
 
-.communityMarker {
-  font-size: 24px;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-  cursor: pointer;
-  transition: transform var(--duration) var(--ease);
-}
-
-.communityMarker:hover {
-  transform: scale(1.2);
-}
-
-/* 推荐范围内的小区标记 */
+/* 小区标记 - 统一样 */
+.communityMarker,
 .recommendedMarker {
-  font-size: 24px;
-  filter: drop-shadow(0 2px 4px rgba(76, 175, 80, 0.4));
+  font-size: 22px;
   cursor: pointer;
+  transition: transform 0.2s ease;
   display: flex;
   align-items: center;
   gap: 2px;
 }
 
+.communityMarker:hover,
 .recommendedMarker:hover {
-  transform: scale(1.2);
+  transform: scale(1.1);
 }
 
+/* 推荐小区 - 绿色背景 */
+.recommendedMarker {
+  background: linear-gradient(135deg, #e8f5e 0%, #c8f5e 100%);
+  border-radius: 50%;
+  padding: 3px 8px;
+}
+
+/* 金币图标 - 柔和弹跳 */
 .coin {
-  font-size: 14px;
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
-  animation: coinBounce 1s ease infinite;
+  font-size: 11px;
+  animation: coinBounce 1.5s ease infinite;
+  opacity: 0.9;
 }
 
 @keyframes coinBounce {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
+  50% { transform: translateY(-2px); }
 }
 
-/* 像素皮肤 */
+/* 图例 */
+.legend {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  font-size: 12px;
+  color: #666;
+  background: rgba(255,255,255,0.9);
+  padding: 4px 10px;
+  border-radius: 4px;
+  display: flex;
+  gap: 8px;
+  pointer-events: none;
+}
+.legendDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+.legendDot.recommended {
+  background: linear-gradient(135deg, #e8f5e 0%, #c8f5e 100%);
+}
+.legendDot.normal {
+  background: #ccc;
+}
+/* 嚐素模式适配 */
 :global([data-theme="pixel"]) .companyMarker,
-:global([data-theme="pixel"]) .communityMarker {
-  font-size: 20px;
+:global([data-theme="pixel"]) .communityMarker,
+:global([data-theme="pixel"]) .recommendedMarker {
+  font-size: 16px;
   image-rendering: pixelated;
 }
