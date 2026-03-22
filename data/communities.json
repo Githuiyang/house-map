@@ -1,0 +1,40 @@
+[
+  {
+    "id": "community-001",
+    "name": "示例小区 A",
+    "coordinates": [121.4737, 31.2304],
+    "distance": "1.2km",
+    "bikeTime": "5分钟",
+    "price": {
+      "min": 3000,
+      "max": 5000,
+      "unit": "月"
+    },
+    "floorTypes": ["高层", "多层"],
+    "layouts": ["一室", "两室"],
+    "elevator": true,
+    "highlights": ["近地铁", "绿化好", "物业负责"],
+    "warnings": ["早高峰拥挤"],
+    "contributor": "灰羊",
+    "updatedAt": "2026-03"
+  },
+  {
+    "id": "community-002",
+    "name": "示例小区 B",
+    "coordinates": [121.4780, 31.2280],
+    "distance": "0.8km",
+    "bikeTime": "3分钟",
+    "price": {
+      "min": 4000,
+      "max": 6000,
+      "unit": "月"
+    },
+    "floorTypes": ["高层"],
+    "layouts": ["一室", "两室", "三室"],
+    "elevator": true,
+    "highlights": ["离公司最近", "新小区"],
+    "warnings": ["租金偏高"],
+    "contributor": "灰羊",
+    "updatedAt": "2026-03"
+  }
+]
