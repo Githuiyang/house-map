@@ -72,16 +72,29 @@
 .listItem:hover {
   border-color: var(--color-primary);
   transform: translateX(4px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.itemName {
-  display: block;
-  font-weight: 500;
+.itemRow1 {
   margin-bottom: 4px;
 }
 
+.itemRow2 {
+  margin-bottom: 2px;
+}
+
+.itemRow3 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
+.itemName {
+  font-weight: 500;
+  font-size: 14px;
+}
+
 .itemMeta {
-  display: block;
   font-size: 13px;
   color: var(--color-text-secondary);
 }
@@ -108,6 +121,111 @@
   border-radius: var(--radius);
 }
 
+/* 移动端筛选按钮 */
+.mobileFilterBtn {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  transition: transform var(--duration) var(--ease),
+              box-shadow var(--duration) var(--ease);
+}
+
+.mobileFilterBtn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.mobileFilterBtn.active {
+  background-color: var(--color-accent);
+}
+
+/* 移动端筛选面板 */
+.mobileFilterPanel {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration) var(--ease);
+}
+
+.mobileFilterPanel.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mobileFilterContent {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--color-card-bg);
+  border-radius: 16px 16px 0 0;
+  padding: 20px;
+  max-height: 70vh;
+  overflow-y: auto;
+  transform: translateY(100%);
+  transition: transform var(--duration) var(--ease);
+}
+
+.mobileFilterPanel.show .mobileFilterContent {
+  transform: translateY(0);
+}
+
+.mobileFilterHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.mobileFilterTitle {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.mobileFilterClose {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobileFilterBody {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 /* 响应式 */
 @media (max-width: 768px) {
   .main {
@@ -115,17 +233,32 @@
   }
 
   .sidebar {
-    width: 100%;
-    max-height: 40vh;
+    display: none; /* 手机端隐藏左侧边栏 */
   }
 
   .mapContainer {
-    min-height: 60vh;
+    flex: 1;
+    min-height: 100vh;
   }
 
   .header {
-    flex-direction: column;
-    align-items: flex-start;
+    padding: 12px 16px;
+  }
+
+  .title {
+    font-size: 20px;
+  }
+
+  .subtitle {
+    font-size: 12px;
+  }
+
+  .mobileFilterBtn {
+    display: flex;
+  }
+
+  .mobileFilterPanel {
+    display: block;
   }
 }
 

@@ -36,11 +36,33 @@ function normalizeCommunities(data: unknown): Community[] {
   }));
 }
 
+// 格式化价格显示 (简化为 k 单位)
+function formatPrice(min: number, max: number): string {
+  const formatK = (n: number) => n >= 1000 ? `${Math.round(n / 1000)}k` : `${n}`;
+  if (min === max) return formatK(min);
+  return `${formatK(min)}-${formatK(max)}`;
+}
+
+// 获取电梯显示文本
+function getElevatorText(elevator?: boolean): string {
+  if (elevator === true) return '有电梯';
+  if (elevator === false) return '无电梯';
+  return '';
+}
+
+// 获取户型显示文本 (取前2个)
+function getLayoutsText(layouts?: string[]): string {
+  if (!layouts || layouts.length === 0) return '';
+  return layouts.slice(0, 2).join('/');
+}
+
 export default function Home() {
   const [selectedCommunity, setSelectedCommunity] = useState<Community | null>(null);
+  const [hoveredCommunity, setHoveredCommunity] = useState<Community | null>(null);
   const [distanceFilter, setDistanceFilter] = useState('all');
   const [priceFilter, setPriceFilter] = useState('all');
   const [layoutFilter, setLayoutFilter] = useState('all');
+  const [showMobileFilter, setShowMobileFilter] = useState(false);
 
   // 规范化数据
   const communities = useMemo(() => normalizeCommunities(communitiesData), []);
@@ -117,11 +139,22 @@ export default function Home() {
                   key={community.id}
                   className={styles.listItem}
                   onClick={() => setSelectedCommunity(community)}
+                  onMouseEnter={() => setHoveredCommunity(community)}
+                  onMouseLeave={() => setHoveredCommunity(null)}
                 >
-                  <span className={styles.itemName}>{community.name}</span>
-                  <span className={styles.itemMeta}>
-                    {community.distance} · {community.price.min}-{community.price.max}元
-                  </span>
+                  <div className={styles.itemRow1}>
+                    <span className={styles.itemName}>🏠 {community.name}</span>
+                  </div>
+                  <div className={styles.itemRow2}>
+                    <span className={styles.itemMeta}>{community.distance} · 骑行{community.bikeTime}</span>
+                  </div>
+                  <div className={styles.itemRow3}>
+                    <span className={styles.itemMeta}>
+                      {formatPrice(community.price.min, community.price.max)}
+                      {getElevatorText(community.elevator) && ` · ${getElevatorText(community.elevator)}`}
+                      {getLayoutsText(community.layouts) && ` · ${getLayoutsText(community.layouts)}`}
+                    </span>
+                  </div>
                 </div>
               ))
             )}
@@ -132,10 +165,51 @@ export default function Home() {
           <MapView
             communities={filteredCommunities}
             selectedCommunity={selectedCommunity}
+            hoveredCommunity={hoveredCommunity}
             onSelectCommunity={handleSelectCommunity}
           />
         </div>
       </main>
+
+      {/* 移动端筛选按钮 */}
+      <button
+        className={`${styles.mobileFilterBtn} ${showMobileFilter ? styles.active : ''}`}
+        onClick={() => setShowMobileFilter(!showMobileFilter)}
+        aria-label="筛选"
+      >
+        {showMobileFilter ? '✕' : '⚙'}
+      </button>
+
+      {/* 移动端筛选面板 */}
+      <div
+        className={`${styles.mobileFilterPanel} ${showMobileFilter ? styles.show : ''}`}
+        onClick={() => setShowMobileFilter(false)}
+      >
+        <div
+          className={styles.mobileFilterContent}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className={styles.mobileFilterHeader}>
+            <h3 className={styles.mobileFilterTitle}>筛选条件</h3>
+            <button
+              className={styles.mobileFilterClose}
+              onClick={() => setShowMobileFilter(false)}
+            >
+              ✕
+            </button>
+          </div>
+          <div className={styles.mobileFilterBody}>
+            <FilterBar
+              distanceFilter={distanceFilter}
+              priceFilter={priceFilter}
+              layoutFilter={layoutFilter}
+              onDistanceChange={setDistanceFilter}
+              onPriceChange={setPriceFilter}
+              onLayoutChange={setLayoutFilter}
+            />
+          </div>
+        </div>
+      </div>
 
       {selectedCommunity && (
         <CommunityCard
