@@ -7,12 +7,74 @@ import styles from './MapView.module.css';
 // 高德地图类型声明
 declare global {
   interface Window {
-    _AMapSecurityConfig: {
+    _AMapSecurityConfig?: {
       securityJsCode: string;
     };
-    AMap: any;
+    AMap?: unknown;
   }
 }
+
+type AMapLngLat = { lng: number; lat: number };
+type AMapPixel = unknown;
+
+type AMapMap = {
+  setCenter: (center: [number, number]) => void;
+  setZoom: (zoom: number) => void;
+  addControl: (control: unknown) => void;
+  getContainer: () => HTMLElement;
+  destroy: () => void;
+};
+
+type AMapCircle = {
+  setMap: (map: AMapMap | null) => void;
+  setCenter: (center: [number, number]) => void;
+};
+
+type AMapMarker = {
+  setMap: (map: AMapMap | null) => void;
+  on: (event: string, handler: (e: unknown) => void) => void;
+  setDraggable: (draggable: boolean) => void;
+  setPosition: (position: [number, number]) => void;
+  setContent: (html: string) => void;
+  getPosition: () => AMapLngLat;
+};
+
+type AMapApi = {
+  Map: new (container: HTMLElement, opts: { zoom: number; center: [number, number] }) => AMapMap;
+  Marker: new (opts: {
+    position: [number, number];
+    title?: string;
+    content?: string;
+    offset?: AMapPixel;
+    draggable?: boolean;
+    zIndex?: number;
+  }) => AMapMarker;
+  Circle: new (opts: {
+    center: [number, number];
+    radius: number;
+    strokeColor: string;
+    strokeWeight: number;
+    strokeOpacity: number;
+    strokeStyle: string;
+    fillColor: string;
+    fillOpacity: number;
+  }) => AMapCircle;
+  Pixel: new (x: number, y: number) => AMapPixel;
+  Scale: new () => unknown;
+};
+
+type AMapLoaderModule = {
+  default: {
+    load: (opts: { key: string; version: string; plugins: string[] }) => Promise<AMapApi>;
+  };
+};
+
+type AMapEventWithTarget = {
+  target: {
+    getPosition: () => AMapLngLat;
+    setContent?: (html: string) => void;
+  };
+};
 
 interface MapViewProps {
   communities: Community[];
@@ -45,23 +107,34 @@ function calculateDistance(coord1: [number, number], coord2: [number, number]): 
   return R * c;
 }
 
+function normalizeLngLat(coords: [number, number]): [number, number] | null {
+  const [a, b] = coords;
+  if (!Number.isFinite(a) || !Number.isFinite(b)) return null;
+
+  const normalized: [number, number] = Math.abs(a) <= 90 && Math.abs(b) > 90 ? [b, a] : [a, b];
+  const [lng, lat] = normalized;
+  if (Math.abs(lng) > 180 || Math.abs(lat) > 90) return null;
+  return normalized;
+}
+
 export default function MapView({ communities, selectedCommunity, hoveredCommunity, onSelectCommunity }: MapViewProps) {
-  const mapRef = useRef<any>(null);
+  const mapRef = useRef<AMapMap | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const markersRef = useRef<Map<string, any>>(new Map());
-  const circleRef = useRef<any>(null);
+  const markersRef = useRef<Map<string, AMapMarker>>(new Map());
+  const circleRef = useRef<AMapCircle | null>(null);
   const [mapReady, setMapReady] = useState(false);
-  const AMapRef = useRef<any>(null);
+  const AMapRef = useRef<AMapApi | null>(null);
   const isInitializedRef = useRef(false);
   const isDestroyedRef = useRef(false);
   const legendRef = useRef<HTMLDivElement | null>(null);
+  const didInitialCenterRef = useRef(false);
 
   // 编辑模式状态
   const [editMode, setEditMode] = useState(false);
   const [modifiedCoords, setModifiedCoords] = useState<Map<string, { original: [number, number], modified: [number, number] }>>(new Map());
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [copiedMessage, setCopiedMessage] = useState(false);
-  const companyMarkerRef = useRef<any>(null);
+  const companyMarkerRef = useRef<AMapMarker | null>(null);
   const [modifiedCompanyCoords, setModifiedCompanyCoords] = useState<[number, number] | null>(null);
 
   // 初始化地图
@@ -74,7 +147,7 @@ export default function MapView({ communities, selectedCommunity, hoveredCommuni
     isDestroyedRef.current = false;
 
     // 动态导入高德地图
-    import('@amap/amap-jsapi-loader').then((AMapLoader) => {
+    import('@amap/amap-jsapi-loader').then((AMapLoader: AMapLoaderModule) => {
       // 检查是否已被销毁
       if (isDestroyedRef.current) return;
 
@@ -89,20 +162,22 @@ export default function MapView({ communities, selectedCommunity, hoveredCommuni
         key: process.env.NEXT_PUBLIC_AMAP_KEY || '',
         version: '2.0',
         plugins: ['AMap.Scale'],
-      }).then((AMap: any) => {
+      }).then((AMap: AMapApi) => {
         // 检查是否已被销毁
         if (isDestroyedRef.current || !containerRef.current) return;
 
         AMapRef.current = AMap;
 
+        const initialCompanyCoords = normalizeLngLat(COMPANY_COORDS) ?? COMPANY_COORDS;
+
         const map = new AMap.Map(containerRef.current, {
           zoom: 13, // zoom=13 显示约4-5km 范围
-          center: COMPANY_COORDS,
+          center: initialCompanyCoords,
         });
 
         // 添加3公里推荐范围圆圈（淡色虚线)
         const circle = new AMap.Circle({
-          center: COMPANY_COORDS,
+          center: initialCompanyCoords,
           radius: RECOMMEND_RADIUS,
           strokeColor: '#888888',
           strokeWeight: 1,
@@ -116,13 +191,13 @@ export default function MapView({ communities, selectedCommunity, hoveredCommuni
 
         // 添加公司标记
         const companyMarker = new AMap.Marker({
-          position: COMPANY_COORDS,
+          position: initialCompanyCoords,
           title: '公司',
           content: `
             <div class="${styles.companyMarker}">
               🏢
               <div style="font-size: 10px; color: #333; margin-top: 2px;">
-                ${COMPANY_COORDS[0].toFixed(4)}, ${COMPANY_COORDS[1].toFixed(4)}
+                ${initialCompanyCoords[0].toFixed(4)}, ${initialCompanyCoords[1].toFixed(4)}
               </div>
             </div>
           `,
@@ -131,14 +206,14 @@ export default function MapView({ communities, selectedCommunity, hoveredCommuni
         });
 
         // 公司标记拖拽事件
-        companyMarker.on('dragging', (e: any) => {
-          const pos = e.target.getPosition();
+        companyMarker.on('dragging', (e: unknown) => {
+          const pos = (e as AMapEventWithTarget).target.getPosition();
           const newCoords: [number, number] = [pos.lng, pos.lat];
           setModifiedCompanyCoords(newCoords);
         });
 
-        companyMarker.on('dragend', (e: any) => {
-          const pos = e.target.getPosition();
+        companyMarker.on('dragend', (e: unknown) => {
+          const pos = (e as AMapEventWithTarget).target.getPosition();
           const newCoords: [number, number] = [pos.lng, pos.lat];
 
           // 更新3km圆心
@@ -147,7 +222,7 @@ export default function MapView({ communities, selectedCommunity, hoveredCommuni
           }
 
           // 更新标记显示
-          e.target.setContent(`
+          (e as AMapEventWithTarget).target.setContent?.(`
             <div class="${styles.companyMarker} ${styles.editingMarker}">
               🏢
               <div style="font-size: 10px; color: #333; margin-top: 2px;">
@@ -218,12 +293,23 @@ export default function MapView({ communities, selectedCommunity, hoveredCommuni
       }
       isInitializedRef.current = false;
       setMapReady(false);
+      didInitialCenterRef.current = false;
     };
   }, []);
 
+  useEffect(() => {
+    if (!mapReady || !mapRef.current || didInitialCenterRef.current) return;
+    didInitialCenterRef.current = true;
+    const companyCoords = normalizeLngLat(COMPANY_COORDS) ?? COMPANY_COORDS;
+    mapRef.current.setCenter(companyCoords);
+    mapRef.current.setZoom(13);
+  }, [mapReady]);
+
   // 添加小区标记
   useEffect(() => {
-    if (!mapRef.current || !mapReady || !AMapRef.current) return;
+    const map = mapRef.current;
+    const AMap = AMapRef.current;
+    if (!map || !mapReady || !AMap) return;
 
     // 清除旧标记
     markersRef.current.forEach(marker => {
@@ -237,12 +323,16 @@ export default function MapView({ communities, selectedCommunity, hoveredCommuni
 
     // 添加新标记 - 使用图标+小区名
     communities.forEach(community => {
-      const distance = calculateDistance(community.coordinates, COMPANY_COORDS);
-      const isRecommended = distance <= RECOMMEND_RADIUS;
       const isModified = modifiedCoords.has(community.id);
-      const currentCoords = isModified ? modifiedCoords.get(community.id)!.modified : community.coordinates;
+      const currentCoordsRaw = isModified ? modifiedCoords.get(community.id)!.modified : community.coordinates;
+      const currentCoords = normalizeLngLat(currentCoordsRaw);
+      if (!currentCoords) return;
 
-      const marker = new AMapRef.current.Marker({
+      const companyCoords = normalizeLngLat(modifiedCompanyCoords || COMPANY_COORDS) ?? (modifiedCompanyCoords || COMPANY_COORDS);
+      const distance = calculateDistance(currentCoords, companyCoords);
+      const isRecommended = distance <= RECOMMEND_RADIUS;
+
+      const marker = new AMap.Marker({
         position: currentCoords,
         title: community.name,
         content: `
@@ -252,7 +342,7 @@ export default function MapView({ communities, selectedCommunity, hoveredCommuni
             ${isModified ? `<span class="${styles.modifiedBadge}">✓</span>` : ''}
           </div>
         `,
-        offset: new AMapRef.current.Pixel(-50, -15),
+        offset: new AMap.Pixel(-50, -15),
         draggable: editMode, // 编辑模式下可拖拽
       });
 
@@ -264,7 +354,7 @@ export default function MapView({ communities, selectedCommunity, hoveredCommuni
       };
 
       // Hover tooltip - 只显示简单信息
-      marker.on('mouseover', (e: any) => {
+      marker.on('mouseover', (e: unknown) => {
         const priceText = formatPrice(community.price.min, community.price.max);
         const tooltipContent = `
           <div class="${styles.hoverTooltip}">
@@ -274,13 +364,16 @@ export default function MapView({ communities, selectedCommunity, hoveredCommuni
         `;
 
         // 创建 tooltip marker
-        const tooltipMarker = new AMapRef.current.Marker({
-          position: e.target.getPosition(),
+        const tooltipMarker = new AMap.Marker({
+          position: (() => {
+            const pos = (e as AMapEventWithTarget).target.getPosition();
+            return [pos.lng, pos.lat] as [number, number];
+          })(),
           content: tooltipContent,
-          offset: new AMapRef.current.Pixel(-60, -60),
+          offset: new AMap.Pixel(-60, -60),
           zIndex: 200,
         });
-        tooltipMarker.setMap(mapRef.current);
+        tooltipMarker.setMap(map);
         markersRef.current.set(`tooltip-${community.id}`, tooltipMarker);
       });
 
@@ -306,8 +399,8 @@ export default function MapView({ communities, selectedCommunity, hoveredCommuni
           setDraggingId(community.id);
         });
 
-        marker.on('dragend', (e: any) => {
-          const pos = e.target.getPosition();
+        marker.on('dragend', (e: unknown) => {
+          const pos = (e as AMapEventWithTarget).target.getPosition();
           const newCoords: [number, number] = [pos.lng, pos.lat];
 
           setModifiedCoords(prev => {
@@ -324,7 +417,7 @@ export default function MapView({ communities, selectedCommunity, hoveredCommuni
           // 更新标记显示,添加修改标记
           const distance = calculateDistance(newCoords, modifiedCompanyCoords || COMPANY_COORDS);
           const isRecommended = distance <= RECOMMEND_RADIUS;
-          e.target.setContent(`
+          (e as AMapEventWithTarget).target.setContent?.(`
             <div class="${styles.communityLabel} ${styles.editingMarker}" data-community-id="${community.id}" style="background: ${isRecommended ? 'rgba(76, 175, 80, 0.9)' : 'rgba(150, 150, 150, 0.9)'}">
               <span class="${styles.communityIcon}">🏠</span>
               <span class="${styles.communityName}">${community.name}</span>
@@ -334,7 +427,7 @@ export default function MapView({ communities, selectedCommunity, hoveredCommuni
         });
       }
 
-      marker.setMap(mapRef.current);
+      marker.setMap(map);
       markersRef.current.set(community.id, marker);
     });
   }, [communities, mapReady, onSelectCommunity, editMode, modifiedCoords, modifiedCompanyCoords]);
@@ -359,14 +452,17 @@ export default function MapView({ communities, selectedCommunity, hoveredCommuni
   useEffect(() => {
     if (!mapReady || !selectedCommunity || !mapRef.current) return;
 
-    mapRef.current.setCenter(selectedCommunity.coordinates);
+    const coords = normalizeLngLat(selectedCommunity.coordinates);
+    if (!coords) return;
+    mapRef.current.setCenter(coords);
     mapRef.current.setZoom(15);  // 放大一点，方便看清楚
   }, [selectedCommunity, mapReady]);
 
   // 居中到公司位置
   const handleCenterToCompany = () => {
     if (mapRef.current) {
-      mapRef.current.setCenter(COMPANY_COORDS);
+      const coords = normalizeLngLat(modifiedCompanyCoords || COMPANY_COORDS) ?? (modifiedCompanyCoords || COMPANY_COORDS);
+      mapRef.current.setCenter(coords);
       mapRef.current.setZoom(13);
     }
   };
@@ -407,7 +503,12 @@ export default function MapView({ communities, selectedCommunity, hoveredCommuni
 
   // 复制更新后的坐标
   const copyCoordinates = async () => {
-    const updates: any[] = [];
+    const updates: Array<{
+      id?: string;
+      type?: 'company';
+      coordinates: [number, number];
+      note?: string;
+    }> = [];
 
     // 添加小区坐标更新
     modifiedCoords.forEach((value, id) => {

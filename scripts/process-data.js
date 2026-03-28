@@ -1,7 +1,12 @@
 const fs = require('fs');
 
-// 读取原始数据
-const rawData = JSON.parse(fs.readFileSync('/Users/huiyang/.claude/projects/-Users-huiyang/b0636c21-6cc7-44c4-bbda-e71366c0a601/tool-results/b5f5a19.txt', 'utf8'));
+const inputPath = process.argv[2];
+if (!inputPath) {
+  process.stderr.write('Usage: node scripts/process-data.js <input.json>\n');
+  process.exit(1);
+}
+
+const rawData = JSON.parse(fs.readFileSync(inputPath, 'utf8'));
 
 // 按小区分组
 const communityMap = new Map();
