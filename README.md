@@ -59,7 +59,7 @@ NEXT_PUBLIC_AMAP_SECURITY_KEY=你的JS安全密钥
 
 - `scripts/geocode-communities.js`：用高德 Web API 通过小区名补全/更新坐标，会覆盖写回 `data/communities.json`（依赖 `.env.local` 里的 `NEXT_PUBLIC_AMAP_KEY`）
 - `scripts/extract-coords.js`：通过高德短链接提取坐标并写回 `data/communities.json`
-- `scripts/process-data.js`：一次性数据加工脚本（当前读取路径为本机硬编码，复用前需要先改成你自己的输入文件路径）
+- `scripts/process-data.js`：一次性数据加工脚本（用法：`node scripts/process-data.js <input.json>`）
 
 ## 目录结构（当前状态）
 
@@ -97,7 +97,16 @@ npm run lint         # 代码检查
 
 **部署平台**: Vercel  
 **生产域名**: https://map.lihuiyang.xyz  
-**项目名称**: `office-map`
+**Vercel 项目**: `office-map`
+
+### Vercel 环境变量
+
+在 Vercel 项目中配置（Production/Preview 都需要）：
+
+- `NEXT_PUBLIC_AMAP_KEY`
+- `NEXT_PUBLIC_AMAP_SECURITY_KEY`
+
+同时请在高德控制台把允许的域名加入白名单（至少包含 `map.lihuiyang.xyz`，以及 Vercel 的预览域名）。
 
 ### 自动部署
 
@@ -110,6 +119,9 @@ git push origin main
 ### 手动部署
 
 ```bash
+# 首次运行需要把本地目录 link 到 Vercel 项目（按提示选择/确认）
+npx vercel link
+
 # 部署到生产环境
 npx vercel --prod
 
