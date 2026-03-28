@@ -87,6 +87,8 @@ interface MapViewProps {
 // 高德地图格式：[经度, 纬度]
 const COMPANY_COORDS: [number, number] = [121.512568, 31.304715];
 const RECOMMEND_RADIUS = 3000; // 推荐范围3公里（米）
+const DEFAULT_ZOOM = 15;
+const SELECTED_ZOOM = 16;
 
 // 调试地标（GCJ-02 坐标，从高德地图获取）- 已废弃，坐标不准
 const DEBUG_LANDMARKS: { name: string; coords: [number, number] }[] = [];
@@ -171,7 +173,7 @@ export default function MapView({ communities, selectedCommunity, hoveredCommuni
         const initialCompanyCoords = normalizeLngLat(COMPANY_COORDS) ?? COMPANY_COORDS;
 
         const map = new AMap.Map(containerRef.current, {
-          zoom: 13, // zoom=13 显示约4-5km 范围
+          zoom: DEFAULT_ZOOM,
           center: initialCompanyCoords,
         });
 
@@ -302,7 +304,7 @@ export default function MapView({ communities, selectedCommunity, hoveredCommuni
     didInitialCenterRef.current = true;
     const companyCoords = normalizeLngLat(COMPANY_COORDS) ?? COMPANY_COORDS;
     mapRef.current.setCenter(companyCoords);
-    mapRef.current.setZoom(13);
+    mapRef.current.setZoom(DEFAULT_ZOOM);
   }, [mapReady]);
 
   // 添加小区标记
@@ -455,7 +457,7 @@ export default function MapView({ communities, selectedCommunity, hoveredCommuni
     const coords = normalizeLngLat(selectedCommunity.coordinates);
     if (!coords) return;
     mapRef.current.setCenter(coords);
-    mapRef.current.setZoom(15);  // 放大一点，方便看清楚
+    mapRef.current.setZoom(SELECTED_ZOOM);
   }, [selectedCommunity, mapReady]);
 
   // 居中到公司位置
@@ -463,7 +465,7 @@ export default function MapView({ communities, selectedCommunity, hoveredCommuni
     if (mapRef.current) {
       const coords = normalizeLngLat(modifiedCompanyCoords || COMPANY_COORDS) ?? (modifiedCompanyCoords || COMPANY_COORDS);
       mapRef.current.setCenter(coords);
-      mapRef.current.setZoom(13);
+      mapRef.current.setZoom(DEFAULT_ZOOM);
     }
   };
 
