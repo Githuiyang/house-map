@@ -1,6 +1,11 @@
-# office-map
+# 公司附近租房地图
 
-公司附近租房地图：用高德地图在页面上展示「公司坐标 + 3km 推荐圈 + 小区点位」，并提供筛选、列表、详情卡片，方便新同事快速筛选租房小区。
+> 用高德地图展示「公司坐标 + 3km 推荐圈 + 小区点位」，方便新同事快速筛选租房小区
+
+**线上访问**: https://map.lihuiyang.xyz  
+**GitHub**: https://github.com/Githuiyang/house-map
+
+---
 
 ## 功能概览
 
@@ -80,8 +85,42 @@ office-map/
 ## 常用命令
 
 ```bash
-npm run dev
-npm run build
-npm run start
-npm run lint
+npm run dev          # 本地开发
+npm run build        # 构建生产版本
+npm run start        # 启动生产服务器
+npm run lint         # 代码检查
 ```
+
+---
+
+## 部署信息
+
+**部署平台**: Vercel  
+**生产域名**: https://map.lihuiyang.xyz  
+**项目名称**: `office-map`
+
+### 自动部署
+
+推送到 `main` 分支后，Vercel 会自动部署到生产环境：
+
+```bash
+git push origin main
+```
+
+### 手动部署
+
+```bash
+# 部署到生产环境
+npx vercel --prod
+
+# 部署到预览环境
+npx vercel
+```
+
+---
+
+## 相关链接
+
+- **生产网站**: https://map.lihuiyang.xyz
+- **GitHub 仓库**: https://github.com/Githuiyang/house-map
+- **Vercel 项目**: https://vercel.com/huiyangs-projects/office-map
