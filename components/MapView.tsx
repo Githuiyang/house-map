@@ -87,8 +87,8 @@ interface MapViewProps {
 // 高德地图格式：[经度, 纬度]
 const COMPANY_COORDS: [number, number] = [121.512568, 31.304715];
 const RECOMMEND_RADIUS = 3000; // 推荐范围3公里（米）
-const DEFAULT_ZOOM = 15;
-const SELECTED_ZOOM = 16;
+const DEFAULT_ZOOM = 16;
+const SELECTED_ZOOM = 17;
 
 // 调试地标（GCJ-02 坐标，从高德地图获取）- 已废弃，坐标不准
 const DEBUG_LANDMARKS: { name: string; coords: [number, number] }[] = [];
