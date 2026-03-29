@@ -170,6 +170,7 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
   const [pickedPoint, setPickedPoint] = useState<[number, number] | null>(null);
   const [expectedLngInput, setExpectedLngInput] = useState('');
   const [expectedLatInput, setExpectedLatInput] = useState('');
+  const [nudgeStepInput, setNudgeStepInput] = useState('0.000100');
   const [desktopCenterCorrection, setDesktopCenterCorrection] = useState<[number, number] | null>(DESKTOP_CENTER_CORRECTION_BASELINE);
   const pickModeRef = useRef(false);
   const debugSeqRef = useRef(0);
@@ -450,6 +451,39 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
     const suggestedCenter: [number, number] = [company[0] + deltaLng, company[1] + deltaLat];
     return { clicked, expected, deltaLng, deltaLat, suggestedCenter };
   }, [expectedLatInput, expectedLngInput, getCompanyCoords, pickedPoint]);
+
+  const nudgeStep = useMemo(() => {
+    const n = Number(nudgeStepInput);
+    if (!Number.isFinite(n) || n <= 0) return 0.0001;
+    return n;
+  }, [nudgeStepInput]);
+
+  const adjustDesktopCorrection = useCallback((deltaLng: number, deltaLat: number) => {
+    setDesktopCenterCorrection(prev => {
+      const base = prev ?? DESKTOP_CENTER_CORRECTION_BASELINE;
+      return [base[0] + deltaLng, base[1] + deltaLat];
+    });
+    scheduleViewportSyncRef.current('desktopCorrection:nudge');
+  }, []);
+
+  const alignCurrentCenterToCompany = useCallback(() => {
+    const map = mapRef.current;
+    if (!map?.getCenter) return;
+    const center = extractLngLat(map.getCenter());
+    if (!center) return;
+    const company = getCompanyCoords();
+    const correction: [number, number] = [company[0] - center[0], company[1] - center[1]];
+    setDesktopCenterCorrection(correction);
+    scheduleViewportSyncRef.current('desktopCorrection:alignCurrent');
+  }, [extractLngLat, getCompanyCoords]);
+
+  const alignPickedPointToCompany = useCallback(() => {
+    if (!pickedPoint) return;
+    const company = getCompanyCoords();
+    const correction: [number, number] = [company[0] - pickedPoint[0], company[1] - pickedPoint[1]];
+    setDesktopCenterCorrection(correction);
+    scheduleViewportSyncRef.current('desktopCorrection:alignPicked');
+  }, [getCompanyCoords, pickedPoint]);
 
   const copyDebugInfo = useCallback(async () => {
     if (!debugEnabledRef.current) return;
@@ -1276,6 +1310,33 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
                           >
                             关闭
                           </button>
+                        </span>
+                      </div>
+                      <div className={styles.debugRow}>
+                        <span className={styles.debugKey}>微调步长</span>
+                        <span className={styles.debugVal}>
+                          <input
+                            value={nudgeStepInput}
+                            onChange={(e) => setNudgeStepInput(e.target.value)}
+                            placeholder="0.000100"
+                            style={{ width: 120 }}
+                          />
+                        </span>
+                      </div>
+                      <div className={styles.debugRow}>
+                        <span className={styles.debugKey}>微调方向</span>
+                        <span className={styles.debugVal}>
+                          <button className={styles.debugBtn} onClick={() => adjustDesktopCorrection(-nudgeStep, 0)}>←</button>{' '}
+                          <button className={styles.debugBtn} onClick={() => adjustDesktopCorrection(nudgeStep, 0)}>→</button>{' '}
+                          <button className={styles.debugBtn} onClick={() => adjustDesktopCorrection(0, nudgeStep)}>↑</button>{' '}
+                          <button className={styles.debugBtn} onClick={() => adjustDesktopCorrection(0, -nudgeStep)}>↓</button>
+                        </span>
+                      </div>
+                      <div className={styles.debugRow}>
+                        <span className={styles.debugKey}>快速对齐</span>
+                        <span className={styles.debugVal}>
+                          <button className={styles.debugBtn} onClick={alignCurrentCenterToCompany}>当前中心对齐公司</button>{' '}
+                          <button className={styles.debugBtn} onClick={alignPickedPointToCompany}>采点对齐公司</button>
                         </span>
                       </div>
                       <div className={styles.debugRow}>
