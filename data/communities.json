@@ -39,8 +39,8 @@
     "id": "zhengminlu-150",
     "name": "政民路150弄",
     "coordinates": [
-      121.512,
-      31.3
+      121.510141,
+      31.303075
     ],
     "distance": "0.3km",
     "bikeTime": "步行3分钟",
@@ -71,8 +71,8 @@
     "id": "zhenglitu-580",
     "name": "政立路580弄",
     "coordinates": [
-      121.51,
-      31.302
+      121.505805,
+      31.305681
     ],
     "distance": "0.8km",
     "bikeTime": "步行10分钟",
@@ -106,8 +106,8 @@
     "id": "fuguangyuan",
     "name": "复光苑",
     "coordinates": [
-      121.505,
-      31.298
+      121.499905,
+      31.302428
     ],
     "distance": "1.0km",
     "bikeTime": "骑车5分钟",
@@ -140,8 +140,8 @@
     "id": "zhengminlu-230",
     "name": "政民路230弄",
     "coordinates": [
-      121.511,
-      31.299
+      121.507672,
+      31.302317
     ],
     "distance": "0.5km",
     "bikeTime": "步行7分钟",
@@ -175,8 +175,8 @@
     "id": "guodinglu-555",
     "name": "国定路555弄",
     "coordinates": [
-      121.506,
-      31.297
+      121.504253,
+      31.303397
     ],
     "distance": "0.9km",
     "bikeTime": "步行12分钟",
@@ -206,8 +206,8 @@
     "id": "guodinglu-600",
     "name": "国定路600弄",
     "coordinates": [
-      121.504,
-      31.296
+      121.505151,
+      31.305133
     ],
     "distance": "0.9km",
     "bikeTime": "步行12分钟",
@@ -238,8 +238,8 @@
     "id": "guodinglu-601",
     "name": "国定路601弄",
     "coordinates": [
-      121.5045,
-      31.2955
+      121.504089,
+      31.304462
     ],
     "distance": "1.0km",
     "bikeTime": "步行14分钟",
@@ -270,8 +270,8 @@
     "id": "zhenglitu-6nong",
     "name": "政立路6弄",
     "coordinates": [
-      121.509,
-      31.303
+      121.523818,
+      31.307803
     ],
     "distance": "1.3km",
     "bikeTime": "骑车7分钟",
@@ -304,8 +304,8 @@
     "id": "zhengtonglu-42",
     "name": "政通路42弄",
     "coordinates": [
-      121.507,
-      31.2995
+      121.520816,
+      31.305346
     ],
     "distance": "0.9km",
     "bikeTime": "步行10分钟",
@@ -337,8 +337,8 @@
     "id": "zhengtonglu-100",
     "name": "政通路100弄",
     "coordinates": [
-      121.5075,
-      31.3005
+      121.517495,
+      31.304728
     ],
     "distance": "0.8km",
     "bikeTime": "步行10分钟",
@@ -369,8 +369,8 @@
     "id": "zhengtonglu-285",
     "name": "政通路285弄",
     "coordinates": [
-      121.508,
-      31.301
+      121.511823,
+      31.301372
     ],
     "distance": "0.8km",
     "bikeTime": "步行10分钟",
@@ -401,8 +401,8 @@
     "id": "zhengde-donglu-108",
     "name": "政德东路108号",
     "coordinates": [
-      121.513,
-      31.304
+      121.518273,
+      31.308893
     ],
     "distance": "1.0km",
     "bikeTime": "步行12分钟",
@@ -435,8 +435,8 @@
     "id": "chuanzhi-fang",
     "name": "创智坊 伟德路10弄",
     "coordinates": [
-      121.512932,
-      31.307608
+      121.50755,
+      31.304333
     ],
     "distance": "0.3km",
     "bikeTime": "步行3分钟",
@@ -471,7 +471,7 @@
     "id": "wenhua-huayuan",
     "name": "文化花园",
     "coordinates": [
-      121.490602,
+      121.490603,
       31.302897
     ],
     "distance": "1.8km",
@@ -503,8 +503,8 @@
     "id": "dongfang-jinyuan",
     "name": "东方锦园",
     "coordinates": [
-      121.5,
-      31.294
+      121.500175,
+      31.309834
     ],
     "distance": "1.8km",
     "bikeTime": "骑车10分钟",
@@ -537,8 +537,8 @@
     "id": "yifuyuan",
     "name": "怡福苑",
     "coordinates": [
-      121.502,
-      31.296
+      121.518614,
+      31.291866
     ],
     "distance": "1.9km",
     "bikeTime": "骑车10分钟",
@@ -572,8 +572,8 @@
     "id": "guoquan-beilu-8nong",
     "name": "国权北路8弄",
     "coordinates": [
-      121.495,
-      31.29
+      121.494444,
+      31.309973
     ],
     "distance": "1.8km",
     "bikeTime": "骑车10分钟",
@@ -604,8 +604,8 @@
     "id": "jianxin-xiaoqu",
     "name": "建新小区",
     "coordinates": [
-      121.496,
-      31.298
+      121.511271,
+      31.300837
     ],
     "distance": "1.0km",
     "bikeTime": "步行12分钟",
@@ -639,8 +639,8 @@
     "id": "wenhua-mingyuan",
     "name": "文化名园",
     "coordinates": [
-      121.497,
-      31.293
+      121.49124,
+      31.30718
     ],
     "distance": "2.0km",
     "bikeTime": "骑车12分钟",
@@ -673,7 +673,7 @@
     "id": "zhengwu-huayuan",
     "name": "正文花园",
     "coordinates": [
-      121.488589,
+      121.48859,
       31.308559
     ],
     "distance": "2.0km",
@@ -707,8 +707,8 @@
     "id": "sipinglu-2555",
     "name": "四平路2555弄",
     "coordinates": [
-      121.503,
-      31.294
+      121.513252,
+      31.296141
     ],
     "distance": "1.2km",
     "bikeTime": "骑车6分钟",
@@ -740,8 +740,8 @@
     "id": "linlu-jiayuan",
     "name": "林绿家园",
     "coordinates": [
-      121.492,
-      31.291
+      121.51243,
+      31.290479
     ],
     "distance": "1.7km",
     "bikeTime": "骑车10分钟",
@@ -771,8 +771,8 @@
     "id": "sanmenlu-358",
     "name": "三门路358弄",
     "coordinates": [
-      121.489,
-      31.288
+      121.492724,
+      31.309768
     ],
     "distance": "2.0km",
     "bikeTime": "骑车15分钟",
@@ -804,8 +804,8 @@
     "id": "nanchayuan",
     "name": "南茶园",
     "coordinates": [
-      121.491,
-      31.295
+      121.518204,
+      31.290743
     ],
     "distance": "2.0km",
     "bikeTime": "骑车12分钟",
@@ -838,7 +838,7 @@
     "name": "国和一村",
     "coordinates": [
       121.529095,
-      31.316402
+      31.316401
     ],
     "distance": "2.5km",
     "bikeTime": "骑车20分钟",
@@ -872,8 +872,8 @@
     "id": "huchang-gongyu",
     "name": "沪昌公寓",
     "coordinates": [
-      121.516,
-      31.3
+      121.515591,
+      31.304317
     ],
     "distance": "0.5km",
     "bikeTime": "步行5分钟",
@@ -904,8 +904,8 @@
     "id": "minfu-jiayuan",
     "name": "民富家园",
     "coordinates": [
-      121.51,
-      31.305
+      121.514905,
+      31.310033
     ],
     "distance": "0.7km",
     "bikeTime": "步行7分钟",
@@ -938,8 +938,8 @@
     "id": "sanxiang-weilai-haian",
     "name": "三湘未来海岸",
     "coordinates": [
-      121.49,
-      31.29
+      121.5058,
+      31.316672
     ],
     "distance": "2.0km",
     "bikeTime": "骑车12分钟",
@@ -970,8 +970,8 @@
     "id": "guodinglu-700",
     "name": "国定路700弄",
     "coordinates": [
-      121.5055,
-      31.2965
+      121.50477,
+      31.307438
     ],
     "distance": "1.0km",
     "bikeTime": "步行10分钟",
@@ -1001,8 +1001,8 @@
     "id": "wuchuanlu-222",
     "name": "武川路222弄",
     "coordinates": [
-      121.5,
-      31.305
+      121.496902,
+      31.305494
     ],
     "distance": "1.5km",
     "bikeTime": "骑车10分钟",
@@ -1034,8 +1034,8 @@
     "id": "beijiao-xiaoqu",
     "name": "北郊小区",
     "coordinates": [
-      121.48,
-      31.28
+      121.490003,
+      31.274292
     ],
     "distance": "3.9km",
     "bikeTime": "骑车26分钟",
@@ -1068,8 +1068,8 @@
     "id": "henan-zhonglu-575",
     "name": "山北小区",
     "coordinates": [
-      121.49,
-      31.24
+      121.483051,
+      31.239909
     ],
     "distance": "10km",
     "bikeTime": "地铁35分钟",

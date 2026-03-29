@@ -1,0 +1,536 @@
+{
+  "total": 33,
+  "matched": 33,
+  "unresolvedCount": 0,
+  "unresolved": [],
+  "rows": [
+    {
+      "id": "renheyuan",
+      "name": "仁和苑",
+      "status": "matched",
+      "source": "place",
+      "query": "仁和苑",
+      "title": "仁和苑",
+      "before": [
+        121.512202,
+        31.303093
+      ],
+      "after": [
+        121.512202,
+        31.303093
+      ]
+    },
+    {
+      "id": "zhengminlu-150",
+      "name": "政民路150弄",
+      "status": "matched",
+      "source": "place",
+      "query": "政民路150弄",
+      "title": "政民路150弄小区",
+      "before": [
+        121.512,
+        31.3
+      ],
+      "after": [
+        121.510141,
+        31.303075
+      ]
+    },
+    {
+      "id": "zhenglitu-580",
+      "name": "政立路580弄",
+      "status": "matched",
+      "source": "geo",
+      "query": "上海市杨浦区政立路580弄",
+      "title": "上海市杨浦区政立路580弄",
+      "before": [
+        121.51,
+        31.302
+      ],
+      "after": [
+        121.505805,
+        31.305681
+      ]
+    },
+    {
+      "id": "fuguangyuan",
+      "name": "复光苑",
+      "status": "matched",
+      "source": "place",
+      "query": "复光苑",
+      "title": "复光苑",
+      "before": [
+        121.505,
+        31.298
+      ],
+      "after": [
+        121.499905,
+        31.302428
+      ]
+    },
+    {
+      "id": "zhengminlu-230",
+      "name": "政民路230弄",
+      "status": "matched",
+      "source": "place",
+      "query": "政民路230弄",
+      "title": "政民路230弄小区",
+      "before": [
+        121.511,
+        31.299
+      ],
+      "after": [
+        121.507672,
+        31.302317
+      ]
+    },
+    {
+      "id": "guodinglu-555",
+      "name": "国定路555弄",
+      "status": "matched",
+      "source": "place",
+      "query": "国定路555弄",
+      "title": "国定路555弄小区",
+      "before": [
+        121.506,
+        31.297
+      ],
+      "after": [
+        121.504253,
+        31.303397
+      ]
+    },
+    {
+      "id": "guodinglu-600",
+      "name": "国定路600弄",
+      "status": "matched",
+      "source": "place",
+      "query": "国定路600弄",
+      "title": "国定路600弄小区",
+      "before": [
+        121.504,
+        31.296
+      ],
+      "after": [
+        121.505151,
+        31.305133
+      ]
+    },
+    {
+      "id": "guodinglu-601",
+      "name": "国定路601弄",
+      "status": "matched",
+      "source": "place",
+      "query": "国定路601弄小区",
+      "title": "国定路601弄小区",
+      "before": [
+        121.5045,
+        31.2955
+      ],
+      "after": [
+        121.504089,
+        31.304462
+      ]
+    },
+    {
+      "id": "zhenglitu-6nong",
+      "name": "政立路6弄",
+      "status": "matched",
+      "source": "place",
+      "query": "政立路6弄",
+      "title": "政立路6弄1-27号",
+      "before": [
+        121.509,
+        31.303
+      ],
+      "after": [
+        121.523818,
+        31.307803
+      ]
+    },
+    {
+      "id": "zhengtonglu-42",
+      "name": "政通路42弄",
+      "status": "matched",
+      "source": "geo",
+      "query": "上海市杨浦区政通路42弄",
+      "title": "上海市杨浦区政通路42弄",
+      "before": [
+        121.507,
+        31.2995
+      ],
+      "after": [
+        121.520816,
+        31.305346
+      ]
+    },
+    {
+      "id": "zhengtonglu-100",
+      "name": "政通路100弄",
+      "status": "matched",
+      "source": "place",
+      "query": "政通路100弄小区",
+      "title": "政通路100弄小区",
+      "before": [
+        121.5075,
+        31.3005
+      ],
+      "after": [
+        121.517495,
+        31.304728
+      ]
+    },
+    {
+      "id": "zhengtonglu-285",
+      "name": "政通路285弄",
+      "status": "matched",
+      "source": "place",
+      "query": "政通路285弄",
+      "title": "建新小区政通路285弄",
+      "before": [
+        121.508,
+        31.301
+      ],
+      "after": [
+        121.511823,
+        31.301372
+      ]
+    },
+    {
+      "id": "zhengde-donglu-108",
+      "name": "政德东路108号",
+      "status": "matched",
+      "source": "geo",
+      "query": "上海市杨浦区政德东路108号",
+      "title": "上海市杨浦区政德东路108号",
+      "before": [
+        121.513,
+        31.304
+      ],
+      "after": [
+        121.518273,
+        31.308893
+      ]
+    },
+    {
+      "id": "chuanzhi-fang",
+      "name": "创智坊 伟德路10弄",
+      "status": "matched",
+      "source": "geo",
+      "query": "上海市杨浦区创智坊 伟德路10弄",
+      "title": "上海市杨浦区创智坊伟德路10弄",
+      "before": [
+        121.512932,
+        31.307608
+      ],
+      "after": [
+        121.50755,
+        31.304333
+      ]
+    },
+    {
+      "id": "wenhua-huayuan",
+      "name": "文化花园",
+      "status": "matched",
+      "source": "place",
+      "query": "文化花园",
+      "title": "文化花园",
+      "before": [
+        121.490602,
+        31.302897
+      ],
+      "after": [
+        121.490603,
+        31.302897
+      ]
+    },
+    {
+      "id": "dongfang-jinyuan",
+      "name": "东方锦园",
+      "status": "matched",
+      "source": "place",
+      "query": "东方锦园",
+      "title": "东方锦园",
+      "before": [
+        121.5,
+        31.294
+      ],
+      "after": [
+        121.500175,
+        31.309834
+      ]
+    },
+    {
+      "id": "yifuyuan",
+      "name": "怡福苑",
+      "status": "matched",
+      "source": "place",
+      "query": "怡福苑",
+      "title": "怡福苑",
+      "before": [
+        121.502,
+        31.296
+      ],
+      "after": [
+        121.518614,
+        31.291866
+      ]
+    },
+    {
+      "id": "guoquan-beilu-8nong",
+      "name": "国权北路8弄",
+      "status": "matched",
+      "source": "place",
+      "query": "国权北路8弄",
+      "title": "同济欣苑北区国权北路8弄",
+      "before": [
+        121.495,
+        31.29
+      ],
+      "after": [
+        121.494444,
+        31.309973
+      ]
+    },
+    {
+      "id": "jianxin-xiaoqu",
+      "name": "建新小区",
+      "status": "matched",
+      "source": "place",
+      "query": "建新小区小区",
+      "title": "建新小区",
+      "before": [
+        121.496,
+        31.298
+      ],
+      "after": [
+        121.511271,
+        31.300837
+      ]
+    },
+    {
+      "id": "wenhua-mingyuan",
+      "name": "文化名园",
+      "status": "matched",
+      "source": "place",
+      "query": "文化名园",
+      "title": "文化名园",
+      "before": [
+        121.497,
+        31.293
+      ],
+      "after": [
+        121.49124,
+        31.30718
+      ]
+    },
+    {
+      "id": "zhengwu-huayuan",
+      "name": "正文花园",
+      "status": "matched",
+      "source": "place",
+      "query": "正文花园",
+      "title": "正文花园",
+      "before": [
+        121.488589,
+        31.308559
+      ],
+      "after": [
+        121.48859,
+        31.308559
+      ]
+    },
+    {
+      "id": "sipinglu-2555",
+      "name": "四平路2555弄",
+      "status": "matched",
+      "source": "place",
+      "query": "四平路2555弄小区",
+      "title": "四平路2555弄小区",
+      "before": [
+        121.503,
+        31.294
+      ],
+      "after": [
+        121.513252,
+        31.296141
+      ]
+    },
+    {
+      "id": "linlu-jiayuan",
+      "name": "林绿家园",
+      "status": "matched",
+      "source": "place",
+      "query": "林绿家园",
+      "title": "林绿家园",
+      "before": [
+        121.492,
+        31.291
+      ],
+      "after": [
+        121.51243,
+        31.290479
+      ]
+    },
+    {
+      "id": "sanmenlu-358",
+      "name": "三门路358弄",
+      "status": "matched",
+      "source": "place",
+      "query": "杨浦区三门路358弄",
+      "title": "三门路358弄小区",
+      "before": [
+        121.489,
+        31.288
+      ],
+      "after": [
+        121.492724,
+        31.309768
+      ]
+    },
+    {
+      "id": "nanchayuan",
+      "name": "南茶园",
+      "status": "matched",
+      "source": "place",
+      "query": "南茶园",
+      "title": "南茶园",
+      "before": [
+        121.491,
+        31.295
+      ],
+      "after": [
+        121.518204,
+        31.290743
+      ]
+    },
+    {
+      "id": "guohu-yicun",
+      "name": "国和一村",
+      "status": "matched",
+      "source": "place",
+      "query": "国和一村",
+      "title": "国和一村",
+      "before": [
+        121.529095,
+        31.316402
+      ],
+      "after": [
+        121.529095,
+        31.316401
+      ]
+    },
+    {
+      "id": "huchang-gongyu",
+      "name": "沪昌公寓",
+      "status": "matched",
+      "source": "place",
+      "query": "沪昌公寓小区",
+      "title": "沪昌公寓",
+      "before": [
+        121.516,
+        31.3
+      ],
+      "after": [
+        121.515591,
+        31.304317
+      ]
+    },
+    {
+      "id": "minfu-jiayuan",
+      "name": "民富家园",
+      "status": "matched",
+      "source": "place",
+      "query": "民富家园",
+      "title": "民富家园(政府路)",
+      "before": [
+        121.51,
+        31.305
+      ],
+      "after": [
+        121.514905,
+        31.310033
+      ]
+    },
+    {
+      "id": "sanxiang-weilai-haian",
+      "name": "三湘未来海岸",
+      "status": "matched",
+      "source": "place",
+      "query": "三湘未来海岸",
+      "title": "三湘未来海岸广场",
+      "before": [
+        121.49,
+        31.29
+      ],
+      "after": [
+        121.5058,
+        31.316672
+      ]
+    },
+    {
+      "id": "guodinglu-700",
+      "name": "国定路700弄",
+      "status": "matched",
+      "source": "place",
+      "query": "国定路700弄小区",
+      "title": "国定路700弄住宅小区",
+      "before": [
+        121.5055,
+        31.2965
+      ],
+      "after": [
+        121.50477,
+        31.307438
+      ]
+    },
+    {
+      "id": "wuchuanlu-222",
+      "name": "武川路222弄",
+      "status": "matched",
+      "source": "place",
+      "query": "武川路222弄",
+      "title": "上海财经大学武东路校区武川路222弄住宅小区",
+      "before": [
+        121.5,
+        31.305
+      ],
+      "after": [
+        121.496902,
+        31.305494
+      ]
+    },
+    {
+      "id": "beijiao-xiaoqu",
+      "name": "北郊小区",
+      "status": "matched",
+      "source": "place",
+      "query": "北郊小区",
+      "title": "北郊小区",
+      "before": [
+        121.48,
+        31.28
+      ],
+      "after": [
+        121.490003,
+        31.274292
+      ]
+    },
+    {
+      "id": "henan-zhonglu-575",
+      "name": "山北小区",
+      "status": "matched",
+      "source": "place",
+      "query": "山北小区小区",
+      "title": "如意里山北小区",
+      "before": [
+        121.49,
+        31.24
+      ],
+      "after": [
+        121.483051,
+        31.239909
+      ]
+    }
+  ]
+}

@@ -7,6 +7,19 @@
 
 ---
 
+## 文档导航（推荐先看）
+
+- 文档总索引：`docs/README.md`
+- 快速开始（安装/启动/环境变量）：`docs/quickstart.md`
+- 功能与架构（页面结构、地图联动、核心组件）：`docs/architecture.md`
+- 坐标与调试（debug 面板、坐标漂移排查、桌面修正）：`docs/debugging.md`
+- 数据维护（数据结构、脚本、坐标更新）：`docs/data-maintenance.md`
+- 测试与发布（CI、E2E、Vercel 部署与回滚）：`docs/testing-and-release.md`
+
+如果你只需要快速上手，请先看 `docs/quickstart.md`；如果你是维护线上稳定性，请直接看 `docs/debugging.md` + `docs/testing-and-release.md`。
+
+---
+
 ## 功能概览
 
 - 左侧筛选：距离 / 价格区间 / 户型
