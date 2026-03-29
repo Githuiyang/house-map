@@ -11,9 +11,10 @@
 
 - 左侧筛选：距离 / 价格区间 / 户型
 - 小区列表：名称、距离、骑行时间、价格、电梯、户型
-- 地图联动：点击列表项定位并展示详情；Hover 列表项高亮地图标记
+- 地图联动：点击列表项定位并展示小浮窗；点击地图浮窗进入详情；Hover 列表项高亮地图标记
 - 主题切换：明/暗色
 - 推荐范围：以公司坐标为圆心的 3km 圆圈
+- 调试模式：采样地图中心点与公司坐标偏移（用于排查不同浏览器定位差异）
 
 ## 本地运行
 
@@ -89,7 +90,20 @@ npm run dev          # 本地开发
 npm run build        # 构建生产版本
 npm run start        # 启动生产服务器
 npm run lint         # 代码检查
+npm run test:unit    # 单元测试（vitest）
+npm run test:unit:coverage  # 单元测试 + 覆盖率门槛
+npm run test:integration  # 集成测试（Playwright）
+npm run test:e2e     # 端到端测试（Playwright，与集成测试共用）
+npm run test:ci      # CI 全量校验（lint/build/unit+coverage/e2e）
 ```
+
+## 调试模式（定位偏移排查）
+
+在 URL 加上 `?debug=1` 可开启调试面板，会自动记录地图中心点、公司坐标、偏移距离、容器尺寸等信息，便于对比不同浏览器/不同布局下的差异：
+
+- https://map.lihuiyang.xyz/?debug=1
+
+调试面板支持一键复制 JSON，便于发给维护者做对比分析。
 
 ---
 
@@ -115,6 +129,76 @@ npm run lint         # 代码检查
 ```bash
 git push origin main
 ```
+
+---
+
+## 代码审查与发布流程（标准化）
+
+### 1) 代码审查（PR 必需）
+
+审查维度：
+
+- 功能逻辑：关键业务路径、边界条件、异常处理
+- 性能：避免无意义重复渲染；事件/观察器无泄漏；地图联动收敛逻辑明确
+- 安全：无敏感信息硬编码；第三方 Key 只通过环境变量；域名白名单/配额限制已配置
+- 规范：lint/typecheck 通过；命名与目录结构一致
+- 可维护性：重复逻辑收敛；副作用集中；避免“补丁套补丁”式修复
+
+仓库内置 PR 模板用于强制检查项：`.github/pull_request_template.md`。
+
+### 2) 自动化测试（审查通过后执行）
+
+本仓库 CI 会在 `pull_request` 与 `main` 上自动执行：
+
+- `npm run lint`
+- `npm run build`
+- `npm run test:unit:coverage`
+- `npm run test:e2e`
+
+说明：
+
+- 单元测试覆盖率有门槛（见 `vitest.config.ts`）
+- E2E 测试在 CI 中会禁用真实地图加载（`NEXT_PUBLIC_DISABLE_MAP=1`），避免依赖第三方网络与 Key
+
+### 3) Staging（预发布验证）
+
+定义：**Vercel Preview Deployment** 作为 staging 环境。
+
+流程：
+
+- 提交 PR → Vercel 自动生成 Preview 链接
+- 在 Preview 环境做验收：地图加载、默认定位、断点切换（侧栏显示/隐藏）、列表/浮窗/详情交互
+- 验收通过后合并到 `main` 触发生产发布
+
+### 4) 生产发布（Production）
+
+发布前检查：
+
+- CI 全绿（lint/build/unit+coverage/e2e）
+- Vercel 环境变量（Production）已配置：`NEXT_PUBLIC_AMAP_KEY` / `NEXT_PUBLIC_AMAP_SECURITY_KEY`
+- 高德控制台域名白名单包含 `map.lihuiyang.xyz`
+
+发布方式：
+
+- 合并到 `main` 后由 Vercel 自动发布（推荐）
+
+### 5) 发布后验证与监控
+
+发布后验证清单（生产域名）：
+
+- 首页可访问、地图可加载
+- 默认中心点正确；窗口从窄到宽跨断点后仍正确
+- 列表 hover 高亮与点击交互正常
+
+监控建议：
+
+- Vercel Deployments/Logs：构建失败、运行期错误
+- 外部探活：定期请求生产首页，检测可用性
+
+### 6) 回滚机制
+
+- Vercel 回滚：在 Vercel 控制台将上一个 Production Deployment Promote/回退
+- Git 回滚：`git revert` 合并提交并推送 `main` 触发重新部署
 
 ### 手动部署
 
