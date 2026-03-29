@@ -66,6 +66,23 @@ type AMapApi = {
     fillColor: string;
     fillOpacity: number;
   }) => AMapCircle;
+  plugin?: (plugins: string | string[], cb: () => void) => void;
+  PlaceSearch?: new (opts: { city?: string; citylimit?: boolean }) => {
+    search: (
+      keyword: string,
+      cb: (
+        status: string,
+        result?: {
+          poiList?: {
+            pois?: Array<{
+              name?: string;
+              location?: unknown;
+            }>;
+          };
+        }
+      ) => void
+    ) => void;
+  };
   Pixel: new (x: number, y: number) => AMapPixel;
   Scale: new () => unknown;
 };
@@ -170,6 +187,8 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
   const [pickedPoint, setPickedPoint] = useState<[number, number] | null>(null);
   const [expectedLngInput, setExpectedLngInput] = useState('');
   const [expectedLatInput, setExpectedLatInput] = useState('');
+  const [rematchRunning, setRematchRunning] = useState(false);
+  const [rematchStats, setRematchStats] = useState<{ matched: number; total: number; unresolved: string[] } | null>(null);
   const [nudgeStepInput, setNudgeStepInput] = useState('0.000100');
   const [desktopCenterCorrection, setDesktopCenterCorrection] = useState<[number, number] | null>(DESKTOP_CENTER_CORRECTION_BASELINE);
   const pickModeRef = useRef(false);
@@ -485,11 +504,76 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
     scheduleViewportSyncRef.current('desktopCorrection:alignPicked');
   }, [getCompanyCoords, pickedPoint]);
 
+  const batchRematchByName = useCallback(async () => {
+    if (rematchRunning) return;
+    const AMap = AMapRef.current;
+    if (!AMap) return;
+
+    setRematchRunning(true);
+    setRematchStats(null);
+    try {
+      await new Promise<void>((resolve) => {
+        if (AMap.PlaceSearch) {
+          resolve();
+          return;
+        }
+        AMap.plugin?.('AMap.PlaceSearch', () => resolve());
+        if (!AMap.plugin) resolve();
+      });
+
+      if (!AMap.PlaceSearch) {
+        setRematchStats({ matched: 0, total: communities.length, unresolved: communities.map(c => c.name) });
+        return;
+      }
+
+      const placeSearch = new AMap.PlaceSearch({ city: '上海', citylimit: true });
+      const nextMap = new Map(modifiedCoords);
+      const unresolved: string[] = [];
+      let matched = 0;
+
+      const searchOne = (keyword: string) =>
+        new Promise<[number, number] | null>((resolve) => {
+          placeSearch.search(keyword, (_status, result) => {
+            const pois = result?.poiList?.pois ?? [];
+            for (const poi of pois) {
+              const loc = extractLngLat(poi.location);
+              if (!loc) continue;
+              resolve(loc);
+              return;
+            }
+            resolve(null);
+          });
+        });
+
+      for (const c of communities) {
+        const queries = [c.name, `${c.name}小区`, `上海杨浦${c.name}`];
+        let found: [number, number] | null = null;
+        for (const q of queries) {
+          found = await searchOne(q);
+          if (found) break;
+        }
+        if (!found) {
+          unresolved.push(c.name);
+          continue;
+        }
+        nextMap.set(c.id, { original: c.coordinates, modified: found });
+        matched += 1;
+      }
+
+      setModifiedCoords(nextMap);
+      setRematchStats({ matched, total: communities.length, unresolved });
+      pushDebugSnapshotRef.current('batchRematch:done');
+    } finally {
+      setRematchRunning(false);
+    }
+  }, [communities, extractLngLat, modifiedCoords, rematchRunning]);
+
   const copyDebugInfo = useCallback(async () => {
     if (!debugEnabledRef.current) return;
     const payload = {
       companyCoords: getCompanyCoords(),
       desktopCenterCorrection,
+      rematchStats,
       snapshots: debugSnapshots,
     };
     try {
@@ -499,7 +583,7 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
     } catch {
       // ignore
     }
-  }, [debugSnapshots, desktopCenterCorrection, getCompanyCoords]);
+  }, [debugSnapshots, desktopCenterCorrection, getCompanyCoords, rematchStats]);
 
   // 初始化地图
   useEffect(() => {
@@ -1339,6 +1423,23 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
                           <button className={styles.debugBtn} onClick={alignPickedPointToCompany}>采点对齐公司</button>
                         </span>
                       </div>
+                      <div className={styles.debugRow}>
+                        <span className={styles.debugKey}>批量匹配</span>
+                        <span className={styles.debugVal}>
+                          <button className={styles.debugBtn} onClick={batchRematchByName} disabled={rematchRunning}>
+                            {rematchRunning ? '匹配中...' : '按名称重匹配'}
+                          </button>
+                        </span>
+                      </div>
+                      {rematchStats && (
+                        <div className={styles.debugRow}>
+                          <span className={styles.debugKey}>匹配结果</span>
+                          <span className={styles.debugVal}>
+                            {rematchStats.matched}/{rematchStats.total}
+                            {rematchStats.unresolved.length > 0 ? `，未命中${rematchStats.unresolved.length}` : ''}
+                          </span>
+                        </div>
+                      )}
                       <div className={styles.debugRow}>
                         <span className={styles.debugKey}>采点模式</span>
                         <span className={styles.debugVal}>
