@@ -188,7 +188,7 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
   const [expectedLngInput, setExpectedLngInput] = useState('');
   const [expectedLatInput, setExpectedLatInput] = useState('');
   const [rematchRunning, setRematchRunning] = useState(false);
-  const [rematchStats, setRematchStats] = useState<{ matched: number; total: number; unresolved: string[] } | null>(null);
+  const [rematchStats, setRematchStats] = useState<{ matched: number; total: number; unresolved: string[]; reason?: string } | null>(null);
   const [nudgeStepInput, setNudgeStepInput] = useState('0.000100');
   const [desktopCenterCorrection, setDesktopCenterCorrection] = useState<[number, number] | null>(DESKTOP_CENTER_CORRECTION_BASELINE);
   const pickModeRef = useRef(false);
@@ -512,28 +512,44 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
     setRematchRunning(true);
     setRematchStats(null);
     try {
-      await new Promise<void>((resolve) => {
+      await new Promise<void>((resolve, reject) => {
         if (AMap.PlaceSearch) {
           resolve();
           return;
         }
-        AMap.plugin?.('AMap.PlaceSearch', () => resolve());
-        if (!AMap.plugin) resolve();
+        if (!AMap.plugin) {
+          reject(new Error('当前地图实例不支持 AMap.plugin，无法加载 PlaceSearch'));
+          return;
+        }
+        const timeout = window.setTimeout(() => reject(new Error('加载 PlaceSearch 超时')), 5000);
+        AMap.plugin('AMap.PlaceSearch', () => {
+          window.clearTimeout(timeout);
+          resolve();
+        });
       });
 
       if (!AMap.PlaceSearch) {
-        setRematchStats({ matched: 0, total: communities.length, unresolved: communities.map(c => c.name) });
+        setRematchStats({
+          matched: 0,
+          total: communities.length,
+          unresolved: communities.map(c => c.name),
+          reason: 'PlaceSearch 插件未加载成功，请检查高德 Key 安全配置与域名白名单',
+        });
         return;
       }
 
-      const placeSearch = new AMap.PlaceSearch({ city: '上海', citylimit: true });
+      const placeSearch = new AMap.PlaceSearch({ city: '上海', citylimit: false });
       const nextMap = new Map(modifiedCoords);
       const unresolved: string[] = [];
       let matched = 0;
 
       const searchOne = (keyword: string) =>
         new Promise<[number, number] | null>((resolve) => {
-          placeSearch.search(keyword, (_status, result) => {
+          placeSearch.search(keyword, (status, result) => {
+            if (status !== 'complete') {
+              resolve(null);
+              return;
+            }
             const pois = result?.poiList?.pois ?? [];
             for (const poi of pois) {
               const loc = extractLngLat(poi.location);
@@ -546,7 +562,7 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
         });
 
       for (const c of communities) {
-        const queries = [c.name, `${c.name}小区`, `上海杨浦${c.name}`];
+        const queries = [c.name, `${c.name}小区`, `上海市杨浦区${c.name}`, `杨浦区${c.name}`];
         let found: [number, number] | null = null;
         for (const q of queries) {
           found = await searchOne(q);
@@ -564,6 +580,14 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
       if (matched > 0) setEditMode(true);
       setRematchStats({ matched, total: communities.length, unresolved });
       pushDebugSnapshotRef.current('batchRematch:done');
+    } catch (err) {
+      const reason = err instanceof Error ? err.message : '批量匹配失败';
+      setRematchStats({
+        matched: 0,
+        total: communities.length,
+        unresolved: communities.map(c => c.name),
+        reason,
+      });
     } finally {
       setRematchRunning(false);
     }
@@ -611,7 +635,7 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
       AMapLoader.default.load({
         key: process.env.NEXT_PUBLIC_AMAP_KEY || '',
         version: '2.0',
-        plugins: ['AMap.Scale'],
+        plugins: ['AMap.Scale', 'AMap.PlaceSearch'],
       }).then((AMap: AMapApi) => {
         // 检查是否已被销毁
         if (isDestroyedRef.current || !containerRef.current) return;
@@ -1438,6 +1462,7 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
                           <span className={styles.debugVal}>
                             {rematchStats.matched}/{rematchStats.total}
                             {rematchStats.unresolved.length > 0 ? `，未命中${rematchStats.unresolved.length}` : ''}
+                            {rematchStats.reason ? `，原因: ${rematchStats.reason}` : ''}
                           </span>
                         </div>
                       )}
