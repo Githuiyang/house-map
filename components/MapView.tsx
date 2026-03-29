@@ -25,7 +25,9 @@ type AMapMap = {
   getContainer: () => HTMLElement;
   getCenter?: () => unknown;
   getZoom?: () => number;
-  on?: (event: string, handler: () => void) => void;
+  containerToLngLat?: (pixel: AMapPixel) => unknown;
+  pixelToLngLat?: (pixel: AMapPixel) => unknown;
+  on?: (event: string, handler: (e?: unknown) => void) => void;
   resize?: () => void;
   destroy: () => void;
 };
@@ -82,6 +84,7 @@ type AMapEventWithTarget = {
 };
 
 type DebugSnapshot = {
+  seq: number;
   label: string;
   time: string;
   company: [number, number];
@@ -89,9 +92,29 @@ type DebugSnapshot = {
   zoom: number | null;
   distanceMeters: number | null;
   viewport: { w: number; h: number };
+  visualViewport: { w: number; h: number; offsetLeft: number; offsetTop: number; scale: number } | null;
+  screen: { w: number; h: number; availW: number; availH: number; pixelDepth: number };
   container: { w: number; h: number } | null;
+  containerRect: { left: number; top: number; right: number; bottom: number; x: number; y: number; w: number; h: number } | null;
   dpr: number;
+  platform: string;
   ua: string;
+  pointer?: {
+    client: { x: number; y: number };
+    container: { x: number; y: number };
+    rect: { left: number; top: number; w: number; h: number };
+  };
+  amapClick?: {
+    lnglat: [number, number] | null;
+    pixel: { x: number; y: number } | null;
+    deltaPx: { x: number; y: number } | null;
+  };
+  hitTest?: {
+    tag: string;
+    id: string | null;
+    className: string | null;
+    inMap: boolean;
+  };
 };
 
 interface MapViewProps {
@@ -106,6 +129,8 @@ interface MapViewProps {
 // 公司坐标：杨浦区淞沪路303号 创智天地 11号楼
 // 高德地图格式：[经度, 纬度]
 const COMPANY_COORDS: [number, number] = [121.512568, 31.304715];
+const DESKTOP_CENTER_CORRECTION_BASELINE: [number, number] = [0.000568, 0.004715];
+const DESKTOP_CENTER_CORRECTION_STORAGE_KEY = 'office-map-desktop-center-correction';
 const RECOMMEND_RADIUS = 3000; // 推荐范围3公里（米）
 const DEFAULT_ZOOM = 16;
 const SELECTED_ZOOM = 17;
@@ -126,7 +151,7 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
   const legendRef = useRef<HTMLDivElement | null>(null);
   const debugEnabledRef = useRef(false);
   const layoutSyncRafRef = useRef<number | null>(null);
-  const layoutSyncStateRef = useRef<{ start: number; lastW: number; lastH: number; stable: number; reason: string } | null>(null);
+  const layoutSyncStateRef = useRef<{ start: number; lastW: number; lastH: number; lastLeft: number; lastTop: number; stable: number; reason: string } | null>(null);
 
   // 编辑模式状态
   const [editMode, setEditMode] = useState(false);
@@ -141,6 +166,48 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
   const [debugSnapshots, setDebugSnapshots] = useState<DebugSnapshot[]>([]);
   const [debugCollapsed, setDebugCollapsed] = useState(false);
   const [debugCopied, setDebugCopied] = useState(false);
+  const [pickMode, setPickMode] = useState(false);
+  const [pickedPoint, setPickedPoint] = useState<[number, number] | null>(null);
+  const [expectedLngInput, setExpectedLngInput] = useState('');
+  const [expectedLatInput, setExpectedLatInput] = useState('');
+  const [desktopCenterCorrection, setDesktopCenterCorrection] = useState<[number, number] | null>(DESKTOP_CENTER_CORRECTION_BASELINE);
+  const pickModeRef = useRef(false);
+  const debugSeqRef = useRef(0);
+  const lastPointerRef = useRef<DebugSnapshot['pointer'] | null>(null);
+  const lastInteractionSyncAtRef = useRef(0);
+  const layoutModeRef = useRef<'desktop' | 'mobile' | null>(null);
+  const [disabledLastClick, setDisabledLastClick] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
+
+  useEffect(() => {
+    pickModeRef.current = pickMode;
+  }, [pickMode]);
+
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(DESKTOP_CENTER_CORRECTION_STORAGE_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as unknown;
+      if (!Array.isArray(parsed) || parsed.length < 2) return;
+      const lng = Number(parsed[0]);
+      const lat = Number(parsed[1]);
+      if (!Number.isFinite(lng) || !Number.isFinite(lat)) return;
+      setDesktopCenterCorrection([lng, lat]);
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      if (!desktopCenterCorrection) {
+        window.localStorage.removeItem(DESKTOP_CENTER_CORRECTION_STORAGE_KEY);
+        return;
+      }
+      window.localStorage.setItem(DESKTOP_CENTER_CORRECTION_STORAGE_KEY, JSON.stringify(desktopCenterCorrection));
+    } catch {
+      // ignore
+    }
+  }, [desktopCenterCorrection]);
 
   const getCompanyCoords = useCallback((): [number, number] => {
     const raw = modifiedCompanyCoords || COMPANY_COORDS;
@@ -164,17 +231,29 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
     return DEFAULT_ZOOM;
   }, [selectedCommunity]);
 
+  const getLayoutMode = useCallback((): 'desktop' | 'mobile' => {
+    return window.innerWidth <= 768 ? 'mobile' : 'desktop';
+  }, []);
+
+  const applyDesktopCorrection = useCallback((center: [number, number]): [number, number] => {
+    if (typeof window === 'undefined') return center;
+    if (getLayoutMode() !== 'desktop' || !desktopCenterCorrection) return center;
+    return [center[0] + desktopCenterCorrection[0], center[1] + desktopCenterCorrection[1]];
+  }, [desktopCenterCorrection, getLayoutMode]);
+
   const applyDesiredViewport = useCallback((label: string) => {
     const map = mapRef.current;
     if (!map) return;
 
     map.resize?.();
-    if (!editMode) {
+    const baseReason = label.split(':')[0] ?? '';
+    const shouldApplyDesiredCenter = baseReason === 'viewportChange' || baseReason === 'mapReady' || baseReason === 'complete' || baseReason === 'created';
+    if (!editMode && shouldApplyDesiredCenter) {
       map.setZoom(getDesiredZoom());
-      map.setCenter(getDesiredCenter());
+      map.setCenter(applyDesktopCorrection(getDesiredCenter()));
     }
     pushDebugSnapshotRef.current(`viewport:${label}`);
-  }, [editMode, getDesiredCenter, getDesiredZoom]);
+  }, [applyDesktopCorrection, editMode, getDesiredCenter, getDesiredZoom]);
 
   const applyDesiredViewportRef = useRef<(label: string) => void>(() => {});
   useEffect(() => {
@@ -190,7 +269,7 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
       return;
     }
 
-    layoutSyncStateRef.current = { start: performance.now(), lastW: -1, lastH: -1, stable: 0, reason };
+    layoutSyncStateRef.current = { start: performance.now(), lastW: -1, lastH: -1, lastLeft: -1, lastTop: -1, stable: 0, reason };
 
     const step = () => {
       const map = mapRef.current;
@@ -205,16 +284,20 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
       const rect = el.getBoundingClientRect();
       const w = Math.round(rect.width);
       const h = Math.round(rect.height);
-      const changed = w !== state.lastW || h !== state.lastH;
+      const left = Math.round(rect.left);
+      const top = Math.round(rect.top);
+      const changed = w !== state.lastW || h !== state.lastH || left !== state.lastLeft || top !== state.lastTop;
       if (changed) {
         state.lastW = w;
         state.lastH = h;
+        state.lastLeft = left;
+        state.lastTop = top;
         state.stable = 0;
       } else {
         state.stable += 1;
       }
 
-      applyDesiredViewportRef.current(`${state.reason}:${w}x${h}:stable${state.stable}`);
+      applyDesiredViewportRef.current(`${state.reason}:${w}x${h}@${left},${top}:stable${state.stable}`);
 
       const elapsed = performance.now() - state.start;
       if (state.stable >= 2 || elapsed >= 900) {
@@ -263,7 +346,7 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
     return [lng, lat];
   }, []);
 
-  const pushDebugSnapshot = useCallback((label: string) => {
+  const pushDebugSnapshot = useCallback((label: string, extras?: Pick<DebugSnapshot, 'pointer' | 'amapClick' | 'hitTest'>) => {
     if (!debugEnabledRef.current) return;
     const map = mapRef.current;
     const company = getCompanyCoords();
@@ -271,7 +354,10 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
     const zoom = map?.getZoom?.() ?? null;
     const container = containerRef.current;
     const containerRect = container ? container.getBoundingClientRect() : null;
+    const vv = window.visualViewport;
+    debugSeqRef.current += 1;
     const snapshot: DebugSnapshot = {
+      seq: debugSeqRef.current,
       label,
       time: new Date().toISOString(),
       company,
@@ -279,14 +365,46 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
       zoom: typeof zoom === 'number' && Number.isFinite(zoom) ? zoom : null,
       distanceMeters: center ? calculateDistanceMeters(center, company) : null,
       viewport: { w: window.innerWidth, h: window.innerHeight },
+      visualViewport: vv
+        ? {
+            w: Math.round(vv.width),
+            h: Math.round(vv.height),
+            offsetLeft: Math.round(vv.offsetLeft),
+            offsetTop: Math.round(vv.offsetTop),
+            scale: Number(vv.scale.toFixed(4)),
+          }
+        : null,
+      screen: {
+        w: window.screen.width,
+        h: window.screen.height,
+        availW: window.screen.availWidth,
+        availH: window.screen.availHeight,
+        pixelDepth: window.screen.pixelDepth,
+      },
       container: containerRect ? { w: Math.round(containerRect.width), h: Math.round(containerRect.height) } : null,
+      containerRect: containerRect
+        ? {
+            left: Math.round(containerRect.left),
+            top: Math.round(containerRect.top),
+            right: Math.round(containerRect.right),
+            bottom: Math.round(containerRect.bottom),
+            x: Math.round(containerRect.x),
+            y: Math.round(containerRect.y),
+            w: Math.round(containerRect.width),
+            h: Math.round(containerRect.height),
+          }
+        : null,
       dpr: window.devicePixelRatio || 1,
+      platform: navigator.platform,
       ua: navigator.userAgent,
+      pointer: extras?.pointer,
+      amapClick: extras?.amapClick,
+      hitTest: extras?.hitTest,
     };
     setDebugSnapshots(prev => [...prev, snapshot].slice(-25));
   }, [extractLngLat, getCompanyCoords]);
 
-  const pushDebugSnapshotRef = useRef<(label: string) => void>(() => {});
+  const pushDebugSnapshotRef = useRef<(label: string, extras?: Pick<DebugSnapshot, 'pointer' | 'amapClick' | 'hitTest'>) => void>(() => {});
   useEffect(() => {
     pushDebugSnapshotRef.current = pushDebugSnapshot;
   }, [pushDebugSnapshot]);
@@ -303,10 +421,41 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
     return { first, last, count: debugSnapshots.length };
   }, [debugSnapshots]);
 
+  const debugDelta = useMemo(() => {
+    if (debugSnapshots.length < 2) return null;
+    const prev = debugSnapshots[debugSnapshots.length - 2];
+    const last = debugSnapshots[debugSnapshots.length - 1];
+    return {
+      viewportW: last.viewport.w - prev.viewport.w,
+      viewportH: last.viewport.h - prev.viewport.h,
+      rectLeft: (last.containerRect?.left ?? 0) - (prev.containerRect?.left ?? 0),
+      rectTop: (last.containerRect?.top ?? 0) - (prev.containerRect?.top ?? 0),
+      rectW: (last.containerRect?.w ?? 0) - (prev.containerRect?.w ?? 0),
+      rectH: (last.containerRect?.h ?? 0) - (prev.containerRect?.h ?? 0),
+      dpr: Number(((last.dpr ?? 0) - (prev.dpr ?? 0)).toFixed(4)),
+      label: `${prev.label} -> ${last.label}`,
+    };
+  }, [debugSnapshots]);
+
+  const calibrationResult = useMemo(() => {
+    if (!pickedPoint) return null;
+    const expectedLng = Number(expectedLngInput);
+    const expectedLat = Number(expectedLatInput);
+    if (!Number.isFinite(expectedLng) || !Number.isFinite(expectedLat)) return null;
+    const clicked = pickedPoint;
+    const expected: [number, number] = [expectedLng, expectedLat];
+    const deltaLng = expected[0] - clicked[0];
+    const deltaLat = expected[1] - clicked[1];
+    const company = getCompanyCoords();
+    const suggestedCenter: [number, number] = [company[0] + deltaLng, company[1] + deltaLat];
+    return { clicked, expected, deltaLng, deltaLat, suggestedCenter };
+  }, [expectedLatInput, expectedLngInput, getCompanyCoords, pickedPoint]);
+
   const copyDebugInfo = useCallback(async () => {
     if (!debugEnabledRef.current) return;
     const payload = {
       companyCoords: getCompanyCoords(),
+      desktopCenterCorrection,
       snapshots: debugSnapshots,
     };
     try {
@@ -316,7 +465,7 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
     } catch {
       // ignore
     }
-  }, [debugSnapshots, getCompanyCoords]);
+  }, [debugSnapshots, desktopCenterCorrection, getCompanyCoords]);
 
   // 初始化地图
   useEffect(() => {
@@ -356,6 +505,27 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
           zoom: DEFAULT_ZOOM,
           center: initialCompanyCoords,
         });
+
+        if (debugEnabledRef.current) {
+          map.on?.('click', (e?: unknown) => {
+            const anyEvent = e as { lnglat?: { lng?: number; lat?: number }; pixel?: { x?: number; y?: number } } | undefined;
+            const lnglat: [number, number] | null = extractLngLat(anyEvent?.lnglat);
+            const pixel =
+              anyEvent?.pixel && typeof anyEvent.pixel.x === 'number' && typeof anyEvent.pixel.y === 'number'
+                ? { x: anyEvent.pixel.x, y: anyEvent.pixel.y }
+                : null;
+            const pointer = lastPointerRef.current;
+            const deltaPx =
+              pixel && pointer ? { x: Math.round(pointer.container.x - pixel.x), y: Math.round(pointer.container.y - pixel.y) } : null;
+            if (pickModeRef.current && lnglat) {
+              setPickedPoint(lnglat);
+            }
+            pushDebugSnapshotRef.current('amap:click', {
+              pointer: pointer ?? undefined,
+              amapClick: { lnglat, pixel, deltaPx },
+            });
+          });
+        }
 
         map.on?.('complete', () => {
           if (isDestroyedRef.current) return;
@@ -492,7 +662,7 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
       isInitializedRef.current = false;
       setMapReady(false);
     };
-  }, [mapDisabled]);
+  }, [extractLngLat, mapDisabled]);
 
   useEffect(() => {
     if (!mapReady) return;
@@ -518,6 +688,33 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
 
   useEffect(() => {
     if (!mapReady) return;
+    const mode = getLayoutMode();
+    layoutModeRef.current = mode;
+    pushDebugSnapshotRef.current(`layoutMode:init:${mode}`);
+  }, [getLayoutMode, mapReady]);
+
+  useEffect(() => {
+    if (!mapReady) return;
+    if (desktopCenterCorrection) return;
+    if (selectedCommunity || previewCommunity) return;
+    if (getLayoutMode() !== 'desktop') return;
+    const map = mapRef.current;
+    if (!map?.getCenter) return;
+    const center = extractLngLat(map.getCenter());
+    if (!center) return;
+    const company = getCompanyCoords();
+    const dist = calculateDistanceMeters(center, company);
+    if (!Number.isFinite(dist) || dist < 200) return;
+    const correction: [number, number] = [company[0] - center[0], company[1] - center[1]];
+    setDesktopCenterCorrection(correction);
+    pushDebugSnapshotRef.current('desktopCorrection:auto', {
+      amapClick: { lnglat: center, pixel: null, deltaPx: null },
+    });
+    scheduleViewportSyncRef.current('desktopCorrection:auto');
+  }, [desktopCenterCorrection, extractLngLat, getCompanyCoords, getLayoutMode, mapReady, previewCommunity, selectedCommunity]);
+
+  useEffect(() => {
+    if (!mapReady) return;
     const handler = () => scheduleViewportSync('windowResize');
     window.addEventListener('resize', handler);
     window.addEventListener('orientationchange', handler);
@@ -526,6 +723,120 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
       window.removeEventListener('orientationchange', handler);
     };
   }, [mapReady, scheduleViewportSync]);
+
+  useEffect(() => {
+    if (!mapReady) return;
+    const handler = () => {
+      const mode = getLayoutMode();
+      if (layoutModeRef.current !== mode) {
+        layoutModeRef.current = mode;
+        pushDebugSnapshotRef.current(`layoutMode:changed:${mode}`);
+      }
+    };
+    window.addEventListener('resize', handler);
+    window.addEventListener('orientationchange', handler);
+    return () => {
+      window.removeEventListener('resize', handler);
+      window.removeEventListener('orientationchange', handler);
+    };
+  }, [getLayoutMode, mapReady]);
+
+  useEffect(() => {
+    if (!mapReady) return;
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const handler = () => scheduleViewportSyncRef.current('visualViewport');
+    vv.addEventListener('resize', handler);
+    vv.addEventListener('scroll', handler);
+    return () => {
+      vv.removeEventListener('resize', handler);
+      vv.removeEventListener('scroll', handler);
+    };
+  }, [extractLngLat, mapReady]);
+
+  useEffect(() => {
+    if (!mapReady) return;
+    const el = containerRef.current;
+    if (!el) return;
+    const onPointerDown = (ev: PointerEvent) => {
+      const now = Date.now();
+      if (now - lastInteractionSyncAtRef.current < 200) return;
+      lastInteractionSyncAtRef.current = now;
+
+      const rect = el.getBoundingClientRect();
+      const pointer: DebugSnapshot['pointer'] = {
+        client: { x: Math.round(ev.clientX), y: Math.round(ev.clientY) },
+        container: { x: Math.round(ev.clientX - rect.left), y: Math.round(ev.clientY - rect.top) },
+        rect: { left: Math.round(rect.left), top: Math.round(rect.top), w: Math.round(rect.width), h: Math.round(rect.height) },
+      };
+      lastPointerRef.current = pointer;
+      const hit = document.elementFromPoint(ev.clientX, ev.clientY) as Element | null;
+      const hitTest: DebugSnapshot['hitTest'] | undefined = hit
+        ? {
+            tag: hit.tagName,
+            id: hit instanceof HTMLElement ? hit.id || null : null,
+            className: hit instanceof HTMLElement ? hit.className ? String(hit.className) : null : null,
+            inMap: el.contains(hit),
+          }
+        : undefined;
+
+      const map = mapRef.current;
+      const AMap = AMapRef.current;
+      const pixel = AMap?.Pixel ? new AMap.Pixel(pointer.container.x, pointer.container.y) : null;
+      const inferredLngLat =
+        map && pixel
+          ? extractLngLat(map.containerToLngLat?.(pixel) ?? map.pixelToLngLat?.(pixel))
+          : null;
+
+      pushDebugSnapshotRef.current('pointerdown', {
+        pointer,
+        hitTest,
+        amapClick: inferredLngLat ? { lnglat: inferredLngLat, pixel: { x: pointer.container.x, y: pointer.container.y }, deltaPx: null } : undefined,
+      });
+      scheduleViewportSyncRef.current('pointerdown');
+    };
+    const onClick = (ev: MouseEvent) => {
+      const rect = el.getBoundingClientRect();
+      const pointer: DebugSnapshot['pointer'] = {
+        client: { x: Math.round(ev.clientX), y: Math.round(ev.clientY) },
+        container: { x: Math.round(ev.clientX - rect.left), y: Math.round(ev.clientY - rect.top) },
+        rect: { left: Math.round(rect.left), top: Math.round(rect.top), w: Math.round(rect.width), h: Math.round(rect.height) },
+      };
+      const hit = document.elementFromPoint(ev.clientX, ev.clientY) as Element | null;
+      const hitTest: DebugSnapshot['hitTest'] | undefined = hit
+        ? {
+            tag: hit.tagName,
+            id: hit instanceof HTMLElement ? hit.id || null : null,
+            className: hit instanceof HTMLElement ? hit.className ? String(hit.className) : null : null,
+            inMap: el.contains(hit),
+          }
+        : undefined;
+
+      const map = mapRef.current;
+      const AMap = AMapRef.current;
+      const pixel = AMap?.Pixel ? new AMap.Pixel(pointer.container.x, pointer.container.y) : null;
+      const inferredLngLat =
+        map && pixel
+          ? extractLngLat(map.containerToLngLat?.(pixel) ?? map.pixelToLngLat?.(pixel))
+          : null;
+
+      if (pickModeRef.current && inferredLngLat) {
+        setPickedPoint(inferredLngLat);
+      }
+
+      pushDebugSnapshotRef.current('dom:click', {
+        pointer,
+        hitTest,
+        amapClick: inferredLngLat ? { lnglat: inferredLngLat, pixel: { x: pointer.container.x, y: pointer.container.y }, deltaPx: null } : undefined,
+      });
+    };
+    el.addEventListener('pointerdown', onPointerDown, { capture: true, passive: true });
+    el.addEventListener('click', onClick, { capture: true, passive: true });
+    return () => {
+      el.removeEventListener('pointerdown', onPointerDown, { capture: true } as AddEventListenerOptions);
+      el.removeEventListener('click', onClick, { capture: true } as AddEventListenerOptions);
+    };
+  }, [extractLngLat, mapReady]);
 
   // 添加小区标记
   useEffect(() => {
@@ -793,7 +1104,21 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
   };
 
   return (
-    <div ref={containerRef} className={styles.container}>
+    <div
+      ref={containerRef}
+      className={styles.container}
+      data-testid="map-root"
+      data-last-click={disabledLastClick ? `${disabledLastClick.x},${disabledLastClick.y}/${disabledLastClick.w}x${disabledLastClick.h}` : undefined}
+      onPointerDown={(e) => {
+        if (!mapDisabled) return;
+        const el = containerRef.current;
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        const x = Math.round(e.clientX - rect.left);
+        const y = Math.round(e.clientY - rect.top);
+        setDisabledLastClick({ x, y, w: Math.round(rect.width), h: Math.round(rect.height) });
+      }}
+    >
       {!mapReady && (
         <div className={styles.loading}>
           {mapDisabled ? '地图在测试环境已禁用' : '地图加载中...'}
@@ -880,6 +1205,10 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
                   {debugSummary.last && (
                     <>
                       <div className={styles.debugRow}>
+                        <span className={styles.debugKey}>序号/标签</span>
+                        <span className={styles.debugVal}>#{debugSummary.last.seq} {debugSummary.last.label}</span>
+                      </div>
+                      <div className={styles.debugRow}>
                         <span className={styles.debugKey}>最后中心</span>
                         <span className={styles.debugVal}>
                           {debugSummary.last.center ? `${debugSummary.last.center[0].toFixed(6)}, ${debugSummary.last.center[1].toFixed(6)}` : 'null'}
@@ -897,6 +1226,124 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
                           {typeof debugSummary.last.zoom === 'number' ? debugSummary.last.zoom : 'null'}
                         </span>
                       </div>
+                      <div className={styles.debugRow}>
+                        <span className={styles.debugKey}>DPR/平台</span>
+                        <span className={styles.debugVal}>{debugSummary.last.dpr} / {debugSummary.last.platform}</span>
+                      </div>
+                      <div className={styles.debugRow}>
+                        <span className={styles.debugKey}>容器Rect</span>
+                        <span className={styles.debugVal}>
+                          {debugSummary.last.containerRect
+                            ? `${debugSummary.last.containerRect.left},${debugSummary.last.containerRect.top},${debugSummary.last.containerRect.w}x${debugSummary.last.containerRect.h}`
+                            : 'null'}
+                        </span>
+                      </div>
+                      {debugDelta && (
+                        <div className={styles.debugRow}>
+                          <span className={styles.debugKey}>最近差分</span>
+                          <span className={styles.debugVal}>
+                            Δvw:{debugDelta.viewportW} Δvh:{debugDelta.viewportH} Δleft:{debugDelta.rectLeft} Δtop:{debugDelta.rectTop} Δw:{debugDelta.rectW} Δh:{debugDelta.rectH}
+                          </span>
+                        </div>
+                      )}
+                      <div className={styles.debugRow}>
+                        <span className={styles.debugKey}>桌面修正</span>
+                        <span className={styles.debugVal}>
+                          {desktopCenterCorrection
+                            ? `Δlng:${desktopCenterCorrection[0].toFixed(6)} Δlat:${desktopCenterCorrection[1].toFixed(6)}`
+                            : '未启用'}
+                        </span>
+                      </div>
+                      <div className={styles.debugRow}>
+                        <span className={styles.debugKey}>修正控制</span>
+                        <span className={styles.debugVal}>
+                          <button
+                            className={styles.debugBtn}
+                            onClick={() => {
+                              setDesktopCenterCorrection(DESKTOP_CENTER_CORRECTION_BASELINE);
+                              scheduleViewportSyncRef.current('desktopCorrection:baseline');
+                            }}
+                          >
+                            基线
+                          </button>
+                          {' '}
+                          <button
+                            className={styles.debugBtn}
+                            onClick={() => {
+                              setDesktopCenterCorrection(null);
+                              scheduleViewportSyncRef.current('desktopCorrection:disabled');
+                            }}
+                          >
+                            关闭
+                          </button>
+                        </span>
+                      </div>
+                      <div className={styles.debugRow}>
+                        <span className={styles.debugKey}>采点模式</span>
+                        <span className={styles.debugVal}>
+                          <button className={styles.debugBtn} onClick={() => setPickMode(v => !v)}>
+                            {pickMode ? '关闭' : '开启'}
+                          </button>
+                        </span>
+                      </div>
+                      <div className={styles.debugRow}>
+                        <span className={styles.debugKey}>最后采点</span>
+                        <span className={styles.debugVal}>
+                          {pickedPoint ? `${pickedPoint[0].toFixed(6)}, ${pickedPoint[1].toFixed(6)}` : 'null'}
+                        </span>
+                      </div>
+                      <div className={styles.debugRow}>
+                        <span className={styles.debugKey}>期望经度</span>
+                        <span className={styles.debugVal}>
+                          <input
+                            value={expectedLngInput}
+                            onChange={(e) => setExpectedLngInput(e.target.value)}
+                            placeholder="121.512568"
+                            style={{ width: 120 }}
+                          />
+                        </span>
+                      </div>
+                      <div className={styles.debugRow}>
+                        <span className={styles.debugKey}>期望纬度</span>
+                        <span className={styles.debugVal}>
+                          <input
+                            value={expectedLatInput}
+                            onChange={(e) => setExpectedLatInput(e.target.value)}
+                            placeholder="31.304715"
+                            style={{ width: 120 }}
+                          />
+                        </span>
+                      </div>
+                      {calibrationResult && (
+                        <>
+                          <div className={styles.debugRow}>
+                            <span className={styles.debugKey}>偏移量</span>
+                            <span className={styles.debugVal}>
+                              Δlng:{calibrationResult.deltaLng.toFixed(6)} Δlat:{calibrationResult.deltaLat.toFixed(6)}
+                            </span>
+                          </div>
+                          <div className={styles.debugRow}>
+                            <span className={styles.debugKey}>建议中心</span>
+                            <span className={styles.debugVal}>
+                              {calibrationResult.suggestedCenter[0].toFixed(6)}, {calibrationResult.suggestedCenter[1].toFixed(6)}
+                            </span>
+                          </div>
+                          <div className={styles.debugRow}>
+                            <span className={styles.debugKey}>应用修正</span>
+                            <span className={styles.debugVal}>
+                              <button
+                                className={styles.debugBtn}
+                                onClick={() => {
+                                  setDesktopCenterCorrection([calibrationResult.deltaLng, calibrationResult.deltaLat]);
+                                  scheduleViewportSyncRef.current('desktopCorrection:manual');
+                                }}
+                              >
+                                应用到桌面修正
+                              </button>
+                            </span>
+                          </div>
+                        </>
+                      )}
                       <div className={styles.debugPre}>
                         {JSON.stringify(debugSummary.last, null, 2)}
                       </div>

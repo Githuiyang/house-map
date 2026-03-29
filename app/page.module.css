@@ -1,7 +1,16 @@
 .container {
+  height: 100vh;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+}
+
+@supports (height: 100dvh) {
+  .container {
+    height: 100dvh;
+    min-height: 100dvh;
+  }
 }
 
 .header {
@@ -33,6 +42,8 @@
   flex: 1;
   display: flex;
   overflow: hidden;
+  min-height: 0;
+  height: 100%;
 }
 
 .sidebar {
@@ -42,12 +53,15 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-height: 0;
+  height: 100%;
 }
 
 .list {
   flex: 1;
   overflow-y: auto;
   padding: var(--spacing);
+  min-height: 0;
 }
 
 .listTitle {
@@ -107,7 +121,8 @@
 
 .mapContainer {
   flex: 1;
-  min-height: 500px;
+  min-height: 0;
+  height: 100%;
 }
 
 .mapLoading {
@@ -238,7 +253,8 @@
 
   .mapContainer {
     flex: 1;
-    min-height: 100vh;
+    min-height: 0;
+    height: 100%;
   }
 
   .header {
