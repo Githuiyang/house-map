@@ -561,6 +561,7 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
       }
 
       setModifiedCoords(nextMap);
+      if (matched > 0) setEditMode(true);
       setRematchStats({ matched, total: communities.length, unresolved });
       pushDebugSnapshotRef.current('batchRematch:done');
     } finally {
