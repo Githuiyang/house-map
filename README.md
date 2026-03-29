@@ -14,6 +14,9 @@
 - 功能与架构（页面结构、地图联动、核心组件）：`docs/architecture.md`
 - 坐标与调试（debug 面板、坐标漂移排查、桌面修正）：`docs/debugging.md`
 - 数据维护（数据结构、脚本、坐标更新）：`docs/data-maintenance.md`
+- 租房向量化系统（Openclaw 入库、向量结构、趋势分析）：`docs/rental-vectorization.md`
+- 数据归档规范（命名、备份、存储路径）：`docs/data-archive-policy.md`
+- Openclaw 接口指南（输入格式、API、错误处理）：`docs/openclaw-guide.md`
 - 测试与发布（CI、E2E、Vercel 部署与回滚）：`docs/testing-and-release.md`
 
 如果你只需要快速上手，请先看 `docs/quickstart.md`；如果你是维护线上稳定性，请直接看 `docs/debugging.md` + `docs/testing-and-release.md`。
@@ -23,6 +26,7 @@
 ## 管理员模式
 
 - 管理页面地址：`/admin`
+- 租房向量化管理地址：`/admin/rentals`
 - 用途：在线编辑每个小区的完整字段（名称、坐标、价格、户型、亮点、注意事项等）
 - 支持：
   - 列表检索与逐项编辑
@@ -30,6 +34,21 @@
   - 一键复制完整 JSON
   - 下载编辑后的 JSON 文件
   - 粘贴 JSON 进行整体导入
+
+租房向量化系统支持：
+
+- Openclaw 文本一行一条批量导入
+- 自动提取租金、面积、户型、朝向、装修、配套、入住时间等字段
+- 输出 dense/sparse/searchable 三类向量结果
+- 增量合并、版本号、备份恢复、反馈收集
+- 新小区自动调用高德 API 补坐标，并写入 `data/communities.json` 供地图直接展示
+- 实时趋势报告与异常检测
+
+说明：
+
+- 自动落图依赖可写文件系统与高德 Web API Key
+- 在本地或自托管 Node 环境可直接生效
+- 如果部署在 Vercel 这类无持久化运行时，需改成数据库或对象存储才能长期保存新小区
 
 建议流程：
 
@@ -86,13 +105,16 @@ NEXT_PUBLIC_AMAP_SECURITY_KEY=你的JS安全密钥
 页面数据源：
 
 - `data/communities.json`：小区列表与坐标（`[lng, lat]`，GCJ-02）
+- `data/rental-system/`：租房向量化快照、历史、反馈、报告、备份
 - 类型定义：`types/community.ts`
+- 租房类型：`types/rental.ts`
 
 常用脚本（`node scripts/xxx.js`）：
 
 - `scripts/geocode-communities.js`：用高德 Web API 通过小区名补全/更新坐标，会覆盖写回 `data/communities.json`（依赖 `.env.local` 里的 `NEXT_PUBLIC_AMAP_KEY`）
 - `scripts/extract-coords.js`：通过高德短链接提取坐标并写回 `data/communities.json`
 - `scripts/process-data.js`：一次性数据加工脚本（用法：`node scripts/process-data.js <input.json>`）
+- `scripts/release-rental-system.sh`：租房向量化系统上线前检查脚本
 
 ## 目录结构（当前状态）
 
@@ -122,11 +144,13 @@ npm run dev          # 本地开发
 npm run build        # 构建生产版本
 npm run start        # 启动生产服务器
 npm run lint         # 代码检查
+npm run typecheck    # TypeScript 校验
 npm run test:unit    # 单元测试（vitest）
 npm run test:unit:coverage  # 单元测试 + 覆盖率门槛
 npm run test:integration  # 集成测试（Playwright）
 npm run test:e2e     # 端到端测试（Playwright，与集成测试共用）
 npm run test:ci      # CI 全量校验（lint/build/unit+coverage/e2e）
+npm run release:rentals  # 租房向量化系统发布前校验
 ```
 
 ## 调试模式（定位偏移排查）

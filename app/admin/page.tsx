@@ -1,28 +1,11 @@
 'use client';
 
+import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import communitiesData from '@/data/communities.json';
-import { createDefaultCommunity, type Community } from '@/types/community';
+import type { Community } from '@/types/community';
+import { normalizeCommunities } from '@/utils/communityData';
 import styles from './page.module.css';
-
-function normalizeCommunities(data: unknown): Community[] {
-  if (!Array.isArray(data)) return [];
-  return data.map(item => createDefaultCommunity({
-    id: item.id,
-    name: item.name,
-    coordinates: item.coordinates,
-    distance: item.distance,
-    bikeTime: item.bikeTime,
-    price: item.price,
-    floorTypes: item.floorTypes,
-    layouts: item.layouts,
-    elevator: item.elevator,
-    highlights: item.highlights,
-    warnings: item.warnings,
-    contributor: item.contributor,
-    updatedAt: item.updatedAt,
-  }));
-}
 
 function parseList(text: string): string[] {
   return text.split('\n').map(v => v.trim()).filter(Boolean);
@@ -37,10 +20,12 @@ function toNumber(value: string, fallback = 0): number {
   return Number.isFinite(n) ? n : fallback;
 }
 
+const initialCommunities = normalizeCommunities(communitiesData);
+
 export default function AdminPage() {
-  const [communities, setCommunities] = useState<Community[]>(() => normalizeCommunities(communitiesData));
+  const [communities, setCommunities] = useState<Community[]>(() => initialCommunities);
   const [q, setQ] = useState('');
-  const [activeId, setActiveId] = useState<string>(() => normalizeCommunities(communitiesData)[0]?.id || '');
+  const [activeId, setActiveId] = useState<string>(() => initialCommunities[0]?.id || '');
   const [copied, setCopied] = useState(false);
   const [importText, setImportText] = useState('');
 
@@ -94,6 +79,7 @@ export default function AdminPage() {
       <div className={styles.topBar}>
         <h1 className={styles.title}>管理员模式</h1>
         <div className={styles.actions}>
+          <Link className={styles.actionLink} href="/admin/rentals">租房向量化系统</Link>
           <button onClick={handleCopy}>{copied ? '已复制' : '复制 JSON'}</button>
           <button onClick={handleDownload}>下载 JSON</button>
         </div>

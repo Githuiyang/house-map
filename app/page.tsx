@@ -6,7 +6,8 @@ import FilterBar from '@/components/FilterBar';
 import CommunityCard from '@/components/CommunityCard';
 import ThemeToggle from '@/components/ThemeToggle';
 import communitiesData from '@/data/communities.json';
-import { createDefaultCommunity, type Community } from '@/types/community';
+import type { Community } from '@/types/community';
+import { normalizeCommunities } from '@/utils/communityData';
 import styles from './page.module.css';
 
 // 动态导入 MapView，禁用 SSR
@@ -14,27 +15,6 @@ const MapView = dynamic(() => import('@/components/MapView'), {
   ssr: false,
   loading: () => <div className={styles.mapLoading}>地图加载中...</div>,
 });
-
-// 将原始数据转换为安全的 Community 对象
-function normalizeCommunities(data: unknown): Community[] {
-  if (!Array.isArray(data)) return [];
-
-  return data.map(item => createDefaultCommunity({
-    id: item.id,
-    name: item.name,
-    coordinates: item.coordinates,
-    distance: item.distance,
-    bikeTime: item.bikeTime,
-    price: item.price,
-    floorTypes: item.floorTypes,
-    layouts: item.layouts,
-    elevator: item.elevator,
-    highlights: item.highlights,
-    warnings: item.warnings,
-    contributor: item.contributor,
-    updatedAt: item.updatedAt,
-  }));
-}
 
 // 格式化价格显示 (简化为 k 单位)
 function formatPrice(min: number, max: number): string {
