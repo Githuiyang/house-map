@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Community } from '@/types/community';
 import styles from './MapView.module.css';
 
@@ -22,6 +22,8 @@ type AMapMap = {
   setZoom: (zoom: number) => void;
   addControl: (control: unknown) => void;
   getContainer: () => HTMLElement;
+  on?: (event: string, handler: () => void) => void;
+  resize?: () => void;
   destroy: () => void;
 };
 
@@ -139,6 +141,11 @@ export default function MapView({ communities, selectedCommunity, hoveredCommuni
   const companyMarkerRef = useRef<AMapMarker | null>(null);
   const [modifiedCompanyCoords, setModifiedCompanyCoords] = useState<[number, number] | null>(null);
 
+  const getCompanyCoords = useCallback((): [number, number] => {
+    const raw = modifiedCompanyCoords || COMPANY_COORDS;
+    return normalizeLngLat(raw) ?? raw;
+  }, [modifiedCompanyCoords]);
+
   // 初始化地图
   useEffect(() => {
     if (typeof window === 'undefined' || !containerRef.current) return;
@@ -175,6 +182,13 @@ export default function MapView({ communities, selectedCommunity, hoveredCommuni
         const map = new AMap.Map(containerRef.current, {
           zoom: DEFAULT_ZOOM,
           center: initialCompanyCoords,
+        });
+
+        map.on?.('complete', () => {
+          if (isDestroyedRef.current) return;
+          map.resize?.();
+          map.setCenter(initialCompanyCoords);
+          map.setZoom(DEFAULT_ZOOM);
         });
 
         // 添加3公里推荐范围圆圈（淡色虚线)
@@ -302,10 +316,34 @@ export default function MapView({ communities, selectedCommunity, hoveredCommuni
   useEffect(() => {
     if (!mapReady || !mapRef.current || didInitialCenterRef.current) return;
     didInitialCenterRef.current = true;
-    const companyCoords = normalizeLngLat(COMPANY_COORDS) ?? COMPANY_COORDS;
-    mapRef.current.setCenter(companyCoords);
-    mapRef.current.setZoom(DEFAULT_ZOOM);
-  }, [mapReady]);
+    const map = mapRef.current;
+    const coords = getCompanyCoords();
+    requestAnimationFrame(() => {
+      map.resize?.();
+      map.setCenter(coords);
+      map.setZoom(DEFAULT_ZOOM);
+    });
+    setTimeout(() => {
+      if (!mapRef.current || selectedCommunity) return;
+      mapRef.current.resize?.();
+      mapRef.current.setCenter(getCompanyCoords());
+      mapRef.current.setZoom(DEFAULT_ZOOM);
+    }, 250);
+  }, [mapReady, getCompanyCoords, selectedCommunity]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    const el = containerRef.current;
+    if (!mapReady || !map || !el) return;
+    if (selectedCommunity) return;
+
+    const observer = new ResizeObserver(() => {
+      map.resize?.();
+      map.setCenter(getCompanyCoords());
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [mapReady, selectedCommunity, getCompanyCoords]);
 
   // 添加小区标记
   useEffect(() => {
@@ -330,7 +368,7 @@ export default function MapView({ communities, selectedCommunity, hoveredCommuni
       const currentCoords = normalizeLngLat(currentCoordsRaw);
       if (!currentCoords) return;
 
-      const companyCoords = normalizeLngLat(modifiedCompanyCoords || COMPANY_COORDS) ?? (modifiedCompanyCoords || COMPANY_COORDS);
+      const companyCoords = getCompanyCoords();
       const distance = calculateDistance(currentCoords, companyCoords);
       const isRecommended = distance <= RECOMMEND_RADIUS;
 
@@ -432,7 +470,7 @@ export default function MapView({ communities, selectedCommunity, hoveredCommuni
       marker.setMap(map);
       markersRef.current.set(community.id, marker);
     });
-  }, [communities, mapReady, onSelectCommunity, editMode, modifiedCoords, modifiedCompanyCoords]);
+  }, [communities, mapReady, onSelectCommunity, editMode, modifiedCoords, modifiedCompanyCoords, getCompanyCoords]);
 
   // 处理 hover 高亮
   useEffect(() => {
@@ -463,7 +501,7 @@ export default function MapView({ communities, selectedCommunity, hoveredCommuni
   // 居中到公司位置
   const handleCenterToCompany = () => {
     if (mapRef.current) {
-      const coords = normalizeLngLat(modifiedCompanyCoords || COMPANY_COORDS) ?? (modifiedCompanyCoords || COMPANY_COORDS);
+      const coords = getCompanyCoords();
       mapRef.current.setCenter(coords);
       mapRef.current.setZoom(DEFAULT_ZOOM);
     }
