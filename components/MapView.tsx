@@ -129,8 +129,8 @@ interface MapViewProps {
 // 公司坐标：杨浦区淞沪路303号 创智天地 11号楼
 // 高德地图格式：[经度, 纬度]
 const COMPANY_COORDS: [number, number] = [121.512568, 31.304715];
-const DESKTOP_CENTER_CORRECTION_BASELINE: [number, number] = [0.000568, 0.004715];
-const DESKTOP_CENTER_CORRECTION_STORAGE_KEY = 'office-map-desktop-center-correction';
+const DESKTOP_CENTER_CORRECTION_BASELINE: [number, number] = [0, 0];
+const DESKTOP_CENTER_CORRECTION_STORAGE_KEY = 'office-map-desktop-center-correction-v2';
 const RECOMMEND_RADIUS = 3000; // 推荐范围3公里（米）
 const DEFAULT_ZOOM = 16;
 const SELECTED_ZOOM = 17;
