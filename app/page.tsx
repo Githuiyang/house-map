@@ -58,6 +58,7 @@ function getLayoutsText(layouts?: string[]): string {
 
 export default function Home() {
   const [selectedCommunity, setSelectedCommunity] = useState<Community | null>(null);
+  const [previewCommunity, setPreviewCommunity] = useState<Community | null>(null);
   const [hoveredCommunity, setHoveredCommunity] = useState<Community | null>(null);
   const [distanceFilter, setDistanceFilter] = useState('all');
   const [priceFilter, setPriceFilter] = useState('all');
@@ -104,6 +105,12 @@ export default function Home() {
 
   const handleSelectCommunity = useCallback((community: Community | null) => {
     setSelectedCommunity(community);
+    if (community) setPreviewCommunity(community);
+  }, []);
+
+  const handlePreviewCommunity = useCallback((community: Community | null) => {
+    setPreviewCommunity(community);
+    setSelectedCommunity(null);
   }, []);
 
   const handleCloseCard = useCallback(() => {
@@ -138,7 +145,7 @@ export default function Home() {
                 <div
                   key={community.id}
                   className={styles.listItem}
-                  onClick={() => setSelectedCommunity(community)}
+                  onClick={() => handlePreviewCommunity(community)}
                   onMouseEnter={() => setHoveredCommunity(community)}
                   onMouseLeave={() => setHoveredCommunity(null)}
                 >
@@ -165,8 +172,10 @@ export default function Home() {
           <MapView
             communities={filteredCommunities}
             selectedCommunity={selectedCommunity}
+            previewCommunity={previewCommunity}
             hoveredCommunity={hoveredCommunity}
             onSelectCommunity={handleSelectCommunity}
+            onPreviewCommunity={handlePreviewCommunity}
           />
         </div>
       </main>

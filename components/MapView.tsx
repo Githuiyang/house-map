@@ -81,8 +81,10 @@ type AMapEventWithTarget = {
 interface MapViewProps {
   communities: Community[];
   selectedCommunity: Community | null;
+  previewCommunity: Community | null;
   hoveredCommunity: Community | null;
   onSelectCommunity: (community: Community | null) => void;
+  onPreviewCommunity: (community: Community | null) => void;
 }
 
 // 公司坐标：杨浦区淞沪路303号 创智天地 11号楼
@@ -121,7 +123,7 @@ function normalizeLngLat(coords: [number, number]): [number, number] | null {
   return normalized;
 }
 
-export default function MapView({ communities, selectedCommunity, hoveredCommunity, onSelectCommunity }: MapViewProps) {
+export default function MapView({ communities, selectedCommunity, previewCommunity, hoveredCommunity, onSelectCommunity, onPreviewCommunity }: MapViewProps) {
   const mapRef = useRef<AMapMap | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const markersRef = useRef<Map<string, AMapMarker>>(new Map());
@@ -140,6 +142,7 @@ export default function MapView({ communities, selectedCommunity, hoveredCommuni
   const [copiedMessage, setCopiedMessage] = useState(false);
   const companyMarkerRef = useRef<AMapMarker | null>(null);
   const [modifiedCompanyCoords, setModifiedCompanyCoords] = useState<[number, number] | null>(null);
+  const previewPopupMarkerRef = useRef<AMapMarker | null>(null);
 
   const getCompanyCoords = useCallback((): [number, number] => {
     const raw = modifiedCompanyCoords || COMPANY_COORDS;
@@ -429,7 +432,7 @@ export default function MapView({ communities, selectedCommunity, hoveredCommuni
       // 点击弹出详情卡片
       marker.on('click', () => {
         if (!editMode) {
-          onSelectCommunity(community);
+          onPreviewCommunity(community);
         }
       });
 
@@ -470,7 +473,7 @@ export default function MapView({ communities, selectedCommunity, hoveredCommuni
       marker.setMap(map);
       markersRef.current.set(community.id, marker);
     });
-  }, [communities, mapReady, onSelectCommunity, editMode, modifiedCoords, modifiedCompanyCoords, getCompanyCoords]);
+  }, [communities, mapReady, onPreviewCommunity, editMode, modifiedCoords, modifiedCompanyCoords, getCompanyCoords]);
 
   // 处理 hover 高亮
   useEffect(() => {
@@ -488,7 +491,54 @@ export default function MapView({ communities, selectedCommunity, hoveredCommuni
     });
   }, [hoveredCommunity, mapReady]);
 
-  // 点击小区时定位到该小区
+  useEffect(() => {
+    const map = mapRef.current;
+    const AMap = AMapRef.current;
+    if (!mapReady || !map || !AMap) return;
+
+    if (previewPopupMarkerRef.current) {
+      previewPopupMarkerRef.current.setMap(null);
+      previewPopupMarkerRef.current = null;
+    }
+
+    if (!previewCommunity || editMode || selectedCommunity) return;
+
+    const coords = normalizeLngLat(previewCommunity.coordinates);
+    if (!coords) return;
+
+    map.setCenter(coords);
+    map.setZoom(DEFAULT_ZOOM);
+
+    const priceMin = previewCommunity.price?.min ?? 0;
+    const priceMax = previewCommunity.price?.max ?? 0;
+    const priceText = priceMin === priceMax ? `${Math.round(priceMin / 1000)}k` : `${Math.round(priceMin / 1000)}-${Math.round(priceMax / 1000)}k`;
+
+    const popup = new AMap.Marker({
+      position: coords,
+      content: `
+        <div class="${styles.previewPopup}">
+          <div class="${styles.previewTitle}">🏠 ${previewCommunity.name}</div>
+          <div class="${styles.previewMeta}">${previewCommunity.distance} · ${priceText}</div>
+          <div class="${styles.previewHint}">点击查看详情</div>
+        </div>
+      `,
+      offset: new AMap.Pixel(-70, -86),
+      zIndex: 300,
+    });
+
+    popup.on('click', () => onSelectCommunity(previewCommunity));
+    popup.setMap(map);
+    previewPopupMarkerRef.current = popup;
+
+    return () => {
+      if (previewPopupMarkerRef.current) {
+        previewPopupMarkerRef.current.setMap(null);
+        previewPopupMarkerRef.current = null;
+      }
+    };
+  }, [mapReady, previewCommunity, editMode, selectedCommunity, onSelectCommunity]);
+
+  // 点击小区详情时定位到该小区
   useEffect(() => {
     if (!mapReady || !selectedCommunity || !mapRef.current) return;
 
