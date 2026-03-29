@@ -83,6 +83,19 @@ type AMapApi = {
       ) => void
     ) => void;
   };
+  Geocoder?: new (opts: { city?: string }) => {
+    getLocation: (
+      address: string,
+      cb: (
+        status: string,
+        result?: {
+          geocodes?: Array<{
+            location?: unknown;
+          }>;
+        }
+      ) => void
+    ) => void;
+  };
   Pixel: new (x: number, y: number) => AMapPixel;
   Scale: new () => unknown;
 };
@@ -513,38 +526,43 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
     setRematchStats(null);
     try {
       await new Promise<void>((resolve, reject) => {
-        if (AMap.PlaceSearch) {
+        if (AMap.PlaceSearch && AMap.Geocoder) {
           resolve();
           return;
         }
         if (!AMap.plugin) {
-          reject(new Error('当前地图实例不支持 AMap.plugin，无法加载 PlaceSearch'));
+          reject(new Error('当前地图实例不支持 AMap.plugin，无法加载搜索插件'));
           return;
         }
-        const timeout = window.setTimeout(() => reject(new Error('加载 PlaceSearch 超时')), 5000);
-        AMap.plugin('AMap.PlaceSearch', () => {
+        const timeout = window.setTimeout(() => reject(new Error('加载 PlaceSearch/Geocoder 超时')), 5000);
+        AMap.plugin(['AMap.PlaceSearch', 'AMap.Geocoder'], () => {
           window.clearTimeout(timeout);
           resolve();
         });
       });
 
-      if (!AMap.PlaceSearch) {
+      if (!AMap.PlaceSearch && !AMap.Geocoder) {
         setRematchStats({
           matched: 0,
           total: communities.length,
           unresolved: communities.map(c => c.name),
-          reason: 'PlaceSearch 插件未加载成功，请检查高德 Key 安全配置与域名白名单',
+          reason: 'PlaceSearch/Geocoder 插件未加载成功，请检查高德 Key 安全配置与域名白名单',
         });
         return;
       }
 
-      const placeSearch = new AMap.PlaceSearch({ city: '上海', citylimit: false });
+      const placeSearch = AMap.PlaceSearch ? new AMap.PlaceSearch({ city: '上海', citylimit: false }) : null;
+      const geocoder = AMap.Geocoder ? new AMap.Geocoder({ city: '上海' }) : null;
       const nextMap = new Map(modifiedCoords);
       const unresolved: string[] = [];
       let matched = 0;
 
       const searchOne = (keyword: string) =>
         new Promise<[number, number] | null>((resolve) => {
+          if (!placeSearch) {
+            resolve(null);
+            return;
+          }
           placeSearch.search(keyword, (status, result) => {
             if (status !== 'complete') {
               resolve(null);
@@ -561,12 +579,35 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
           });
         });
 
+      const geocodeOne = (address: string) =>
+        new Promise<[number, number] | null>((resolve) => {
+          if (!geocoder) {
+            resolve(null);
+            return;
+          }
+          geocoder.getLocation(address, (status, result) => {
+            if (status !== 'complete') {
+              resolve(null);
+              return;
+            }
+            const loc = extractLngLat(result?.geocodes?.[0]?.location);
+            resolve(loc);
+          });
+        });
+
       for (const c of communities) {
         const queries = [c.name, `${c.name}小区`, `上海市杨浦区${c.name}`, `杨浦区${c.name}`];
+        const geocodeQueries = [`上海市杨浦区${c.name}`, `上海杨浦${c.name}`, `${c.name}`];
         let found: [number, number] | null = null;
         for (const q of queries) {
           found = await searchOne(q);
           if (found) break;
+        }
+        if (!found) {
+          for (const q of geocodeQueries) {
+            found = await geocodeOne(q);
+            if (found) break;
+          }
         }
         if (!found) {
           unresolved.push(c.name);
@@ -578,7 +619,12 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
 
       setModifiedCoords(nextMap);
       if (matched > 0) setEditMode(true);
-      setRematchStats({ matched, total: communities.length, unresolved });
+      setRematchStats({
+        matched,
+        total: communities.length,
+        unresolved,
+        reason: matched === 0 ? '搜索插件可用，但名称无法检索到坐标；建议补充道路门牌或人工采点后批量回填' : undefined,
+      });
       pushDebugSnapshotRef.current('batchRematch:done');
     } catch (err) {
       const reason = err instanceof Error ? err.message : '批量匹配失败';
@@ -635,7 +681,7 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
       AMapLoader.default.load({
         key: process.env.NEXT_PUBLIC_AMAP_KEY || '',
         version: '2.0',
-        plugins: ['AMap.Scale', 'AMap.PlaceSearch'],
+        plugins: ['AMap.Scale', 'AMap.PlaceSearch', 'AMap.Geocoder'],
       }).then((AMap: AMapApi) => {
         // 检查是否已被销毁
         if (isDestroyedRef.current || !containerRef.current) return;
