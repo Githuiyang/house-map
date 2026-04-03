@@ -9,6 +9,8 @@ interface CommunityCardProps {
 }
 
 export default function CommunityCard({ community, onClose }: CommunityCardProps) {
+  const commute = community.commute;
+
   return (
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.card} onClick={(e) => e.stopPropagation()}>
@@ -17,13 +19,25 @@ export default function CommunityCard({ community, onClose }: CommunityCardProps
         <h2 className={styles.title}>{community.name}</h2>
 
         <div className={styles.meta}>
-          <span className={styles.distance}>📍 {community.distance}</span>
-          <span className={styles.bikeTime}>🚴 {community.bikeTime}</span>
+          {commute ? (
+            <>
+              <span className={styles.distance}>📍 {commute.roadDistanceKm}km</span>
+              <span className={styles.walkTime}>🚶 步行{commute.walkMinutes}min</span>
+              <span className={styles.bikeTime}>🚴 骑行{commute.bikeMinutes}min</span>
+            </>
+          ) : (
+            <>
+              <span className={styles.distance}>📍 {community.distance}</span>
+              <span className={styles.bikeTime}>🚴 {community.bikeTime}</span>
+            </>
+          )}
         </div>
 
         <div className={styles.price}>
           <span className={styles.priceValue}>
-            {community.price.min}-{community.price.max}
+            {community.price.min === community.price.max
+              ? Math.round(community.price.min / 1000) + 'k'
+              : `${Math.round(community.price.min / 1000)}-${Math.round(community.price.max / 1000)}k`}
           </span>
           <span className={styles.priceUnit}>元/{community.price.unit}</span>
         </div>
@@ -70,7 +84,7 @@ export default function CommunityCard({ community, onClose }: CommunityCardProps
         )}
 
         <div className={styles.footer}>
-          <span className={styles.contributor}>数据来源: 即刻社区</span>
+          <span className={styles.contributor}>数据来源: {community.contributor || '即刻社区'}</span>
           <span className={styles.updatedAt}>更新于 {community.updatedAt || '未知'}</span>
         </div>
       </div>

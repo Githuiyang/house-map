@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Community } from '@/types/community';
 import { calculateDistanceMeters, normalizeLngLat } from '@/utils/geo';
+import { COMPANY_COORDS } from '@/utils/constants';
 import styles from './MapView.module.css';
 
 // 高德地图类型声明
@@ -156,9 +157,6 @@ interface MapViewProps {
   onPreviewCommunity: (community: Community | null) => void;
 }
 
-// 公司坐标：杨浦区淞沪路303号 创智天地 11号楼
-// 高德地图格式：[经度, 纬度]
-const COMPANY_COORDS: [number, number] = [121.512568, 31.304715];
 const DESKTOP_CENTER_CORRECTION_BASELINE: [number, number] = [0, 0];
 const DESKTOP_CENTER_CORRECTION_STORAGE_KEY = 'office-map-desktop-center-correction-v2';
 const RECOMMEND_RADIUS = 3000; // 推荐范围3公里（米）
@@ -191,6 +189,12 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
   const companyMarkerRef = useRef<AMapMarker | null>(null);
   const [modifiedCompanyCoords, setModifiedCompanyCoords] = useState<[number, number] | null>(null);
   const previewPopupMarkerRef = useRef<AMapMarker | null>(null);
+  const previewCommunityRef = useRef<Community | null>(null);
+
+  // Keep previewCommunityRef in sync with prop
+  useEffect(() => {
+    previewCommunityRef.current = previewCommunity;
+  }, [previewCommunity]);
 
   const [debugMode, setDebugMode] = useState(false);
   const [debugSnapshots, setDebugSnapshots] = useState<DebugSnapshot[]>([]);
@@ -1075,12 +1079,16 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
         return `${formatK(min)}-${formatK(max)}`;
       };
 
-      // Hover tooltip - 只显示简单信息
+      // Hover tooltip - 只显示简单信息（preview 打开时不显示，避免重叠）
       marker.on('mouseover', (e: unknown) => {
+        if (previewCommunityRef.current?.id === community.id) return;
         const priceText = formatPrice(community.price.min, community.price.max);
+        const distText = community.commute
+          ? `${community.commute.roadDistanceKm}km · 步行${community.commute.walkMinutes}min · 骑行${community.commute.bikeMinutes}min`
+          : `${community.distance} · 骑行${community.bikeTime}`;
         const tooltipContent = `
           <div class="${styles.hoverTooltip}">
-            <div class="${styles.tooltipRow}">${community.distance} · 骑行${community.bikeTime}</div>
+            <div class="${styles.tooltipRow}">${distText}</div>
             <div class="${styles.tooltipRow}">¥${priceText}/月</div>
           </div>
         `;
@@ -1189,12 +1197,17 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
     const priceMax = previewCommunity.price?.max ?? 0;
     const priceText = priceMin === priceMax ? `${Math.round(priceMin / 1000)}k` : `${Math.round(priceMin / 1000)}-${Math.round(priceMax / 1000)}k`;
 
+    const commuteText = previewCommunity.commute
+      ? `${previewCommunity.commute.roadDistanceKm}km · 步行${previewCommunity.commute.walkMinutes}min · 骑行${previewCommunity.commute.bikeMinutes}min`
+      : `${previewCommunity.distance} · ${previewCommunity.bikeTime}`;
+
     const popup = new AMap.Marker({
       position: coords,
       content: `
         <div class="${styles.previewPopup}">
           <div class="${styles.previewTitle}">🏠 ${previewCommunity.name}</div>
-          <div class="${styles.previewMeta}">${previewCommunity.distance} · ${priceText}</div>
+          <div class="${styles.previewMeta}">${commuteText}</div>
+          <div class="${styles.previewMeta}">¥${priceText}/月</div>
           <div class="${styles.previewHint}">点击查看详情</div>
         </div>
       `,

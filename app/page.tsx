@@ -51,10 +51,10 @@ export default function Home() {
   // 筛选逻辑
   const filteredCommunities = useMemo(() => {
     return communities.filter(community => {
-      // 距离筛选（简化版，实际应该计算真实距离）
+      // 距离筛选：使用计算的道路距离
       if (distanceFilter !== 'all') {
-        const distance = parseFloat(community.distance);
-        if (isNaN(distance) || distance > parseInt(distanceFilter)) return false;
+        const distance = community.commute?.roadDistanceKm;
+        if (distance === undefined || distance > parseFloat(distanceFilter)) return false;
       }
 
       // 价格筛选
@@ -133,7 +133,11 @@ export default function Home() {
                     <span className={styles.itemName}>🏠 {community.name}</span>
                   </div>
                   <div className={styles.itemRow2}>
-                    <span className={styles.itemMeta}>{community.distance} · 骑行{community.bikeTime}</span>
+                    <span className={styles.itemMeta}>
+                      {community.commute
+                        ? `${community.commute.roadDistanceKm}km · 步行${community.commute.walkMinutes}min · 骑行${community.commute.bikeMinutes}min`
+                        : `${community.distance} · 骑行${community.bikeTime}`}
+                    </span>
                   </div>
                   <div className={styles.itemRow3}>
                     <span className={styles.itemMeta}>

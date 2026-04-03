@@ -1,9 +1,17 @@
+export interface CommuteInfo {
+  distanceKm: number;       // 直线距离 (km)
+  roadDistanceKm: number;    // 道路距离估算 (km)
+  walkMinutes: number;      // 步行时间 (分钟)
+  bikeMinutes: number;      // 骑行时间 (分钟)
+}
+
 export interface Community {
   id: string;
   name: string;
   coordinates: [number, number]; // [lng, lat]
   distance: string;
   bikeTime: string;
+  commute?: CommuteInfo;
   price: {
     min: number;
     max: number;
@@ -26,6 +34,7 @@ export function createDefaultCommunity(partial: Partial<Community>): Community {
     coordinates: partial.coordinates || [0, 0],
     distance: partial.distance || '未知',
     bikeTime: partial.bikeTime || '未知',
+    commute: partial.commute,
     price: {
       min: partial.price?.min ?? 0,
       max: partial.price?.max ?? 0,

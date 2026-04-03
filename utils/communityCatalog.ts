@@ -1,12 +1,11 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { calculateDistanceMeters } from '@/utils/geo';
+import { COMPANY_COORDS } from '@/utils/constants';
 import { createDefaultCommunity, type Community } from '@/types/community';
 import type { RentalCommunitySyncItem, RentalCommunitySyncResult, RentalListingRecord } from '@/types/rental';
 import { uniqueStrings } from '@/utils/collections';
 import { toStableSlug } from '@/utils/slug';
-
-const COMPANY_COORDS: [number, number] = [121.512568, 31.304715];
 
 export interface CommunityCatalogOptions {
   dataPath?: string;
