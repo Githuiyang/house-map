@@ -106,6 +106,10 @@ function uploadFile(
     });
 
     xhr.open('POST', '/api/images/upload');
+    const adminKey = sessionStorage.getItem('office-map-admin-key');
+    if (adminKey) {
+      xhr.setRequestHeader('x-admin-key', adminKey);
+    }
     xhr.send(formData);
   });
 }
