@@ -1,5 +1,35 @@
 # 数据维护指南
 
+## 数据库
+
+项目使用 **Supabase PostgreSQL**（东京区域）存储小区评论与图片等数据。
+
+- 连接配置：`src/db/index.ts`（postgres.js 驱动 + Drizzle ORM）
+- 表定义：`src/db/schema.ts`（`drizzle-orm/pg-core` 方言）
+- 迁移配置：`drizzle.config.ts`
+- 迁移文件：`drizzle/`
+
+数据库表：
+
+- `community_comments`：小区评论
+- `community_images`：小区图片
+
+常用数据库操作：
+
+```bash
+# 推送 schema 变更到数据库（开发用）
+npx drizzle-kit push
+
+# 生成迁移文件
+npx drizzle-kit generate
+
+# 运行迁移（生产推荐）
+npx drizzle-kit migrate
+
+# 可视化管理
+npx drizzle-kit studio
+```
+
 ## 数据文件
 
 - 主数据：`data/communities.json`

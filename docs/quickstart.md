@@ -16,14 +16,20 @@ npm i
 在项目根目录新建 `.env.local`：
 
 ```bash
+# 高德地图（客户端可见）
 NEXT_PUBLIC_AMAP_KEY=你的高德Key
 NEXT_PUBLIC_AMAP_SECURITY_KEY=你的JS安全密钥
+
+# Supabase PostgreSQL（服务端使用，不暴露到客户端）
+DATABASE_URL=postgresql://postgres.rcxcmtqihkakhaxezify:[PASSWORD]@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres?sslmode=require
 ```
 
 注意：
 
-- 这两个变量都在客户端可见，务必配置高德域名白名单
+- 高德 Key 变量在客户端可见，务必配置高德域名白名单
+- `DATABASE_URL` 为 Supabase PostgreSQL 连接串（东京区域），仅服务端使用
 - 本地调试和 Vercel 预览/生产都需要配置
+- 数据库 schema 变更后需运行 `npx drizzle-kit push` 同步
 
 ## 4) 本地开发
 

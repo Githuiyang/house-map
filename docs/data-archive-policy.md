@@ -57,4 +57,5 @@ data/
 
 - 本地开发：仓库内 `data/rental-system/`
 - 生产环境：建议挂载持久卷，或周期性同步到对象存储
-- 如果切换到数据库，需保证 `current snapshot + history log + backup` 三层能力不丢失
+- 项目已使用 Supabase PostgreSQL（东京区域）作为主数据库，schema 定义在 `src/db/schema.ts`，通过 Drizzle ORM 操作
+- 租房系统的文件数据（`data/rental-system/`）仍以 JSON 文件形式存储，后续可考虑迁移到数据库

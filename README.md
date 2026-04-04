@@ -48,7 +48,7 @@
 
 - 自动落图依赖可写文件系统与高德 Web API Key
 - 在本地或自托管 Node 环境可直接生效
-- 如果部署在 Vercel 这类无持久化运行时，需改成数据库或对象存储才能长期保存新小区
+- 数据库：Supabase PostgreSQL（东京区域），用于小区评论与图片等持久化存储（`src/db/schema.ts`）
 
 建议流程：
 
@@ -85,20 +85,25 @@ npm run dev
 
 访问：http://localhost:3000
 
-## 环境变量（高德地图）
+## 环境变量
 
-本项目在客户端加载高德 JSAPI，需要在根目录创建 `.env.local`：
+在项目根目录创建 `.env.local`：
 
 ```bash
+# 高德地图（客户端可见）
 NEXT_PUBLIC_AMAP_KEY=你的高德Key
 NEXT_PUBLIC_AMAP_SECURITY_KEY=你的JS安全密钥
+
+# Supabase PostgreSQL（服务端使用，不暴露到客户端）
+DATABASE_URL=postgresql://postgres.rcxcmtqihkakhaxezify:[PASSWORD]@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres?sslmode=require
 ```
 
 说明：
 
 - `NEXT_PUBLIC_AMAP_KEY`：高德地图 JSAPI Key
 - `NEXT_PUBLIC_AMAP_SECURITY_KEY`：配合「JS 安全密钥」使用
-- Key 会暴露在浏览器端，请务必在高德控制台配置「域名白名单」
+- `DATABASE_URL`：Supabase PostgreSQL 连接串（东京区域），用于小区评论与图片等数据存储
+- 高德 Key 会暴露在浏览器端，请务必在高德控制台配置「域名白名单」
 
 ## 数据维护
 
@@ -128,10 +133,14 @@ office-map/
     FilterBar.tsx           筛选条
     CommunityCard.tsx       小区详情卡片
     ThemeToggle.tsx         主题切换
+  src/db/                   数据库层（Supabase PostgreSQL）
+    index.ts                postgres.js 连接 + Drizzle ORM 初始化
+    schema.ts               Drizzle ORM 表定义（pg-core）
   data/
     communities.json        当前使用的数据
     communities_raw.json    原始/中间数据（保留参考）
     communities.json.bak    备份
+  drizzle/                  Drizzle Kit 生成的迁移文件
   scripts/                  数据处理与坐标辅助脚本
   types/                    TypeScript 类型定义
   public/                   静态资源
@@ -165,9 +174,10 @@ npm run release:rentals  # 租房向量化系统发布前校验
 
 ## 部署信息
 
-**部署平台**: Vercel  
-**生产域名**: https://map.lihuiyang.xyz  
+**部署平台**: Vercel
+**生产域名**: https://map.lihuiyang.xyz
 **Vercel 项目**: `office-map`
+**数据库**: Supabase PostgreSQL（东京区域，`aws-0-ap-northeast-1`）
 
 ### Vercel 环境变量
 
@@ -175,6 +185,7 @@ npm run release:rentals  # 租房向量化系统发布前校验
 
 - `NEXT_PUBLIC_AMAP_KEY`
 - `NEXT_PUBLIC_AMAP_SECURITY_KEY`
+- `DATABASE_URL`（Supabase PostgreSQL 连接串）
 
 同时请在高德控制台把允许的域名加入白名单（至少包含 `map.lihuiyang.xyz`，以及 Vercel 的预览域名）。
 
@@ -231,7 +242,8 @@ git push origin main
 发布前检查：
 
 - CI 全绿（lint/build/unit+coverage/e2e）
-- Vercel 环境变量（Production）已配置：`NEXT_PUBLIC_AMAP_KEY` / `NEXT_PUBLIC_AMAP_SECURITY_KEY`
+- Vercel 环境变量（Production）已配置：`NEXT_PUBLIC_AMAP_KEY` / `NEXT_PUBLIC_AMAP_SECURITY_KEY` / `DATABASE_URL`
+- 如有数据库 schema 变更，先运行 `npx drizzle-kit push` 或 `npx drizzle-kit migrate` 同步 Supabase
 - 高德控制台域名白名单包含 `map.lihuiyang.xyz`
 
 发布方式：

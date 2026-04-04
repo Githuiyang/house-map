@@ -1,15 +1,28 @@
 # 项目文档索引
 
-本目录用于沉淀项目的维护文档，按“开发者最常见问题”组织：
+本目录用于沉淀项目的维护文档，按”开发者最常见问题”组织：
 
 - 我如何把项目跑起来？→ `quickstart.md`
 - 页面和地图联动逻辑在哪？→ `architecture.md`
+- 数据库结构和管理？→ `architecture.md`（数据库层章节）+ `data-maintenance.md`
 - 为什么默认中心会漂、怎么校准？→ `debugging.md`
+- 数据库连接出问题怎么排查？→ `debugging.md`（数据库连接排查章节）
 - 小区数据怎么更新？→ `data-maintenance.md`
 - Openclaw 租房文本怎么入库并生成向量？→ `rental-vectorization.md`
 - 租房数据怎么归档、备份与命名？→ `data-archive-policy.md`
 - Openclaw 接口怎么调用？→ `openclaw-guide.md`
 - 如何保证发布质量并上线/回滚？→ `testing-and-release.md`
+
+## 数据库概览
+
+- **数据库**: Supabase PostgreSQL（东京区域）
+- **驱动**: postgres.js
+- **ORM**: Drizzle ORM（pg-core 方言）
+- **连接串**: `DATABASE_URL` 环境变量
+- **Schema**: `src/db/schema.ts`
+- **连接初始化**: `src/db/index.ts`
+- **迁移配置**: `drizzle.config.ts`
+- **迁移文件**: `drizzle/`
 
 ## 建议阅读顺序
 

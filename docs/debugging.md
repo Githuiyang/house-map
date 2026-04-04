@@ -40,3 +40,35 @@
 2. 在 768px 附近反复拖动窗口并再次复制
 3. 对比 `containerRect`、`distanceMeters`、`label` 序列
 4. 若仅桌面偏移，使用桌面修正微调并固化
+
+## 数据库连接排查
+
+项目使用 Supabase PostgreSQL（东京区域），通过 `DATABASE_URL` 环境变量连接。
+
+常见问题：
+
+1. **连接超时**
+   - 检查 `DATABASE_URL` 是否正确配置
+   - 确认 Supabase 项目状态（是否暂停，免费套餐会自动暂停）
+   - 检查网络是否能访问 `aws-0-ap-northeast-1.pooler.supabase.com:6543`
+
+2. **Schema 不匹配**
+   - 本地运行 `npx drizzle-kit push` 同步 schema
+   - 检查 `src/db/schema.ts` 与实际数据库表是否一致
+   - 使用 `npx drizzle-kit studio` 可视化检查表结构
+
+3. **SSL 错误**
+   - 确保连接串包含 `?sslmode=require`
+
+排查工具：
+
+```bash
+# 检查数据库连接（需安装 drizzle-kit）
+npx drizzle-kit push --dry-run
+
+# 可视化管理数据库
+npx drizzle-kit studio
+
+# 查看 schema 差异
+npx drizzle-kit generate
+```
