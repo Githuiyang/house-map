@@ -22,7 +22,7 @@
 - ORM：`drizzle-orm/postgres-js`
 - 方言：`pg-core`（PostgreSQL）
 - 连接串：`DATABASE_URL` 环境变量
-- 主机：Supabase 连接池（`aws-0-ap-northeast-1.pooler.supabase.com:6543`）
+- 主机：Supabase 连接池（`aws-1-ap-northeast-1.pooler.supabase.com:5432`）
 
 常用 Drizzle Kit 命令：
 

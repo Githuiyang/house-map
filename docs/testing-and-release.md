@@ -34,9 +34,12 @@ npm run test:e2e
 执行内容：
 
 - lint
+- typecheck（`test:ci` 脚本包含，CI workflow 当前未单独运行，由 `next build` 间接覆盖类型检查）
 - build
 - unit coverage
 - e2e
+
+> **注意**：`npm run test:ci` 脚本包含 `typecheck` 步骤（`lint && typecheck && build && test:unit:coverage && test:e2e`），但 `.github/workflows/ci.yml` 当前未单独运行 `typecheck`。由于 `next build` 内置类型检查，实际效果一致。
 
 ## Vercel 发布
 
