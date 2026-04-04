@@ -49,3 +49,17 @@ export function createDefaultCommunity(partial: Partial<Community>): Community {
     updatedAt: partial.updatedAt || '未知',
   };
 }
+
+export interface CommunityComment {
+  id: string;
+  nickname: string;
+  content: string;
+  createdAt: string;
+}
+
+export interface CommunityImage {
+  id: string;
+  url: string;
+  caption: string | null;
+  uploadedAt: string;
+}

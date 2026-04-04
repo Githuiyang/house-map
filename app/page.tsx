@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import FilterBar from '@/components/FilterBar';
 import CommunityCard from '@/components/CommunityCard';
@@ -44,6 +44,46 @@ export default function Home() {
   const [priceFilter, setPriceFilter] = useState('all');
   const [layoutFilter, setLayoutFilter] = useState('all');
   const [showMobileFilter, setShowMobileFilter] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  // 管理员身份检测：sessionStorage > URL ?admin=XXX
+  useEffect(() => {
+    // 1. 先检查 sessionStorage 缓存
+    if (sessionStorage.getItem('office-map-admin') === '1') {
+      setIsAdmin(true);
+      return;
+    }
+
+    // 2. 检查 URL 参数 ?admin=XXX
+    const params = new URLSearchParams(window.location.search);
+    const adminKey = params.get('admin');
+
+    if (adminKey) {
+      // 清除 URL 中的 admin 参数（防止 key 泄露）
+      params.delete('admin');
+      const newSearch = params.toString();
+      const newUrl = window.location.pathname + (newSearch ? `?${newSearch}` : '');
+      window.history.replaceState({}, '', newUrl);
+
+      // 调用服务端验证
+      fetch('/api/admin/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key: adminKey }),
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.valid) {
+            sessionStorage.setItem('office-map-admin-key', adminKey);
+            sessionStorage.setItem('office-map-admin', '1');
+            setIsAdmin(true);
+          }
+        })
+        .catch(() => {
+          // 静默忽略错误
+        });
+    }
+  }, []);
 
   // 规范化数据
   const communities = useMemo(() => normalizeCommunities(communitiesData), []);
@@ -160,6 +200,7 @@ export default function Home() {
             hoveredCommunity={hoveredCommunity}
             onSelectCommunity={handleSelectCommunity}
             onPreviewCommunity={handlePreviewCommunity}
+            isAdmin={isAdmin}
           />
         </div>
       </main>
@@ -208,6 +249,7 @@ export default function Home() {
         <CommunityCard
           community={selectedCommunity}
           onClose={handleCloseCard}
+          isAdmin={isAdmin}
         />
       )}
     </div>

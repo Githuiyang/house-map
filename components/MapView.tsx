@@ -44,6 +44,7 @@ type AMapMarker = {
   setDraggable: (draggable: boolean) => void;
   setPosition: (position: [number, number]) => void;
   setContent: (html: string) => void;
+  setzIndex: (zIndex: number) => void;
   getPosition: () => AMapLngLat;
 };
 
@@ -155,18 +156,18 @@ interface MapViewProps {
   hoveredCommunity: Community | null;
   onSelectCommunity: (community: Community | null) => void;
   onPreviewCommunity: (community: Community | null) => void;
+  isAdmin?: boolean;
 }
 
 const DESKTOP_CENTER_CORRECTION_BASELINE: [number, number] = [0, 0];
 const DESKTOP_CENTER_CORRECTION_STORAGE_KEY = 'office-map-desktop-center-correction-v2';
 const RECOMMEND_RADIUS = 3000; // 推荐范围3公里（米）
 const DEFAULT_ZOOM = 16;
-const SELECTED_ZOOM = 17;
 
 // 调试地标（GCJ-02 坐标，从高德地图获取）- 已废弃，坐标不准
 const DEBUG_LANDMARKS: { name: string; coords: [number, number] }[] = [];
 
-export default function MapView({ communities, selectedCommunity, previewCommunity, hoveredCommunity, onSelectCommunity, onPreviewCommunity }: MapViewProps) {
+export default function MapView({ communities, selectedCommunity, previewCommunity, hoveredCommunity, onSelectCommunity, onPreviewCommunity, isAdmin }: MapViewProps) {
   const mapRef = useRef<AMapMap | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const markersRef = useRef<Map<string, AMapMarker>>(new Map());
@@ -264,9 +265,8 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
   }, [getCompanyCoords, previewCommunity, selectedCommunity]);
 
   const getDesiredZoom = useCallback(() => {
-    if (selectedCommunity) return SELECTED_ZOOM;
     return DEFAULT_ZOOM;
-  }, [selectedCommunity]);
+  }, []);
 
   const getLayoutMode = useCallback((): 'desktop' | 'mobile' => {
     return window.innerWidth <= 768 ? 'mobile' : 'desktop';
@@ -1070,6 +1070,7 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
         `,
         offset: new AMap.Pixel(-50, -15),
         draggable: editMode, // 编辑模式下可拖拽
+        zIndex: 100,
       });
 
       // 格式化价格 (简化为 k 单位)
@@ -1101,7 +1102,7 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
           })(),
           content: tooltipContent,
           offset: new AMap.Pixel(-60, -60),
-          zIndex: 200,
+          zIndex: 9999,
         });
         tooltipMarker.setMap(map);
         markersRef.current.set(`tooltip-${community.id}`, tooltipMarker);
@@ -1166,7 +1167,17 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
   useEffect(() => {
     if (!mapReady) return;
 
-    // 直接通过 DOM 查询所有标记元素（marker.getContent() 返回字符串，无法用 querySelector）
+    // 通过 AMap setzIndex 提升 hover 的 marker 层级（比 CSS z-index 更可靠）
+    markersRef.current.forEach((marker, key) => {
+      if (key.startsWith('tooltip-')) return; // 跳过 tooltip markers
+      if (hoveredCommunity && key === hoveredCommunity.id) {
+        marker.setzIndex(9998);
+      } else {
+        marker.setzIndex(100);
+      }
+    });
+
+    // 同时保留 CSS 高亮效果（缩放、阴影）
     const labelEls = document.querySelectorAll(`.${styles.communityLabel}`);
     labelEls.forEach((el) => {
       const communityId = el.getAttribute('data-community-id');
@@ -1212,7 +1223,7 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
         </div>
       `,
       offset: new AMap.Pixel(-70, -86),
-      zIndex: 300,
+      zIndex: 9997,
     });
 
     popup.on('click', () => onSelectCommunity(previewCommunity));
@@ -1236,6 +1247,7 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
 
   // 切换编辑模式
   const toggleEditMode = () => {
+    if (!isAdmin) return;
     const newEditMode = !editMode;
     setEditMode(newEditMode);
 
@@ -1336,6 +1348,7 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
             🏢
           </button>
 
+          {isAdmin && (
           <button
             className={`${styles.editButton} ${editMode ? styles.editButtonActive : ''}`}
             onClick={toggleEditMode}
@@ -1343,6 +1356,7 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
           >
             {editMode ? '✓ 编辑中' : '✏️ 编辑'}
           </button>
+          )}
 
           {editMode && (
             <div className={styles.editModeHint}>

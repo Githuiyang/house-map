@@ -229,7 +229,6 @@
 .communityLabelHovered {
   transform: scale(1.2) !important;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4) !important;
-  z-index: 100 !important;
 }
 
 .communityIcon {

@@ -1,0 +1,163 @@
+.container {
+  margin-top: 12px;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.uploadBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-card-bg);
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color var(--duration) var(--ease),
+    border-color var(--duration) var(--ease);
+}
+
+.uploadBtn:hover {
+  background-color: var(--color-border);
+}
+
+.uploadBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Thumbnail grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.thumbnail {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background-color: var(--color-border);
+}
+
+.thumbnailImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Progress bar */
+.progressTrack {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+.progressFill {
+  height: 100%;
+  background-color: var(--color-primary);
+  transition: width 150ms ease-out;
+}
+
+/* Done overlay */
+.doneOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.checkmark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #4caf50;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Error overlay */
+.errorOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background-color: rgba(0, 0, 0, 0.45);
+  border: 2px solid #e74c3c;
+  border-radius: var(--radius-sm);
+}
+
+.retryBtn {
+  padding: 4px 10px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background-color: #e74c3c;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 12px;
+  cursor: pointer;
+  transition: opacity var(--duration) var(--ease);
+}
+
+.retryBtn:hover {
+  opacity: 0.85;
+}
+
+.removeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.25);
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  line-height: 1;
+  transition: background-color var(--duration) var(--ease);
+}
+
+.removeBtn:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Pixel theme overrides */
+:global([data-theme="pixel"]) .uploadBtn {
+  border: 2px solid var(--color-border);
+  border-radius: 0;
+}
+
+:global([data-theme="pixel"]) .thumbnail {
+  border-radius: 0;
+  border: 2px solid var(--color-border);
+}
+
+:global([data-theme="pixel"]) .errorOverlay {
+  border-radius: 0;
+}
+
+:global([data-theme="pixel"]) .retryBtn {
+  border-radius: 0;
+}

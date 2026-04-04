@@ -14,20 +14,28 @@
     "test:integration": "playwright test",
     "test:e2e": "playwright test",
     "test:ci": "npm run lint && npm run typecheck && npm run build && npm run test:unit:coverage && npm run test:e2e",
-    "release:rentals": "bash scripts/release-rental-system.sh"
+    "release:rentals": "bash scripts/release-rental-system.sh",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
     "@amap/amap-jsapi-loader": "^1.0.1",
+    "@libsql/client": "^0.17.2",
+    "@vercel/blob": "^2.3.3",
+    "drizzle-orm": "^0.45.2",
     "next": "16.2.1",
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },
   "devDependencies": {
+    "@playwright/test": "^1.55.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@playwright/test": "^1.55.0",
     "@vitest/coverage-v8": "^3.2.4",
+    "drizzle-kit": "^0.31.10",
     "eslint": "^9",
     "eslint-config-next": "16.2.1",
     "typescript": "^5",
