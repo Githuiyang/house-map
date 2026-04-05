@@ -1764,5 +1764,40 @@
       "随时入住",
       "10号线地铁口"
     ]
+  },
+  {
+    "id": "sanmenlu-555",
+    "name": "三门路555弄",
+    "coordinates": [
+      121.49,
+      31.31
+    ],
+    "distance": "2.0km",
+    "bikeTime": "骑车12分钟",
+    "price": {
+      "min": 3500,
+      "max": 3500,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "多层"
+    ],
+    "layouts": [
+      "一室一厅"
+    ],
+    "elevator": false,
+    "highlights": [
+      "4楼"
+    ],
+    "warnings": [],
+    "contributor": "老大",
+    "updatedAt": "2026",
+    "roomPricing": [
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   }
 ]
