@@ -57,9 +57,16 @@
       {
         "layout": "两室一厅",
         "shared": 0,
-        "whole": 0
+        "whole": 0,
+        "rooms": 2,
+        "pricePerRoom": 3200
       }
-    ]
+    ],
+    "pricePerRoomStats": {
+      "min": 3200,
+      "max": 3200,
+      "avg": 3200
+    }
   },
   {
     "id": "chuanzhi-fang",
@@ -104,14 +111,23 @@
       {
         "layout": "两室两厅",
         "shared": 0,
-        "whole": 0
+        "whole": 0,
+        "rooms": 2,
+        "pricePerRoom": 4500
       },
       {
         "layout": "四室两卫",
         "shared": 0,
-        "whole": 0
+        "whole": 0,
+        "rooms": 4,
+        "pricePerRoom": 2250
       }
-    ]
+    ],
+    "pricePerRoomStats": {
+      "min": 2250,
+      "max": 4500,
+      "avg": 3375
+    }
   },
   {
     "id": "dongfang-jinyuan",
@@ -168,7 +184,7 @@
     "name": "公园3000",
     "coordinates": [
       121.52,
-      31.30
+      31.3
     ],
     "distance": "1.0km",
     "bikeTime": "骑车5分钟",
@@ -196,9 +212,16 @@
       {
         "layout": "一室一厅",
         "shared": 0,
-        "whole": 0
+        "whole": 0,
+        "rooms": 1,
+        "pricePerRoom": 5500
       }
-    ]
+    ],
+    "pricePerRoomStats": {
+      "min": 5500,
+      "max": 5500,
+      "avg": 5500
+    }
   },
   {
     "id": "guodinglu-505",
@@ -233,9 +256,16 @@
       {
         "layout": "两室一厅",
         "shared": 0,
-        "whole": 0
+        "whole": 0,
+        "rooms": 2,
+        "pricePerRoom": 2950
       }
-    ]
+    ],
+    "pricePerRoomStats": {
+      "min": 2950,
+      "max": 2950,
+      "avg": 2950
+    }
   },
   {
     "id": "guodinglu-555",
@@ -274,14 +304,23 @@
       {
         "layout": "一室",
         "shared": 0,
-        "whole": 0
+        "whole": 0,
+        "rooms": 1,
+        "pricePerRoom": 4200
       },
       {
         "layout": "一室一厅",
         "shared": 0,
-        "whole": 0
+        "whole": 0,
+        "rooms": 1,
+        "pricePerRoom": 4200
       }
-    ]
+    ],
+    "pricePerRoomStats": {
+      "min": 4200,
+      "max": 4200,
+      "avg": 4200
+    }
   },
   {
     "id": "guodinglu-600",
@@ -395,20 +434,31 @@
         "shared": 0,
         "whole": 4500,
         "area": "44-46平",
-        "priceRange": "4500-5700"
+        "priceRange": "4500-5700",
+        "rooms": 1,
+        "pricePerRoom": 4500
       },
       {
         "layout": "一室一厅",
         "shared": 0,
-        "whole": 0
+        "whole": 0,
+        "rooms": 1,
+        "pricePerRoom": 4500
       },
       {
         "layout": "两室一厅",
         "shared": 0,
         "whole": 6800,
-        "area": "66平"
+        "area": "66平",
+        "rooms": 2,
+        "pricePerRoom": 2250
       }
-    ]
+    ],
+    "pricePerRoomStats": {
+      "min": 2250,
+      "max": 4500,
+      "avg": 3750
+    }
   },
   {
     "id": "guohelu-610",
@@ -441,9 +491,16 @@
       {
         "layout": "一室",
         "shared": 0,
-        "whole": 0
+        "whole": 0,
+        "rooms": 1,
+        "pricePerRoom": 4500
       }
-    ]
+    ],
+    "pricePerRoomStats": {
+      "min": 4500,
+      "max": 4500,
+      "avg": 4500
+    }
   },
   {
     "id": "guohu-yicun",
@@ -526,9 +583,16 @@
       {
         "layout": "一室",
         "shared": 0,
-        "whole": 0
+        "whole": 0,
+        "rooms": 1,
+        "pricePerRoom": 4300
       }
-    ]
+    ],
+    "pricePerRoomStats": {
+      "min": 4300,
+      "max": 4300,
+      "avg": 4300
+    }
   },
   {
     "id": "henan-zhonglu-575",
@@ -620,9 +684,16 @@
       {
         "layout": "一室",
         "shared": 0,
-        "whole": 0
+        "whole": 0,
+        "rooms": 1,
+        "pricePerRoom": 5300
       }
-    ]
+    ],
+    "pricePerRoomStats": {
+      "min": 5300,
+      "max": 5300,
+      "avg": 5300
+    }
   },
   {
     "id": "linlu-jiayuan",
@@ -707,9 +778,16 @@
       {
         "layout": "两室一厅",
         "shared": 0,
-        "whole": 0
+        "whole": 0,
+        "rooms": 2,
+        "pricePerRoom": 3000
       }
-    ]
+    ],
+    "pricePerRoomStats": {
+      "min": 3000,
+      "max": 3000,
+      "avg": 3000
+    }
   },
   {
     "id": "nanchayuan",
@@ -768,7 +846,27 @@
     "warnings": [],
     "contributor": "老大",
     "updatedAt": "2026",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "一室",
+        "rooms": 1,
+        "pricePerRoom": 4100,
+        "shared": 0,
+        "whole": 4100
+      },
+      {
+        "layout": "两室一厅",
+        "rooms": 2,
+        "pricePerRoom": 2050,
+        "shared": 0,
+        "whole": 4100
+      }
+    ],
+    "pricePerRoomStats": {
+      "min": 2050,
+      "max": 4100,
+      "avg": 3075
+    }
   },
   {
     "id": "renheyuan",
@@ -812,9 +910,16 @@
         "shared": 0,
         "whole": 10700,
         "area": "156平",
-        "note": "复式"
+        "note": "复式",
+        "rooms": 4,
+        "pricePerRoom": 2675
       }
-    ]
+    ],
+    "pricePerRoomStats": {
+      "min": 2675,
+      "max": 2675,
+      "avg": 2675
+    }
   },
   {
     "id": "sanmenlu-358",
@@ -858,9 +963,16 @@
       {
         "layout": "两室一厅",
         "shared": 0,
-        "whole": 0
+        "whole": 0,
+        "rooms": 2,
+        "pricePerRoom": 2650
       }
-    ]
+    ],
+    "pricePerRoomStats": {
+      "min": 2650,
+      "max": 2650,
+      "avg": 2650
+    }
   },
   {
     "id": "sanmenlu-555",
@@ -893,9 +1005,16 @@
       {
         "layout": "一室一厅",
         "shared": 0,
-        "whole": 0
+        "whole": 0,
+        "rooms": 1,
+        "pricePerRoom": 3500
       }
-    ]
+    ],
+    "pricePerRoomStats": {
+      "min": 3500,
+      "max": 3500,
+      "avg": 3500
+    }
   },
   {
     "id": "sanxiang-weilai-haian",
@@ -954,9 +1073,16 @@
       {
         "layout": "一室一厅",
         "shared": 0,
-        "whole": 0
+        "whole": 0,
+        "rooms": 1,
+        "pricePerRoom": 4500
       }
-    ]
+    ],
+    "pricePerRoomStats": {
+      "min": 4500,
+      "max": 4500,
+      "avg": 4500
+    }
   },
   {
     "id": "sipinglu-2065nong",
@@ -1015,7 +1141,7 @@
     "name": "铁村小区",
     "coordinates": [
       121.51,
-      31.30
+      31.3
     ],
     "distance": "1.0km",
     "bikeTime": "骑车5分钟",
@@ -1043,9 +1169,16 @@
       {
         "layout": "一室",
         "shared": 0,
-        "whole": 0
+        "whole": 0,
+        "rooms": 1,
+        "pricePerRoom": 4300
       }
-    ]
+    ],
+    "pricePerRoomStats": {
+      "min": 4300,
+      "max": 4300,
+      "avg": 4300
+    }
   },
   {
     "id": "wenhua-huayuan",
@@ -1134,9 +1267,16 @@
       {
         "layout": "一室一厅",
         "shared": 0,
-        "whole": 0
+        "whole": 0,
+        "rooms": 1,
+        "pricePerRoom": 4400
       }
-    ]
+    ],
+    "pricePerRoomStats": {
+      "min": 4400,
+      "max": 4400,
+      "avg": 4400
+    }
   },
   {
     "id": "wuchuanlu-245",
@@ -1172,9 +1312,16 @@
       {
         "layout": "一室",
         "shared": 0,
-        "whole": 0
+        "whole": 0,
+        "rooms": 1,
+        "pricePerRoom": 4800
       }
-    ]
+    ],
+    "pricePerRoomStats": {
+      "min": 4800,
+      "max": 4800,
+      "avg": 4800
+    }
   },
   {
     "id": "wuchuanlu-99nong",
@@ -1236,7 +1383,9 @@
       {
         "layout": "三室两厅两卫",
         "shared": 0,
-        "whole": 0
+        "whole": 0,
+        "rooms": 3,
+        "pricePerRoom": 4500
       }
     ],
     "highlights": [
@@ -1249,7 +1398,12 @@
       "精装修",
       "随时入住",
       "高区景观最好的楼层"
-    ]
+    ],
+    "pricePerRoomStats": {
+      "min": 4500,
+      "max": 4500,
+      "avg": 4500
+    }
   },
   {
     "id": "yifuyuan",
@@ -1280,7 +1434,7 @@
     "id": "yixian-ercun-460",
     "name": "逸仙二村460弄",
     "coordinates": [
-      121.50,
+      121.5,
       31.31
     ],
     "distance": "1.5km",
@@ -1310,9 +1464,16 @@
       {
         "layout": "一室一厅",
         "shared": 0,
-        "whole": 0
+        "whole": 0,
+        "rooms": 1,
+        "pricePerRoom": 5500
       }
-    ]
+    ],
+    "pricePerRoomStats": {
+      "min": 5500,
+      "max": 5500,
+      "avg": 5500
+    }
   },
   {
     "id": "zhengde-donglu-108",
@@ -1390,9 +1551,16 @@
       {
         "layout": "两室两厅",
         "shared": 0,
-        "whole": 0
+        "whole": 0,
+        "rooms": 2,
+        "pricePerRoom": 3900
       }
-    ]
+    ],
+    "pricePerRoomStats": {
+      "min": 3900,
+      "max": 3900,
+      "avg": 3900
+    }
   },
   {
     "id": "zhenglitu-580",
@@ -1435,19 +1603,30 @@
       {
         "layout": "一室一厅",
         "shared": 0,
-        "whole": 0
+        "whole": 0,
+        "rooms": 1,
+        "pricePerRoom": 8000
       },
       {
         "layout": "三室一厅",
         "shared": 0,
-        "whole": 0
+        "whole": 0,
+        "rooms": 3,
+        "pricePerRoom": 2667
       },
       {
         "layout": "两室一厅",
         "shared": 0,
-        "whole": 0
+        "whole": 0,
+        "rooms": 2,
+        "pricePerRoom": 4000
       }
-    ]
+    ],
+    "pricePerRoomStats": {
+      "min": 2667,
+      "max": 8000,
+      "avg": 4889
+    }
   },
   {
     "id": "zhenglitu-6nong",
@@ -1508,9 +1687,16 @@
         "layout": "一室",
         "shared": 0,
         "whole": 5600,
-        "area": "44平"
+        "area": "44平",
+        "rooms": 1,
+        "pricePerRoom": 5600
       }
-    ]
+    ],
+    "pricePerRoomStats": {
+      "min": 5600,
+      "max": 5600,
+      "avg": 5600
+    }
   },
   {
     "id": "zhengminlu-230",
@@ -1553,14 +1739,23 @@
       {
         "layout": "一室",
         "shared": 0,
-        "whole": 0
+        "whole": 0,
+        "rooms": 1,
+        "pricePerRoom": 5800
       },
       {
         "layout": "两室",
         "shared": 0,
-        "whole": 0
+        "whole": 0,
+        "rooms": 2,
+        "pricePerRoom": 2900
       }
-    ]
+    ],
+    "pricePerRoomStats": {
+      "min": 2900,
+      "max": 5800,
+      "avg": 4350
+    }
   },
   {
     "id": "zhengtonglu-100",
@@ -1600,7 +1795,9 @@
         "layout": "两室一厅",
         "shared": 0,
         "whole": 5500,
-        "area": "51平"
+        "area": "51平",
+        "rooms": 2,
+        "pricePerRoom": 2750
       },
       {
         "layout": "两室一厅",
@@ -1620,7 +1817,12 @@
         "whole": 7000,
         "area": "73平"
       }
-    ]
+    ],
+    "pricePerRoomStats": {
+      "min": 2750,
+      "max": 2750,
+      "avg": 2750
+    }
   },
   {
     "id": "zhengtonglu-118",
@@ -1654,9 +1856,16 @@
       {
         "layout": "一室一厅",
         "shared": 0,
-        "whole": 0
+        "whole": 0,
+        "rooms": 1,
+        "pricePerRoom": 6900
       }
-    ]
+    ],
+    "pricePerRoomStats": {
+      "min": 6900,
+      "max": 6900,
+      "avg": 6900
+    }
   },
   {
     "id": "zhengtonglu-285",
@@ -1720,9 +1929,16 @@
       {
         "layout": "一室",
         "shared": 0,
-        "whole": 0
+        "whole": 0,
+        "rooms": 1,
+        "pricePerRoom": 4500
       }
-    ]
+    ],
+    "pricePerRoomStats": {
+      "min": 4500,
+      "max": 4500,
+      "avg": 4500
+    }
   },
   {
     "id": "zhengwu-huayuan",
@@ -1783,8 +1999,15 @@
       {
         "layout": "一室一厅",
         "shared": 0,
-        "whole": 0
+        "whole": 0,
+        "rooms": 1,
+        "pricePerRoom": 4200
       }
-    ]
+    ],
+    "pricePerRoomStats": {
+      "min": 4200,
+      "max": 4200,
+      "avg": 4200
+    }
   }
 ]
