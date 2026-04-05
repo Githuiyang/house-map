@@ -1515,5 +1515,43 @@
         "whole": 0
       }
     ]
+  },
+  {
+    "id": "yixian-ercun-460",
+    "name": "逸仙二村460弄",
+    "coordinates": [
+      121.50,
+      31.31
+    ],
+    "distance": "1.5km",
+    "bikeTime": "骑车8分钟",
+    "price": {
+      "min": 5500,
+      "max": 5500,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "多层"
+    ],
+    "layouts": [
+      "一室一厅"
+    ],
+    "elevator": false,
+    "highlights": [
+      "51平",
+      "精装修",
+      "五楼",
+      "可办车位"
+    ],
+    "warnings": [],
+    "contributor": "老大",
+    "updatedAt": "2026",
+    "roomPricing": [
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   }
 ]
