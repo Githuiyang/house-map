@@ -183,11 +183,11 @@
     "id": "gongyuan-3000",
     "name": "公园3000",
     "coordinates": [
-      121.52,
-      31.3
+      121.55,
+      31.28
     ],
-    "distance": "1.0km",
-    "bikeTime": "骑车5分钟",
+    "distance": "3.1km",
+    "bikeTime": "步行50分钟",
     "price": {
       "min": 5500,
       "max": 5500,
