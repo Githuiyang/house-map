@@ -402,8 +402,8 @@
     "distance": "0.9km",
     "bikeTime": "步行10分钟",
     "price": {
-      "min": 0,
-      "max": 0,
+      "min": 4500,
+      "max": 4500,
       "unit": "月"
     },
     "floorTypes": [
@@ -414,8 +414,9 @@
     ],
     "elevator": false,
     "highlights": [
-      "隔音好",
+      "1楼",
       "南北通透",
+      "隔音好",
       "靠虬江"
     ],
     "warnings": [
@@ -423,7 +424,7 @@
       "客厅采光一半不好"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2020",
+    "updatedAt": "2026",
     "roomPricing": [
       {
         "layout": "一室",
