@@ -1463,20 +1463,33 @@
     "distance": "0.3km",
     "bikeTime": "步行3分钟",
     "price": {
-      "min": 0,
-      "max": 0,
+      "min": 5600,
+      "max": 5600,
       "unit": "月"
     },
     "floorTypes": [
       "多层"
     ],
-    "layouts": [],
+    "layouts": [
+      "一室"
+    ],
     "elevator": false,
-    "highlights": [],
+    "highlights": [
+      "44平米",
+      "整租一居",
+      "来源：自如"
+    ],
     "warnings": [],
-    "contributor": "即刻社区",
-    "updatedAt": "2020",
-    "roomPricing": []
+    "contributor": "老大",
+    "updatedAt": "2026",
+    "roomPricing": [
+      {
+        "layout": "一室",
+        "shared": 0,
+        "whole": 5600,
+        "area": "44平"
+      }
+    ]
   },
   {
     "id": "zhengminlu-230",
