@@ -1469,5 +1469,38 @@
         "whole": 0
       }
     ]
+  },
+  {
+    "id": "sipinglu-2065nong",
+    "name": "四平路2065弄",
+    "coordinates": [
+      121.513,
+      31.296
+    ],
+    "distance": "1.2km",
+    "bikeTime": "骑车6分钟",
+    "price": {
+      "min": 3600,
+      "max": 3600,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "多层"
+    ],
+    "layouts": [
+      "一室"
+    ],
+    "elevator": false,
+    "highlights": [],
+    "warnings": [],
+    "contributor": "老大",
+    "updatedAt": "2026",
+    "roomPricing": [
+      {
+        "layout": "一室",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   }
 ]
