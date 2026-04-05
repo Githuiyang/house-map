@@ -1682,5 +1682,48 @@
         "whole": 0
       }
     ]
+  },
+  {
+    "id": "xinjiangwancheng-shanghaiyuanzi",
+    "name": "新江湾城 上海院子",
+    "coordinates": [
+      121.52,
+      31.33
+    ],
+    "distance": "4.0km",
+    "bikeTime": "地铁30分钟",
+    "price": {
+      "min": 13500,
+      "max": 13500,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "电梯洋房"
+    ],
+    "layouts": [
+      "三室两厅两卫"
+    ],
+    "elevator": true,
+    "highlights": [
+      "86平",
+      "电梯洋房中区",
+      "精装修",
+      "空关",
+      "随时入住",
+      "看房方便",
+      "10号线地铁口"
+    ],
+    "warnings": [
+      "离公司较远"
+    ],
+    "contributor": "老大",
+    "updatedAt": "2026",
+    "roomPricing": [
+      {
+        "layout": "三室两厅两卫",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   }
 ]
