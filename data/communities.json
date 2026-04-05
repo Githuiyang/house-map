@@ -1908,5 +1908,42 @@
         "whole": 0
       }
     ]
+  },
+  {
+    "id": "guodinglu-505",
+    "name": "国定路505弄",
+    "coordinates": [
+      121.505,
+      31.304
+    ],
+    "distance": "1.0km",
+    "bikeTime": "步行12分钟",
+    "price": {
+      "min": 5900,
+      "max": 5900,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "多层"
+    ],
+    "layouts": [
+      "两室一厅"
+    ],
+    "elevator": false,
+    "highlights": [
+      "装修干净",
+      "双南",
+      "5楼"
+    ],
+    "warnings": [],
+    "contributor": "老大",
+    "updatedAt": "2026",
+    "roomPricing": [
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   }
 ]
