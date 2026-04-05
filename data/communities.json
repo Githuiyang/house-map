@@ -216,12 +216,7 @@
         "rooms": 1,
         "pricePerRoom": 5500
       }
-    ],
-    "pricePerRoomStats": {
-      "min": 5500,
-      "max": 5500,
-      "avg": 5500
-    }
+    ]
   },
   {
     "id": "guodinglu-505",
@@ -315,12 +310,7 @@
         "rooms": 1,
         "pricePerRoom": 4200
       }
-    ],
-    "pricePerRoomStats": {
-      "min": 4200,
-      "max": 4200,
-      "avg": 4200
-    }
+    ]
   },
   {
     "id": "guodinglu-600",
@@ -456,8 +446,8 @@
     ],
     "pricePerRoomStats": {
       "min": 2250,
-      "max": 4500,
-      "avg": 3750
+      "max": 2250,
+      "avg": 2250
     }
   },
   {
@@ -495,12 +485,7 @@
         "rooms": 1,
         "pricePerRoom": 4500
       }
-    ],
-    "pricePerRoomStats": {
-      "min": 4500,
-      "max": 4500,
-      "avg": 4500
-    }
+    ]
   },
   {
     "id": "guohu-yicun",
@@ -587,12 +572,7 @@
         "rooms": 1,
         "pricePerRoom": 4300
       }
-    ],
-    "pricePerRoomStats": {
-      "min": 4300,
-      "max": 4300,
-      "avg": 4300
-    }
+    ]
   },
   {
     "id": "henan-zhonglu-575",
@@ -688,12 +668,7 @@
         "rooms": 1,
         "pricePerRoom": 5300
       }
-    ],
-    "pricePerRoomStats": {
-      "min": 5300,
-      "max": 5300,
-      "avg": 5300
-    }
+    ]
   },
   {
     "id": "linlu-jiayuan",
@@ -864,8 +839,8 @@
     ],
     "pricePerRoomStats": {
       "min": 2050,
-      "max": 4100,
-      "avg": 3075
+      "max": 2050,
+      "avg": 2050
     }
   },
   {
@@ -1009,12 +984,7 @@
         "rooms": 1,
         "pricePerRoom": 3500
       }
-    ],
-    "pricePerRoomStats": {
-      "min": 3500,
-      "max": 3500,
-      "avg": 3500
-    }
+    ]
   },
   {
     "id": "sanxiang-weilai-haian",
@@ -1077,12 +1047,7 @@
         "rooms": 1,
         "pricePerRoom": 4500
       }
-    ],
-    "pricePerRoomStats": {
-      "min": 4500,
-      "max": 4500,
-      "avg": 4500
-    }
+    ]
   },
   {
     "id": "sipinglu-2065nong",
@@ -1173,12 +1138,7 @@
         "rooms": 1,
         "pricePerRoom": 4300
       }
-    ],
-    "pricePerRoomStats": {
-      "min": 4300,
-      "max": 4300,
-      "avg": 4300
-    }
+    ]
   },
   {
     "id": "wenhua-huayuan",
@@ -1271,12 +1231,7 @@
         "rooms": 1,
         "pricePerRoom": 4400
       }
-    ],
-    "pricePerRoomStats": {
-      "min": 4400,
-      "max": 4400,
-      "avg": 4400
-    }
+    ]
   },
   {
     "id": "wuchuanlu-245",
@@ -1316,12 +1271,7 @@
         "rooms": 1,
         "pricePerRoom": 4800
       }
-    ],
-    "pricePerRoomStats": {
-      "min": 4800,
-      "max": 4800,
-      "avg": 4800
-    }
+    ]
   },
   {
     "id": "wuchuanlu-99nong",
@@ -1468,12 +1418,7 @@
         "rooms": 1,
         "pricePerRoom": 5500
       }
-    ],
-    "pricePerRoomStats": {
-      "min": 5500,
-      "max": 5500,
-      "avg": 5500
-    }
+    ]
   },
   {
     "id": "zhengde-donglu-108",
@@ -1624,8 +1569,8 @@
     ],
     "pricePerRoomStats": {
       "min": 2667,
-      "max": 8000,
-      "avg": 4889
+      "max": 4000,
+      "avg": 3334
     }
   },
   {
@@ -1691,12 +1636,7 @@
         "rooms": 1,
         "pricePerRoom": 5600
       }
-    ],
-    "pricePerRoomStats": {
-      "min": 5600,
-      "max": 5600,
-      "avg": 5600
-    }
+    ]
   },
   {
     "id": "zhengminlu-230",
@@ -1753,8 +1693,8 @@
     ],
     "pricePerRoomStats": {
       "min": 2900,
-      "max": 5800,
-      "avg": 4350
+      "max": 2900,
+      "avg": 2900
     }
   },
   {
@@ -1860,12 +1800,7 @@
         "rooms": 1,
         "pricePerRoom": 6900
       }
-    ],
-    "pricePerRoomStats": {
-      "min": 6900,
-      "max": 6900,
-      "avg": 6900
-    }
+    ]
   },
   {
     "id": "zhengtonglu-285",
@@ -1933,12 +1868,7 @@
         "rooms": 1,
         "pricePerRoom": 4500
       }
-    ],
-    "pricePerRoomStats": {
-      "min": 4500,
-      "max": 4500,
-      "avg": 4500
-    }
+    ]
   },
   {
     "id": "zhengwu-huayuan",
@@ -2003,11 +1933,6 @@
         "rooms": 1,
         "pricePerRoom": 4200
       }
-    ],
-    "pricePerRoomStats": {
-      "min": 4200,
-      "max": 4200,
-      "avg": 4200
-    }
+    ]
   }
 ]

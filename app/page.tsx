@@ -8,6 +8,7 @@ import ThemeToggle from '@/components/ThemeToggle';
 import communitiesData from '@/data/communities.json';
 import type { Community } from '@/types/community';
 import { normalizeCommunities } from '@/utils/communityData';
+import { formatPricePerRoom } from '@/utils/price';
 import styles from './page.module.css';
 
 // 动态导入 MapView，禁用 SSR
@@ -39,6 +40,12 @@ function getRentalPriceText(
   if (community.price.min === 0 && community.price.max === 0 && (!community.roomPricing || community.roomPricing.length === 0)) {
     return '';
   }
+  // 优先使用单间均价
+  const avgPerRoom = community.pricePerRoomStats?.avg;
+  if (avgPerRoom) {
+    return formatPricePerRoom(avgPerRoom) ?? formatPrice(community.price.min, community.price.max);
+  }
+  // fallback: 原有逻辑
   if (rentalType === 'all' || !community.roomPricing || community.roomPricing.length === 0) {
     return formatPrice(community.price.min, community.price.max);
   }

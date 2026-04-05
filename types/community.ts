@@ -61,6 +61,7 @@ export function createDefaultCommunity(partial: Partial<Community>): Community {
     floorTypes: partial.floorTypes || [],
     layouts: partial.layouts || [],
     roomPricing: partial.roomPricing || [],
+    pricePerRoomStats: partial.pricePerRoomStats,
     elevator: partial.elevator ?? false,
     highlights: partial.highlights || [],
     warnings: partial.warnings || [],

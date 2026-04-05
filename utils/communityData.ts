@@ -23,6 +23,7 @@ export function normalizeCommunities(data: unknown): Community[] {
       contributor: item.contributor,
       updatedAt: item.updatedAt,
       roomPricing: item.roomPricing,
+      pricePerRoomStats: item.pricePerRoomStats,
     });
   });
 }
