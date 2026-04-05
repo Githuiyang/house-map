@@ -1374,8 +1374,8 @@
     "distance": "0.6km",
     "bikeTime": "步行7分钟",
     "price": {
-      "min": 0,
-      "max": 0,
+      "min": 4300,
+      "max": 4300,
       "unit": "月"
     },
     "floorTypes": [
@@ -1385,11 +1385,19 @@
       "一室"
     ],
     "elevator": false,
-    "highlights": [],
+    "highlights": [
+      "2楼"
+    ],
     "warnings": [],
     "contributor": "老大",
     "updatedAt": "2026",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "一室",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "pulu-615nong",
@@ -1585,6 +1593,45 @@
     "roomPricing": [
       {
         "layout": "一室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
+  },
+  {
+    "id": "zhenglilu-639",
+    "name": "政立路639弄",
+    "coordinates": [
+      121.508,
+      31.307
+    ],
+    "distance": "0.8km",
+    "bikeTime": "步行10分钟",
+    "price": {
+      "min": 7800,
+      "max": 7800,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "多层"
+    ],
+    "layouts": [
+      "两室两厅"
+    ],
+    "elevator": false,
+    "highlights": [
+      "100平",
+      "全新装修",
+      "首次出租",
+      "品牌家电",
+      "全屋定制家具"
+    ],
+    "warnings": [],
+    "contributor": "老大",
+    "updatedAt": "2026",
+    "roomPricing": [
+      {
+        "layout": "两室两厅",
         "shared": 0,
         "whole": 0
       }
