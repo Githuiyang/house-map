@@ -1215,18 +1215,20 @@
     "distance": "1.0km",
     "bikeTime": "步行10分钟",
     "price": {
-      "min": 0,
-      "max": 0,
+      "min": 4600,
+      "max": 4600,
       "unit": "月"
     },
     "floorTypes": [
       "多层"
     ],
     "layouts": [
+      "一室一厅",
       "两室一厅"
     ],
     "elevator": false,
     "highlights": [
+      "4600元约看房",
       "南北通透",
       "手机信号良好"
     ],
@@ -1234,8 +1236,13 @@
       "幼儿园广播"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2020",
+    "updatedAt": "2026",
     "roomPricing": [
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 0
+      },
       {
         "layout": "两室一厅",
         "shared": 0,
