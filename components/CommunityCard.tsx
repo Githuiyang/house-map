@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { Community } from '@/types/community';
+import type { Community, RoomPricing } from '@/types/community';
 import styles from './CommunityCard.module.css';
 import CommentSection from './CommentSection';
 import ImageGallery from './ImageGallery';
@@ -9,6 +9,9 @@ import ImageUploader from './ImageUploader';
 
 type TabKey = 'info' | 'images' | 'comments';
 type RentalMode = 'shared' | 'whole';
+
+/** 一室户不能合租，需要过滤 */
+const isOneRoom = (layout: string) => layout?.includes('一室');
 
 interface CommunityCardProps {
   community: Community;
@@ -83,13 +86,31 @@ const TABS: { key: TabKey; label: string }[] = [
 export default function CommunityCard({ community, onClose, isAdmin }: CommunityCardProps) {
   const [activeTab, setActiveTab] = useState<TabKey>('info');
   const [imageRefreshKey, setImageRefreshKey] = useState(0);
-  const [rentalMode, setRentalMode] = useState<RentalMode>('shared');
   const commute = community.commute;
+
+  // 智能默认：有合租数据则默认合租，否则默认整租
+  const hasMultiRoomShared = community.roomPricing?.some(
+    rp => !isOneRoom(rp.layout) && rp.shared > 0
+  );
+  const [rentalMode, setRentalMode] = useState<RentalMode>(
+    hasMultiRoomShared ? 'shared' : 'whole'
+  );
 
   const hasRoomPricing =
     community.roomPricing &&
     community.roomPricing.length > 0 &&
-    community.roomPricing.some(rp => rp.shared > 0 || rp.whole > 0);
+    community.roomPricing.some(rp => rp.shared > 0 || rp.whole > 0 || (rp.pricePerRoom ?? 0) > 0);
+
+  // 合租模式过滤掉一室户
+  const displayedPricing = rentalMode === 'shared'
+    ? community.roomPricing!.filter(rp => !isOneRoom(rp.layout))
+    : community.roomPricing!;
+
+  // 获取展示价格：整租模式下一室户用 pricePerRoom 兜底
+  const getDisplayPrice = (rp: RoomPricing): number => {
+    if (rentalMode === 'shared') return rp.shared;
+    return rp.whole || (isOneRoom(rp.layout) ? (rp.pricePerRoom || 0) : 0);
+  };
 
   return (
     <div className={styles.overlay} onClick={onClose}>
@@ -139,8 +160,8 @@ export default function CommunityCard({ community, onClose, isAdmin }: Community
                 </tr>
               </thead>
               <tbody>
-                {community.roomPricing!.map(rp => {
-                  const price = rentalMode === 'shared' ? rp.shared : rp.whole;
+                {displayedPricing.map(rp => {
+                  const price = getDisplayPrice(rp);
                   return (
                     <tr key={rp.layout}>
                       <td>{rp.layout}</td>
@@ -150,6 +171,13 @@ export default function CommunityCard({ community, onClose, isAdmin }: Community
                     </tr>
                   );
                 })}
+                {displayedPricing.length === 0 && (
+                  <tr>
+                    <td colSpan={2} className={styles.priceEmpty}>
+                      暂无合租数据
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

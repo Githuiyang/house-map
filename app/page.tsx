@@ -132,13 +132,30 @@ export default function Home() {
     return communities.filter(community => {
       // 隐藏没有价格数据的小区
       const hasPrice = community.price.min > 0 || community.price.max > 0 ||
-        (community.roomPricing && community.roomPricing.some(rp => rp.shared > 0 || rp.whole > 0));
+        (community.roomPricing && community.roomPricing.some(rp => rp.shared > 0 || rp.whole > 0 || (rp.pricePerRoom ?? 0) > 0));
       if (!hasPrice) return false;
 
       // 距离筛选：使用计算的道路距离
       if (distanceFilter !== 'all') {
         const distance = community.commute?.roadDistanceKm;
         if (distance === undefined || distance > parseFloat(distanceFilter)) return false;
+      }
+
+      // 租法筛选（独立于价格筛选）
+      if (rentalTypeFilter !== 'all' && community.roomPricing && community.roomPricing.length > 0) {
+        if (rentalTypeFilter === 'shared') {
+          // 合租：仅看多室户型的 shared 价格
+          const hasShared = community.roomPricing.some(
+            rp => !rp.layout?.includes('一室') && rp.shared > 0
+          );
+          if (!hasShared) return false;
+        } else {
+          // 整租：看所有户型的 whole 或 pricePerRoom
+          const hasWhole = community.roomPricing.some(
+            rp => rp.whole > 0 || (rp.pricePerRoom != null && rp.pricePerRoom > 0)
+          );
+          if (!hasWhole) return false;
+        }
       }
 
       // 价格筛选（根据租法类型选择价格范围）
@@ -151,11 +168,17 @@ export default function Home() {
         };
         const range = priceRanges[priceFilter];
         if (range) {
-          if (rentalTypeFilter !== 'all' && community.roomPricing && community.roomPricing.length > 0) {
-            // 按合租/整租筛选：检查 roomPricing 中是否有匹配的价格
-            const priceKey = rentalTypeFilter === 'shared' ? 'shared' : 'whole';
+          if (rentalTypeFilter === 'shared' && community.roomPricing && community.roomPricing.length > 0) {
+            // 合租：仅匹配多室户型的 shared 价格
             const hasMatch = community.roomPricing.some(rp => {
-              const price = rp[priceKey];
+              if (rp.layout?.includes('一室')) return false;
+              return rp.shared > 0 && rp.shared >= range.min && rp.shared <= range.max;
+            });
+            if (!hasMatch) return false;
+          } else if (rentalTypeFilter === 'whole' && community.roomPricing && community.roomPricing.length > 0) {
+            // 整租：匹配 whole 或 pricePerRoom（一室户用 pricePerRoom）
+            const hasMatch = community.roomPricing.some(rp => {
+              const price = rp.whole || (rp.layout?.includes('一室') ? (rp.pricePerRoom || 0) : 0);
               return price > 0 && price >= range.min && price <= range.max;
             });
             if (!hasMatch) return false;
@@ -191,6 +214,14 @@ export default function Home() {
     setSelectedCommunity(null);
   }, []);
 
+  // 合租和一室户不兼容，切换到合租时自动重置户型筛选
+  const handleRentalTypeChange = useCallback((value: string) => {
+    setRentalTypeFilter(value);
+    if (value === 'shared' && layoutFilter === '一室') {
+      setLayoutFilter('all');
+    }
+  }, [layoutFilter]);
+
   return (
     <div className={styles.container}>
       <header className={styles.header}>
@@ -209,7 +240,7 @@ export default function Home() {
             onDistanceChange={setDistanceFilter}
             onPriceChange={setPriceFilter}
             onLayoutChange={setLayoutFilter}
-            onRentalTypeChange={setRentalTypeFilter}
+            onRentalTypeChange={handleRentalTypeChange}
             pricingAvailable={pricingAvailable}
           />
 
@@ -297,7 +328,7 @@ export default function Home() {
               onDistanceChange={setDistanceFilter}
               onPriceChange={setPriceFilter}
               onLayoutChange={setLayoutFilter}
-              onRentalTypeChange={setRentalTypeFilter}
+              onRentalTypeChange={handleRentalTypeChange}
               pricingAvailable={pricingAvailable}
             />
           </div>
@@ -306,6 +337,7 @@ export default function Home() {
 
       {selectedCommunity && (
         <CommunityCard
+          key={selectedCommunity.id}
           community={selectedCommunity}
           onClose={handleCloseCard}
           isAdmin={isAdmin}

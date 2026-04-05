@@ -86,7 +86,9 @@ export default function FilterBar({
             className={styles.select}
           >
             <option value="all">全部</option>
-            <option value="一室">一室</option>
+            {rentalTypeFilter !== 'shared' && (
+              <option value="一室">一室</option>
+            )}
             <option value="两室">两室</option>
             <option value="三室">三室</option>
           </select>
