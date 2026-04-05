@@ -780,20 +780,41 @@
     "distance": "0.6km",
     "bikeTime": "3分钟",
     "price": {
-      "min": 0,
-      "max": 0,
+      "min": 10700,
+      "max": 10700,
       "unit": "月"
     },
     "floorTypes": [
       "多层"
     ],
-    "layouts": [],
+    "layouts": [
+      "四室"
+    ],
     "elevator": false,
-    "highlights": [],
-    "warnings": [],
-    "contributor": "即刻社区",
-    "updatedAt": "2020",
-    "roomPricing": []
+    "highlights": [
+      "156平米四居复式",
+      "10700元/月",
+      "离公司最近",
+      "对面万达",
+      "地铁3分钟",
+      "门口全家"
+    ],
+    "warnings": [
+      "采光一般",
+      "手机信号弱",
+      "潮湿需除湿机"
+    ],
+    "contributor": "老大",
+    "updatedAt": "2026",
+    "roomPricing": [
+      {
+        "layout": "四室",
+        "shared": 0,
+        "whole": 10700,
+        "area": "156平",
+        "note": "复式"
+      }
+    ]
   },
   {
     "id": "sanmenlu-358",
@@ -1551,20 +1572,55 @@
     "distance": "0.8km",
     "bikeTime": "步行10分钟",
     "price": {
-      "min": 0,
-      "max": 0,
+      "min": 5500,
+      "max": 7000,
       "unit": "月"
     },
     "floorTypes": [
       "多层"
     ],
-    "layouts": [],
+    "layouts": [
+      "两室一厅"
+    ],
     "elevator": false,
-    "highlights": [],
+    "highlights": [
+      "51-73平米两室",
+      "51平5500元",
+      "55平5800元",
+      "70平6300元",
+      "73平7000元",
+      "南北通透",
+      "水压高"
+    ],
     "warnings": [],
-    "contributor": "即刻社区",
-    "updatedAt": "2020",
-    "roomPricing": []
+    "contributor": "老大",
+    "updatedAt": "2026",
+    "roomPricing": [
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 5500,
+        "area": "51平"
+      },
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 5800,
+        "area": "55平"
+      },
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 6300,
+        "area": "70平"
+      },
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 7000,
+        "area": "73平"
+      }
+    ]
   },
   {
     "id": "zhengtonglu-118",
