@@ -16,7 +16,10 @@
     "floorTypes": [
       "多层"
     ],
-    "layouts": [],
+    "layouts": [
+      "一室",
+      "三室"
+    ],
     "elevator": false,
     "highlights": [
       "离公司最近",
@@ -31,7 +34,18 @@
     ],
     "contributor": "即刻社区",
     "updatedAt": "2020",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "一室",
+        "shared": 0,
+        "whole": 0
+      },
+      {
+        "layout": "三室",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "zhengminlu-150",
@@ -50,7 +64,9 @@
     "floorTypes": [
       "多层"
     ],
-    "layouts": [],
+    "layouts": [
+      "两室一厅"
+    ],
     "elevator": false,
     "highlights": [
       "离公司超近",
@@ -62,7 +78,13 @@
     ],
     "contributor": "即刻社区",
     "updatedAt": "2020",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "zhenglitu-580",
@@ -81,7 +103,10 @@
     "floorTypes": [
       "多层"
     ],
-    "layouts": [],
+    "layouts": [
+      "一室一厅",
+      "两室一厅"
+    ],
     "elevator": false,
     "highlights": [
       "采光好",
@@ -95,7 +120,18 @@
     ],
     "contributor": "即刻社区",
     "updatedAt": "2020",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 0
+      },
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "fuguangyuan",
@@ -114,7 +150,10 @@
     "floorTypes": [
       "多层"
     ],
-    "layouts": [],
+    "layouts": [
+      "三室一厅",
+      "四室两卫"
+    ],
     "elevator": true,
     "highlights": [
       "水压高洗澡舒服",
@@ -127,7 +166,18 @@
     ],
     "contributor": "即刻社区",
     "updatedAt": "2022",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "三室一厅",
+        "shared": 0,
+        "whole": 0
+      },
+      {
+        "layout": "四室两卫",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "zhengminlu-230",
@@ -146,7 +196,10 @@
     "floorTypes": [
       "板楼"
     ],
-    "layouts": [],
+    "layouts": [
+      "一室",
+      "两室"
+    ],
     "elevator": false,
     "highlights": [
       "靠虬江视野好",
@@ -160,7 +213,18 @@
     ],
     "contributor": "即刻社区",
     "updatedAt": "2020",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "一室",
+        "shared": 0,
+        "whole": 0
+      },
+      {
+        "layout": "两室",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "guodinglu-555",
@@ -179,7 +243,9 @@
     "floorTypes": [
       "多层"
     ],
-    "layouts": [],
+    "layouts": [
+      "一室一厅"
+    ],
     "elevator": false,
     "highlights": [
       "采光好",
@@ -190,7 +256,13 @@
     ],
     "contributor": "即刻社区",
     "updatedAt": "2020",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "guodinglu-600",
@@ -228,7 +300,13 @@
     ],
     "contributor": "老大",
     "updatedAt": "2026",
-    "roomPricing": [],
+    "roomPricing": [
+      {
+        "layout": "一室",
+        "shared": 0,
+        "whole": 0
+      }
+    ],
     "geocodeSource": "amap"
   },
   {
@@ -248,7 +326,9 @@
     "floorTypes": [
       "多层"
     ],
-    "layouts": [],
+    "layouts": [
+      "一室一厅"
+    ],
     "elevator": false,
     "highlights": [
       "隔音不错",
@@ -260,7 +340,13 @@
     ],
     "contributor": "即刻社区",
     "updatedAt": "2020",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "zhenglitu-6nong",
@@ -279,7 +365,9 @@
     "floorTypes": [
       "板楼"
     ],
-    "layouts": [],
+    "layouts": [
+      "一室"
+    ],
     "elevator": false,
     "highlights": [
       "隔音良好",
@@ -293,7 +381,13 @@
     ],
     "contributor": "即刻社区",
     "updatedAt": "2020",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "一室",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "zhengtonglu-42",
@@ -312,7 +406,9 @@
     "floorTypes": [
       "多层"
     ],
-    "layouts": [],
+    "layouts": [
+      "一室"
+    ],
     "elevator": false,
     "highlights": [
       "隔音好",
@@ -325,7 +421,13 @@
     ],
     "contributor": "即刻社区",
     "updatedAt": "2020",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "一室",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "zhengtonglu-100",
@@ -344,7 +446,9 @@
     "floorTypes": [
       "多层"
     ],
-    "layouts": [],
+    "layouts": [
+      "一室一厅"
+    ],
     "elevator": false,
     "highlights": [
       "水压高",
@@ -356,7 +460,13 @@
     ],
     "contributor": "即刻社区",
     "updatedAt": "2020",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "zhengtonglu-285",
@@ -375,7 +485,9 @@
     "floorTypes": [
       "多层"
     ],
-    "layouts": [],
+    "layouts": [
+      "两室一厅"
+    ],
     "elevator": false,
     "highlights": [
       "南北通透",
@@ -387,7 +499,13 @@
     ],
     "contributor": "即刻社区",
     "updatedAt": "2020",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "zhengde-donglu-108",
@@ -406,7 +524,9 @@
     "floorTypes": [
       "多层"
     ],
-    "layouts": [],
+    "layouts": [
+      "一室一厅"
+    ],
     "elevator": false,
     "highlights": [
       "邻里和睦",
@@ -420,7 +540,13 @@
     ],
     "contributor": "即刻社区",
     "updatedAt": "2026",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "chuanzhi-fang",
@@ -439,7 +565,9 @@
     "floorTypes": [
       "高层"
     ],
-    "layouts": [],
+    "layouts": [
+      "四室两卫"
+    ],
     "elevator": true,
     "highlights": [
       "离公司最近",
@@ -455,7 +583,13 @@
     ],
     "contributor": "即刻社区",
     "updatedAt": "2020",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "四室两卫",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "wenhua-huayuan",
@@ -474,7 +608,9 @@
     "floorTypes": [
       "高层"
     ],
-    "layouts": [],
+    "layouts": [
+      "三室一厅"
+    ],
     "elevator": true,
     "highlights": [
       "小区新",
@@ -486,7 +622,13 @@
     ],
     "contributor": "即刻社区",
     "updatedAt": "2020",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "三室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "dongfang-jinyuan",
@@ -505,7 +647,10 @@
     "floorTypes": [
       "多层"
     ],
-    "layouts": [],
+    "layouts": [
+      "一室",
+      "四室顶复"
+    ],
     "elevator": false,
     "highlights": [
       "采光非常好",
@@ -518,7 +663,18 @@
     ],
     "contributor": "即刻社区",
     "updatedAt": "2020",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "一室",
+        "shared": 0,
+        "whole": 0
+      },
+      {
+        "layout": "四室顶复",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "yifuyuan",
@@ -537,7 +693,10 @@
     "floorTypes": [
       "高层"
     ],
-    "layouts": [],
+    "layouts": [
+      "一室",
+      "三室两厅"
+    ],
     "elevator": true,
     "highlights": [
       "小区新",
@@ -551,7 +710,18 @@
     ],
     "contributor": "即刻社区",
     "updatedAt": "2020",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "一室",
+        "shared": 0,
+        "whole": 0
+      },
+      {
+        "layout": "三室两厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "guoquan-beilu-8nong",
@@ -570,7 +740,9 @@
     "floorTypes": [
       "多层"
     ],
-    "layouts": [],
+    "layouts": [
+      "一室一厅"
+    ],
     "elevator": false,
     "highlights": [
       "采光好",
@@ -582,7 +754,13 @@
     ],
     "contributor": "即刻社区",
     "updatedAt": "2020",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "jianxin-xiaoqu",
@@ -601,7 +779,9 @@
     "floorTypes": [
       "多层"
     ],
-    "layouts": [],
+    "layouts": [
+      "一室"
+    ],
     "elevator": false,
     "highlights": [
       "阳台采光好",
@@ -616,7 +796,13 @@
     ],
     "contributor": "即刻社区",
     "updatedAt": "2025",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "一室",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "wenhua-mingyuan",
@@ -635,7 +821,9 @@
     "floorTypes": [
       "多层"
     ],
-    "layouts": [],
+    "layouts": [
+      "一室"
+    ],
     "elevator": false,
     "highlights": [
       "隔音很好",
@@ -649,7 +837,13 @@
     ],
     "contributor": "即刻社区",
     "updatedAt": "2020",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "一室",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "zhengwu-huayuan",
@@ -668,7 +862,9 @@
     "floorTypes": [
       "多层"
     ],
-    "layouts": [],
+    "layouts": [
+      "两室一厅"
+    ],
     "elevator": false,
     "highlights": [
       "绿化特好",
@@ -682,7 +878,13 @@
     ],
     "contributor": "即刻社区",
     "updatedAt": "2020",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "sipinglu-2555",
@@ -701,7 +903,9 @@
     "floorTypes": [
       "多层"
     ],
-    "layouts": [],
+    "layouts": [
+      "两室一厅"
+    ],
     "elevator": false,
     "highlights": [
       "采光好",
@@ -714,7 +918,13 @@
     ],
     "contributor": "即刻社区",
     "updatedAt": "2020",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "linlu-jiayuan",
@@ -733,7 +943,9 @@
     "floorTypes": [
       "高层"
     ],
-    "layouts": [],
+    "layouts": [
+      "一室一厅"
+    ],
     "elevator": true,
     "highlights": [
       "采光好",
@@ -744,7 +956,13 @@
     "warnings": [],
     "contributor": "即刻社区",
     "updatedAt": "2022",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "sanmenlu-358",
@@ -763,7 +981,9 @@
     "floorTypes": [
       "多层"
     ],
-    "layouts": [],
+    "layouts": [
+      "两室一厅"
+    ],
     "elevator": false,
     "highlights": [
       "厕所可直接冲纸",
@@ -776,7 +996,13 @@
     ],
     "contributor": "即刻社区",
     "updatedAt": "2020",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "nanchayuan",
@@ -795,7 +1021,9 @@
     "floorTypes": [
       "多层"
     ],
-    "layouts": [],
+    "layouts": [
+      "两室一厅"
+    ],
     "elevator": false,
     "highlights": [
       "手机信号良好"
@@ -808,7 +1036,13 @@
     ],
     "contributor": "即刻社区",
     "updatedAt": "2020",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "guohu-yicun",
@@ -827,7 +1061,9 @@
     "floorTypes": [
       "多层"
     ],
-    "layouts": [],
+    "layouts": [
+      "两室一厅"
+    ],
     "elevator": false,
     "highlights": [
       "采光非常好",
@@ -842,7 +1078,13 @@
     ],
     "contributor": "即刻社区",
     "updatedAt": "2020",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "huchang-gongyu",
@@ -861,7 +1103,9 @@
     "floorTypes": [
       "高层"
     ],
-    "layouts": [],
+    "layouts": [
+      "两室一厅"
+    ],
     "elevator": true,
     "highlights": [
       "离公司近",
@@ -873,7 +1117,13 @@
     ],
     "contributor": "即刻社区",
     "updatedAt": "2020",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "minfu-jiayuan",
@@ -892,7 +1142,9 @@
     "floorTypes": [
       "多层"
     ],
-    "layouts": [],
+    "layouts": [
+      "两室一厅"
+    ],
     "elevator": false,
     "highlights": [
       "采光好",
@@ -906,7 +1158,13 @@
     ],
     "contributor": "即刻社区",
     "updatedAt": "2020",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "sanxiang-weilai-haian",
@@ -925,7 +1183,9 @@
     "floorTypes": [
       "高层"
     ],
-    "layouts": [],
+    "layouts": [
+      "一室一厅"
+    ],
     "elevator": true,
     "highlights": [
       "采光好",
@@ -937,7 +1197,13 @@
     ],
     "contributor": "即刻社区",
     "updatedAt": "2020",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "guodinglu-700",
@@ -956,7 +1222,9 @@
     "floorTypes": [
       "多层"
     ],
-    "layouts": [],
+    "layouts": [
+      "两室一厅"
+    ],
     "elevator": false,
     "highlights": [
       "南北通透",
@@ -967,7 +1235,13 @@
     ],
     "contributor": "即刻社区",
     "updatedAt": "2020",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "wuchuanlu-222",
@@ -987,7 +1261,9 @@
       "多层",
       "新楼"
     ],
-    "layouts": [],
+    "layouts": [
+      "一室一厅"
+    ],
     "elevator": false,
     "highlights": [
       "隔音好",
@@ -999,7 +1275,13 @@
     "warnings": [],
     "contributor": "即刻社区",
     "updatedAt": "2022",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "beijiao-xiaoqu",
@@ -1018,7 +1300,9 @@
     "floorTypes": [
       "多层"
     ],
-    "layouts": [],
+    "layouts": [
+      "一室一厅"
+    ],
     "elevator": false,
     "highlights": [
       "隔音较好",
@@ -1032,7 +1316,13 @@
     ],
     "contributor": "即刻社区",
     "updatedAt": "2022",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "henan-zhonglu-575",
@@ -1051,7 +1341,9 @@
     "floorTypes": [
       "多层"
     ],
-    "layouts": [],
+    "layouts": [
+      "一室一厅"
+    ],
     "elevator": false,
     "highlights": [
       "绿化很好",
@@ -1064,7 +1356,13 @@
     ],
     "contributor": "即刻社区",
     "updatedAt": "2020",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "guoshunlu-400nong",
@@ -1141,7 +1439,9 @@
     "floorTypes": [
       "多层"
     ],
-    "layouts": [],
+    "layouts": [
+      "三室"
+    ],
     "elevator": false,
     "highlights": [
       "精装修",
@@ -1169,7 +1469,9 @@
     "floorTypes": [
       "多层"
     ],
-    "layouts": [],
+    "layouts": [
+      "一室"
+    ],
     "elevator": false,
     "highlights": [],
     "warnings": [],
