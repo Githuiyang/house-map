@@ -247,18 +247,21 @@
     "distance": "0.9km",
     "bikeTime": "步行12分钟",
     "price": {
-      "min": 0,
-      "max": 0,
+      "min": 4200,
+      "max": 4200,
       "unit": "月"
     },
     "floorTypes": [
       "多层"
     ],
     "layouts": [
+      "一室",
       "一室一厅"
     ],
     "elevator": false,
     "highlights": [
+      "4200可谈约看房",
+      "精装修",
       "采光好",
       "限时垃圾分类可悄悄扔"
     ],
@@ -266,8 +269,13 @@
       "小区旧"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2020",
+    "updatedAt": "2026",
     "roomPricing": [
+      {
+        "layout": "一室",
+        "shared": 0,
+        "whole": 0
+      },
       {
         "layout": "一室一厅",
         "shared": 0,
