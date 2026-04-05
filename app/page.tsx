@@ -30,6 +30,30 @@ function getElevatorText(elevator?: boolean): string {
   return '';
 }
 
+// 根据租法类型获取列表价格显示文本
+function getRentalPriceText(
+  community: Community,
+  rentalType: string
+): string {
+  // 价格已下线时返回空
+  if (community.price.min === 0 && community.price.max === 0 && (!community.roomPricing || community.roomPricing.length === 0)) {
+    return '';
+  }
+  if (rentalType === 'all' || !community.roomPricing || community.roomPricing.length === 0) {
+    return formatPrice(community.price.min, community.price.max);
+  }
+  const priceKey = rentalType === 'shared' ? 'shared' : 'whole';
+  const prices = community.roomPricing
+    .map(rp => rp[priceKey])
+    .filter(p => p > 0);
+  if (prices.length === 0) {
+    return formatPrice(community.price.min, community.price.max);
+  }
+  const min = Math.min(...prices);
+  const max = Math.max(...prices);
+  return formatPrice(min, max);
+}
+
 // 获取户型显示文本 (取前2个)
 function getLayoutsText(layouts?: string[]): string {
   if (!layouts || layouts.length === 0) return '';
@@ -43,6 +67,7 @@ export default function Home() {
   const [distanceFilter, setDistanceFilter] = useState('all');
   const [priceFilter, setPriceFilter] = useState('all');
   const [layoutFilter, setLayoutFilter] = useState('all');
+  const [rentalTypeFilter, setRentalTypeFilter] = useState('all');
   const [showMobileFilter, setShowMobileFilter] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -88,6 +113,13 @@ export default function Home() {
   // 规范化数据
   const communities = useMemo(() => normalizeCommunities(communitiesData), []);
 
+  // 判断是否有价格数据（控制筛选栏显示）
+  const pricingAvailable = useMemo(() =>
+    communities.some(c => c.price.min > 0 || c.price.max > 0 ||
+      (c.roomPricing && c.roomPricing.some(rp => rp.shared > 0 || rp.whole > 0))),
+    [communities]
+  );
+
   // 筛选逻辑
   const filteredCommunities = useMemo(() => {
     return communities.filter(community => {
@@ -97,7 +129,7 @@ export default function Home() {
         if (distance === undefined || distance > parseFloat(distanceFilter)) return false;
       }
 
-      // 价格筛选
+      // 价格筛选（根据租法类型选择价格范围）
       if (priceFilter !== 'all') {
         const priceRanges: Record<string, { min: number; max: number }> = {
           '3000': { min: 0, max: 3000 },
@@ -107,9 +139,19 @@ export default function Home() {
         };
         const range = priceRanges[priceFilter];
         if (range) {
-          // 检查小区价格区间是否与筛选区间有交集
-          const hasOverlap = community.price.min <= range.max && community.price.max >= range.min;
-          if (!hasOverlap) return false;
+          if (rentalTypeFilter !== 'all' && community.roomPricing && community.roomPricing.length > 0) {
+            // 按合租/整租筛选：检查 roomPricing 中是否有匹配的价格
+            const priceKey = rentalTypeFilter === 'shared' ? 'shared' : 'whole';
+            const hasMatch = community.roomPricing.some(rp => {
+              const price = rp[priceKey];
+              return price > 0 && price >= range.min && price <= range.max;
+            });
+            if (!hasMatch) return false;
+          } else {
+            // 全部租法：使用概览价格
+            const hasOverlap = community.price.min <= range.max && community.price.max >= range.min;
+            if (!hasOverlap) return false;
+          }
         }
       }
 
@@ -121,7 +163,7 @@ export default function Home() {
 
       return true;
     });
-  }, [communities, distanceFilter, priceFilter, layoutFilter]);
+  }, [communities, distanceFilter, priceFilter, layoutFilter, rentalTypeFilter]);
 
   const handleSelectCommunity = useCallback((community: Community | null) => {
     setSelectedCommunity(community);
@@ -151,9 +193,12 @@ export default function Home() {
             distanceFilter={distanceFilter}
             priceFilter={priceFilter}
             layoutFilter={layoutFilter}
+            rentalTypeFilter={rentalTypeFilter}
             onDistanceChange={setDistanceFilter}
             onPriceChange={setPriceFilter}
             onLayoutChange={setLayoutFilter}
+            onRentalTypeChange={setRentalTypeFilter}
+            pricingAvailable={pricingAvailable}
           />
 
           <div className={styles.list}>
@@ -181,9 +226,8 @@ export default function Home() {
                   </div>
                   <div className={styles.itemRow3}>
                     <span className={styles.itemMeta}>
-                      {formatPrice(community.price.min, community.price.max)}
+                      {getRentalPriceText(community, rentalTypeFilter)}
                       {getElevatorText(community.elevator) && ` · ${getElevatorText(community.elevator)}`}
-                      {getLayoutsText(community.layouts) && ` · ${getLayoutsText(community.layouts)}`}
                     </span>
                   </div>
                 </div>
@@ -237,9 +281,12 @@ export default function Home() {
               distanceFilter={distanceFilter}
               priceFilter={priceFilter}
               layoutFilter={layoutFilter}
+              rentalTypeFilter={rentalTypeFilter}
               onDistanceChange={setDistanceFilter}
               onPriceChange={setPriceFilter}
               onLayoutChange={setLayoutFilter}
+              onRentalTypeChange={setRentalTypeFilter}
+              pricingAvailable={pricingAvailable}
             />
           </div>
         </div>

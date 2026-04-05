@@ -195,7 +195,7 @@ export default function ImageGallery({ communityId, images: imagesProp, isAdmin,
             className={styles.thumbnail}
             onClick={() => openLightbox(index)}
           >
-            <img src={image.url} alt={image.caption || ''} loading="lazy" />
+            <img src={image.url} alt={image.caption || '小区图片'} loading="lazy" />
             {image.caption && (
               <div className={styles.caption}>{image.caption}</div>
             )}
@@ -259,7 +259,7 @@ export default function ImageGallery({ communityId, images: imagesProp, isAdmin,
                 <img
                   className={styles.lightboxImage}
                   src={image.url}
-                  alt={image.caption || ''}
+                  alt={image.caption || '小区图片'}
                 />
                 {image.caption && (
                   <div className={styles.lightboxCaption}>{image.caption}</div>

@@ -41,6 +41,38 @@ npx drizzle-kit generate  # 生成迁移文件
 - `components/CommunityCard.tsx`：详情卡片
 - `components/ThemeToggle.tsx`：主题切换
 
+## 合租/整租价格体系
+
+**当前状态：价格和户型已下线，等待原始数据补充后重新上架。**
+
+数据模型（`types/community.ts`）：
+
+- `Community.price`：概览价格（min/max），作为兜底显示
+- `Community.roomPricing`：按户型的合租/整租价格数组，每个条目包含 `layout`、`shared`（合租）、`whole`（整租）
+- `Community.layouts`：户型列表（与 roomPricing 联动）
+- 无 `roomPricing` 数据或价格为 0 时，价格区域自动隐藏
+- 筛选栏通过 `pricingAvailable` 计算属性自动控制显示/隐藏
+
+数据处理流程：
+
+1. 在 `data/raw-pricing.json` 中补充原始数据（每条：小区名、户型、租法、价格、日期、来源）
+2. 运行 `npx tsx scripts/process-pricing.ts`
+3. 脚本自动：去重（同户型多条取平均）→ 匹配小区 → 更新 roomPricing → 输出报告
+4. 未匹配的小区/户型生成缺失清单
+5. 输出格式：`{小区名称}|{户型ID}|{租金(元/月)}|{更新时间}`
+6. `npm run build` → 部署
+
+关键文件：
+
+- `data/raw-pricing.json`：原始定价数据（手动补充）
+- `scripts/process-pricing.ts`：数据处理脚本
+- `data/communities.json`：处理后的小区数据
+- `types/community.ts`：`RoomPricing` 接口
+- `utils/communityData.ts`：`normalizeCommunities` 传递 `roomPricing`
+- `components/FilterBar.tsx`：筛选栏（`pricingAvailable` 控制显隐）
+- `components/CommunityCard.tsx`：价格切换 tab + 价格表
+- `app/admin/page.tsx`：后台编辑
+
 ## 关键联动关系
 
 - 列表点击 → 更新 `previewCommunity` → 地图弹窗跟随

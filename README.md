@@ -60,12 +60,15 @@
 
 ## 功能概览
 
-- 左侧筛选：距离 / 价格区间 / 户型
-- 小区列表：名称、距离、骑行时间、价格、电梯、户型
+- 左侧筛选：距离（价格/租法/户型筛选在价格数据上架后自动恢复）
+- 小区列表：名称、距离、骑行时间、电梯
+- 详情卡片：价格和户型信息待数据补充后显示
 - 地图联动：点击列表项定位并展示小浮窗；点击地图浮窗进入详情；Hover 列表项高亮地图标记
 - 主题切换：明/暗色
 - 推荐范围：以公司坐标为圆心的 3km 圆圈
 - 调试模式：采样地图中心点与公司坐标偏移（用于排查不同浏览器定位差异）
+- 后台管理（`/admin`）：可编辑小区信息
+- 租金数据：通过 `data/raw-pricing.json` 分批补充后运行 `npx tsx scripts/process-pricing.ts` 自动上架
 
 ## 本地运行
 
@@ -115,7 +118,7 @@ ADMIN_KEY=your-admin-key
 
 - `data/communities.json`：小区列表与坐标（`[lng, lat]`，GCJ-02）
 - `data/rental-system/`：租房向量化快照、历史、反馈、报告、备份
-- 类型定义：`types/community.ts`
+- 类型定义：`types/community.ts`（含 `RoomPricing` 合租/整租价格接口）
 - 租房类型：`types/rental.ts`
 
 常用脚本（`node scripts/xxx.js`）：
@@ -124,6 +127,7 @@ ADMIN_KEY=your-admin-key
 - `scripts/extract-coords.js`：通过高德短链接提取坐标并写回 `data/communities.json`
 - `scripts/process-data.js`：一次性数据加工脚本（用法：`node scripts/process-data.js <input.json>`）
 - `scripts/release-rental-system.sh`：租房向量化系统上线前检查脚本
+- `scripts/process-pricing.ts`：租金数据处理脚本（读取 raw-pricing.json → 去重取平均 → 更新 communities.json）
 
 ## 目录结构（当前状态）
 

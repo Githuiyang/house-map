@@ -5,6 +5,12 @@ export interface CommuteInfo {
   bikeMinutes: number;      // 骑行时间 (分钟)
 }
 
+export interface RoomPricing {
+  layout: string;   // "一室一厅"、"两室一厅"等
+  shared: number;   // 合租价格 (元/月)
+  whole: number;    // 整租价格 (元/月)
+}
+
 export interface Community {
   id: string;
   name: string;
@@ -19,6 +25,7 @@ export interface Community {
   };
   floorTypes?: string[];
   layouts?: string[];
+  roomPricing?: RoomPricing[];
   elevator?: boolean;
   highlights?: string[];
   warnings?: string[];
@@ -42,6 +49,7 @@ export function createDefaultCommunity(partial: Partial<Community>): Community {
     },
     floorTypes: partial.floorTypes || [],
     layouts: partial.layouts || [],
+    roomPricing: partial.roomPricing || [],
     elevator: partial.elevator ?? false,
     highlights: partial.highlights || [],
     warnings: partial.warnings || [],

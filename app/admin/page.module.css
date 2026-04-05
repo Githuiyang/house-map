@@ -187,6 +187,42 @@
   line-height: 1.4;
 }
 
+/* Pricing table */
+.pricingTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.pricingTable th {
+  text-align: left;
+  padding: 6px 8px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--color-border);
+  font-weight: 400;
+}
+
+.pricingTable td {
+  padding: 4px 6px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.pricingTable input[type="number"] {
+  width: 90px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 13px;
+}
+
+.emptyHint {
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-style: italic;
+  padding: 12px !important;
+}
+
 @media (max-width: 1200px) {
   .layout {
     grid-template-columns: 280px 1fr;

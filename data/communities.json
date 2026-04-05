@@ -1427,5 +1427,41 @@
         "whole": 0
       }
     ]
+  },
+  {
+    "id": "wuchuanlu-99nong",
+    "name": "武川路99弄",
+    "coordinates": [
+      121.497,
+      31.305
+    ],
+    "distance": "1.5km",
+    "bikeTime": "骑车10分钟",
+    "price": {
+      "min": 6800,
+      "max": 6800,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "多层"
+    ],
+    "layouts": [
+      "三室"
+    ],
+    "elevator": false,
+    "highlights": [
+      "精装修",
+      "5楼"
+    ],
+    "warnings": [],
+    "contributor": "老大",
+    "updatedAt": "2026",
+    "roomPricing": [
+      {
+        "layout": "三室",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   }
 ]

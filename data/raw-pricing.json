@@ -1,0 +1,11 @@
+[
+  {
+    "_comment": "原始定价数据格式说明（此条仅为示例，处理时会被自动跳过）",
+    "communityName": "示例小区名（必须与 communities.json 中的 name 完全一致）",
+    "layout": "户型名称（如：一室一厅、两室一厅）",
+    "rentType": "shared 或 whole（合租或整租）",
+    "price": 0,
+    "date": "YYYY-MM-DD",
+    "source": "数据来源（如：链家、安居客）"
+  }
+]

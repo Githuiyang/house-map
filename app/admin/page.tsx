@@ -148,6 +148,61 @@ export default function AdminPage() {
                 <label>注意事项（每行一个）</label>
                 <textarea value={toListText(active.warnings)} onChange={e => updateActive(v => ({ ...v, warnings: parseList(e.target.value) }))} />
               </div>
+
+              <div className={styles.areaGroup}>
+                <label>户型价格（合租 / 整租）</label>
+                <table className={styles.pricingTable}>
+                  <thead>
+                    <tr>
+                      <th>户型</th>
+                      <th>合租（元/月）</th>
+                      <th>整租（元/月）</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(active.roomPricing || []).map((rp, idx) => (
+                      <tr key={rp.layout}>
+                        <td>{rp.layout}</td>
+                        <td>
+                          <input
+                            type="number"
+                            value={rp.shared || ''}
+                            placeholder="0"
+                            onChange={e => {
+                              const val = toNumber(e.target.value, 0);
+                              updateActive(v => {
+                                const pricing = [...(v.roomPricing || [])];
+                                pricing[idx] = { ...pricing[idx], shared: val };
+                                return { ...v, roomPricing: pricing };
+                              });
+                            }}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="number"
+                            value={rp.whole || ''}
+                            placeholder="0"
+                            onChange={e => {
+                              const val = toNumber(e.target.value, 0);
+                              updateActive(v => {
+                                const pricing = [...(v.roomPricing || [])];
+                                pricing[idx] = { ...pricing[idx], whole: val };
+                                return { ...v, roomPricing: pricing };
+                              });
+                            }}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                    {(!active.roomPricing || active.roomPricing.length === 0) && (
+                      <tr>
+                        <td colSpan={3} className={styles.emptyHint}>暂无户型数据，请先在「户型」中添加</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
         </main>

@@ -22,6 +22,7 @@ export function normalizeCommunities(data: unknown): Community[] {
       warnings: item.warnings,
       contributor: item.contributor,
       updatedAt: item.updatedAt,
+      roomPricing: item.roomPricing,
     });
   });
 }
