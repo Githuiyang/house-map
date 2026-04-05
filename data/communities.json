@@ -274,34 +274,40 @@
     "distance": "0.9km",
     "bikeTime": "步行12分钟",
     "price": {
-      "min": 3600,
-      "max": 3600,
+      "min": 6000,
+      "max": 6000,
       "unit": "月"
     },
     "floorTypes": [
       "旧楼"
     ],
     "layouts": [
-      "一室"
+      "一房一厅"
     ],
     "elevator": false,
     "highlights": [
-      "便宜"
+      "46平",
+      "三楼",
+      "便宜",
+      "朝南全明",
+      "环保材料",
+      "精装修"
     ],
     "warnings": [
       "隔音差",
       "无绿化",
       "潮湿"
     ],
-    "contributor": "即刻社区",
-    "updatedAt": "2020",
+    "contributor": "老大",
+    "updatedAt": "2026",
     "roomPricing": [
       {
-        "layout": "一室",
+        "layout": "一房一厅",
         "shared": 0,
         "whole": 0
       }
-    ]
+    ],
+    "geocodeSource": "amap"
   },
   {
     "id": "guodinglu-601",
