@@ -189,8 +189,8 @@
     "distance": "0.5km",
     "bikeTime": "步行7分钟",
     "price": {
-      "min": 0,
-      "max": 0,
+      "min": 5800,
+      "max": 5800,
       "unit": "月"
     },
     "floorTypes": [
@@ -202,9 +202,12 @@
     ],
     "elevator": false,
     "highlights": [
-      "靠虬江视野好",
+      "中层",
+      "大学路旁边",
+      "小区门口垃圾站随便扔",
       "河边安静",
-      "小区门口垃圾站随便扔"
+      "精装修全配",
+      "靠虬江视野好"
     ],
     "warnings": [
       "排水偶尔堵",
@@ -212,7 +215,7 @@
       "中间户型隔音差"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2020",
+    "updatedAt": "2026",
     "roomPricing": [
       {
         "layout": "一室",
