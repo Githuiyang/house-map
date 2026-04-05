@@ -1556,22 +1556,15 @@
         "layout": "三室一厅",
         "shared": 0,
         "whole": 0,
-        "rooms": 3,
-        "pricePerRoom": 2667
+        "rooms": 3
       },
       {
         "layout": "两室一厅",
         "shared": 0,
         "whole": 0,
-        "rooms": 2,
-        "pricePerRoom": 4000
+        "rooms": 2
       }
-    ],
-    "pricePerRoomStats": {
-      "min": 2667,
-      "max": 4000,
-      "avg": 3334
-    }
+    ]
   },
   {
     "id": "zhenglitu-6nong",
@@ -1687,15 +1680,9 @@
         "layout": "两室",
         "shared": 0,
         "whole": 0,
-        "rooms": 2,
-        "pricePerRoom": 2900
+        "rooms": 2
       }
-    ],
-    "pricePerRoomStats": {
-      "min": 2900,
-      "max": 2900,
-      "avg": 2900
-    }
+    ]
   },
   {
     "id": "zhengtonglu-100",
