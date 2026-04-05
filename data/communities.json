@@ -180,11 +180,11 @@
     "roomPricing": []
   },
   {
-    "id": "gongyuan-3000",
-    "name": "公园3000",
+    "id": "gongyuan-3000-huangxing-huayuan",
+    "name": "公园3000·黄兴花园",
     "coordinates": [
-      121.55,
-      31.28
+      121.523217,
+      31.292219
     ],
     "distance": "3.1km",
     "bikeTime": "步行50分钟",
