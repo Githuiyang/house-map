@@ -1478,5 +1478,42 @@
     "contributor": "老大",
     "updatedAt": "2026",
     "roomPricing": []
+  },
+  {
+    "id": "gongyuan-3000",
+    "name": "公园3000",
+    "coordinates": [
+      121.52,
+      31.30
+    ],
+    "distance": "1.0km",
+    "bikeTime": "骑车5分钟",
+    "price": {
+      "min": 5500,
+      "max": 5500,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "高层"
+    ],
+    "layouts": [
+      "一室一厅"
+    ],
+    "elevator": true,
+    "highlights": [
+      "电梯高区",
+      "装修干净",
+      "大衣帽/可做书房"
+    ],
+    "warnings": [],
+    "contributor": "老大",
+    "updatedAt": "2026",
+    "roomPricing": [
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   }
 ]
