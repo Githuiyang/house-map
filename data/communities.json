@@ -2018,5 +2018,42 @@
         "whole": 0
       }
     ]
+  },
+  {
+    "id": "caida-xiaoqu-guodinglu",
+    "name": "国定路财大小区",
+    "coordinates": [
+      121.506,
+      31.304
+    ],
+    "distance": "0.8km",
+    "bikeTime": "步行10分钟",
+    "price": {
+      "min": 6400,
+      "max": 6500,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "多层"
+    ],
+    "layouts": [
+      "两室一厅"
+    ],
+    "elevator": false,
+    "highlights": [
+      "双南",
+      "精装修",
+      "看房方便"
+    ],
+    "warnings": [],
+    "contributor": "老大",
+    "updatedAt": "2026",
+    "roomPricing": [
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   }
 ]
