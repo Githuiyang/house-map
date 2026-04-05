@@ -578,23 +578,25 @@
     "distance": "0.3km",
     "bikeTime": "步行3分钟",
     "price": {
-      "min": 0,
-      "max": 0,
+      "min": 9000,
+      "max": 10000,
       "unit": "月"
     },
     "floorTypes": [
       "高层"
     ],
     "layouts": [
+      "两室两厅",
       "四室两卫"
     ],
     "elevator": true,
     "highlights": [
-      "离公司最近",
+      "97平",
       "小区新",
-      "隔音好",
       "水压高",
-      "近游泳馆"
+      "离公司最近",
+      "近游泳馆",
+      "隔音好"
     ],
     "warnings": [
       "采光一般",
@@ -602,8 +604,13 @@
       "神奇户型"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2020",
+    "updatedAt": "2026",
     "roomPricing": [
+      {
+        "layout": "两室两厅",
+        "shared": 0,
+        "whole": 0
+      },
       {
         "layout": "四室两卫",
         "shared": 0,
