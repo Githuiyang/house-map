@@ -1982,5 +1982,41 @@
         "whole": 0
       }
     ]
+  },
+  {
+    "id": "zhengtonglu-118",
+    "name": "政通路118弄",
+    "coordinates": [
+      121.519,
+      31.305
+    ],
+    "distance": "0.9km",
+    "bikeTime": "步行10分钟",
+    "price": {
+      "min": 6900,
+      "max": 6900,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "高层"
+    ],
+    "layouts": [
+      "一室一厅"
+    ],
+    "elevator": true,
+    "highlights": [
+      "电梯2楼",
+      "看房钥匙"
+    ],
+    "warnings": [],
+    "contributor": "老大",
+    "updatedAt": "2026",
+    "roomPricing": [
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   }
 ]
