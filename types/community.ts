@@ -7,8 +7,18 @@ export interface CommuteInfo {
 
 export interface RoomPricing {
   layout: string;   // "一室一厅"、"两室一厅"等
+  rooms?: number;   // 房间数
+  pricePerRoom?: number;  // 单间价格 (元/月)
   shared: number;   // 合租价格 (元/月)
   whole: number;    // 整租价格 (元/月)
+  area?: string;    // 面积 (如 "44平")
+  note?: string;    // 备注 (如 "复式")
+}
+
+export interface PricePerRoomStats {
+  min: number;  // 最低单间价格
+  max: number;  // 最高单间价格
+  avg: number;  // 平均单间价格
 }
 
 export interface Community {
@@ -26,6 +36,7 @@ export interface Community {
   floorTypes?: string[];
   layouts?: string[];
   roomPricing?: RoomPricing[];
+  pricePerRoomStats?: PricePerRoomStats;
   elevator?: boolean;
   highlights?: string[];
   warnings?: string[];
