@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Community } from '@/types/community';
 import { calculateDistanceMeters, normalizeLngLat } from '@/utils/geo';
 import { COMPANY_COORDS } from '@/utils/constants';
+import { formatPricePerRoom } from '@/utils/price';
 import styles from './MapView.module.css';
 
 // 高德地图类型声明
@@ -186,7 +187,8 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
   const [editMode, setEditMode] = useState(false);
   const [modifiedCoords, setModifiedCoords] = useState<Map<string, { original: [number, number], modified: [number, number] }>>(new Map());
   const [draggingId, setDraggingId] = useState<string | null>(null);
-  const [copiedMessage, setCopiedMessage] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [savingCoords, setSavingCoords] = useState(false);
   const companyMarkerRef = useRef<AMapMarker | null>(null);
   const [modifiedCompanyCoords, setModifiedCompanyCoords] = useState<[number, number] | null>(null);
   const previewPopupMarkerRef = useRef<AMapMarker | null>(null);
@@ -1083,14 +1085,15 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
       // Hover tooltip - 只显示简单信息（preview 打开时不显示，避免重叠）
       marker.on('mouseover', (e: unknown) => {
         if (previewCommunityRef.current?.id === community.id) return;
-        const priceText = formatPrice(community.price.min, community.price.max);
+        const priceText = formatPricePerRoom(community.pricePerRoomStats?.avg)
+          ?? `¥${formatPrice(community.price.min, community.price.max)}/月`;
         const distText = community.commute
           ? `${community.commute.roadDistanceKm}km · 步行${community.commute.walkMinutes}min · 骑行${community.commute.bikeMinutes}min`
           : `${community.distance} · 骑行${community.bikeTime}`;
         const tooltipContent = `
           <div class="${styles.hoverTooltip}">
             <div class="${styles.tooltipRow}">${distText}</div>
-            <div class="${styles.tooltipRow}">¥${priceText}/月</div>
+            <div class="${styles.tooltipRow}">${priceText}</div>
           </div>
         `;
 
@@ -1206,7 +1209,9 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
 
     const priceMin = previewCommunity.price?.min ?? 0;
     const priceMax = previewCommunity.price?.max ?? 0;
-    const priceText = priceMin === priceMax ? `${Math.round(priceMin / 1000)}k` : `${Math.round(priceMin / 1000)}-${Math.round(priceMax / 1000)}k`;
+    const fallbackPriceText = priceMin === priceMax ? `${Math.round(priceMin / 1000)}k` : `${Math.round(priceMin / 1000)}-${Math.round(priceMax / 1000)}k`;
+    const priceText = formatPricePerRoom(previewCommunity.pricePerRoomStats?.avg)
+      ?? `¥${fallbackPriceText}/月`;
 
     const commuteText = previewCommunity.commute
       ? `${previewCommunity.commute.roadDistanceKm}km · 步行${previewCommunity.commute.walkMinutes}min · 骑行${previewCommunity.commute.bikeMinutes}min`
@@ -1218,7 +1223,7 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
         <div class="${styles.previewPopup}">
           <div class="${styles.previewTitle}">🏠 ${previewCommunity.name}</div>
           <div class="${styles.previewMeta}">${commuteText}</div>
-          <div class="${styles.previewMeta}">¥${priceText}/月</div>
+          <div class="${styles.previewMeta}">${priceText}</div>
           <div class="${styles.previewHint}">点击查看详情</div>
         </div>
       `,
@@ -1280,40 +1285,46 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
     }
   };
 
-  // 复制更新后的坐标
-  const copyCoordinates = async () => {
-    const updates: Array<{
-      id?: string;
-      type?: 'company';
-      coordinates: [number, number];
-      note?: string;
-    }> = [];
-
-    // 添加小区坐标更新
-    modifiedCoords.forEach((value, id) => {
-      updates.push({
-        id,
-        coordinates: value.modified
-      });
-    });
-
-    // 如果公司坐标也被修改,添加到更新列表
-    if (modifiedCompanyCoords) {
-      updates.push({
-        type: 'company',
-        coordinates: modifiedCompanyCoords,
-        note: '公司坐标(需要更新COMPANY_COORDS常量)'
-      });
+  // 保存更新后的坐标到 communities.json 并触发部署
+  const saveCoordinates = async () => {
+    const adminKey = sessionStorage.getItem('office-map-admin-key');
+    if (!adminKey) {
+      setSaveStatus({ type: 'error', message: '未登录管理员' });
+      setTimeout(() => setSaveStatus(null), 3000);
+      return;
     }
 
-    const jsonStr = JSON.stringify(updates, null, 2);
+    const updates: Array<{ id: string; coordinates: [number, number] }> = [];
+    modifiedCoords.forEach((value, id) => {
+      updates.push({ id, coordinates: value.modified });
+    });
 
+    if (updates.length === 0) return;
+
+    setSavingCoords(true);
     try {
-      await navigator.clipboard.writeText(jsonStr);
-      setCopiedMessage(true);
-      setTimeout(() => setCopiedMessage(false), 2000);
+      const res = await fetch('/api/admin/communities', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'x-admin-key': adminKey },
+        body: JSON.stringify({ updates }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || '保存失败');
+      }
+
+      const msg = data.warning
+        ? `⚠️ ${data.warning}`
+        : `✓ 已保存 ${data.updatedCount} 个并部署`;
+      setSaveStatus({ type: 'success', message: msg });
+      setTimeout(() => setSaveStatus(null), 3000);
     } catch (err) {
-      console.error('复制失败:', err);
+      const msg = err instanceof Error ? err.message : '保存失败';
+      setSaveStatus({ type: 'error', message: `✗ ${msg}` });
+      setTimeout(() => setSaveStatus(null), 5000);
+    } finally {
+      setSavingCoords(false);
     }
   };
 
@@ -1360,16 +1371,17 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
 
           {editMode && (
             <div className={styles.editModeHint}>
-              拖拽标记修正位置,完成后点击复制坐标
+              拖拽标记修正位置,完成后点击保存
             </div>
           )}
 
           {editMode && modifiedCoords.size > 0 && (
             <button
               className={styles.copyButton}
-              onClick={copyCoordinates}
+              onClick={saveCoordinates}
+              disabled={savingCoords}
             >
-              {copiedMessage ? '✓ 已复制' : `📋 复制坐标 (${modifiedCoords.size})`}
+              {savingCoords ? '保存中...' : saveStatus ? saveStatus.message : `💾 保存 (${modifiedCoords.size})`}
             </button>
           )}
 
