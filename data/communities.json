@@ -363,20 +363,24 @@
     "distance": "1.0km",
     "bikeTime": "步行10分钟",
     "price": {
-      "min": 4600,
-      "max": 4600,
+      "min": 4500,
+      "max": 6800,
       "unit": "月"
     },
     "floorTypes": [
       "多层"
     ],
     "layouts": [
+      "一室",
       "一室一厅",
       "两室一厅"
     ],
     "elevator": false,
     "highlights": [
+      "44-46平米一室 4500-5700元",
       "4600元约看房",
+      "66平米两室 6800元",
+      "66平米两室一厅 6800元",
       "南北通透",
       "手机信号良好"
     ],
@@ -387,6 +391,13 @@
     "updatedAt": "2026",
     "roomPricing": [
       {
+        "layout": "一室",
+        "shared": 0,
+        "whole": 4500,
+        "area": "44-46平",
+        "priceRange": "4500-5700"
+      },
+      {
         "layout": "一室一厅",
         "shared": 0,
         "whole": 0
@@ -394,7 +405,8 @@
       {
         "layout": "两室一厅",
         "shared": 0,
-        "whole": 0
+        "whole": 6800,
+        "area": "66平"
       }
     ]
   },
