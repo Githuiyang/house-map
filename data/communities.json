@@ -776,8 +776,8 @@
     "distance": "1.0km",
     "bikeTime": "步行12分钟",
     "price": {
-      "min": 0,
-      "max": 0,
+      "min": 5300,
+      "max": 5300,
       "unit": "月"
     },
     "floorTypes": [
@@ -788,6 +788,8 @@
     ],
     "elevator": false,
     "highlights": [
+      "5楼",
+      "精装大一房",
       "阳台采光好",
       "随时扔垃圾"
     ],
@@ -799,7 +801,7 @@
       "居委会大爷太热情"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2025",
+    "updatedAt": "2026",
     "roomPricing": [
       {
         "layout": "一室",
