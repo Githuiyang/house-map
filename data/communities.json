@@ -725,8 +725,8 @@
     "roomPricing": []
   },
   {
-    "id": "pulu-615nong",
-    "name": "浦路615弄",
+    "id": "jipulu-615nong",
+    "name": "吉浦路615弄",
     "coordinates": [
       121.5145,
       31.2995
@@ -734,21 +734,24 @@
     "distance": "0.9km",
     "bikeTime": "步行10分钟",
     "price": {
-      "min": 0,
-      "max": 0,
+      "min": 4100,
+      "max": 6300,
       "unit": "月"
     },
     "floorTypes": [
       "高层"
     ],
     "layouts": [
+      "一室",
       "两室一厅"
     ],
     "elevator": true,
     "highlights": [
+      "一房首次出租4100元",
+      "业主第二次出租",
+      "两房精装修6300元",
       "南北全明",
-      "精装修",
-      "业主第二次出租"
+      "精装修"
     ],
     "warnings": [],
     "contributor": "老大",
