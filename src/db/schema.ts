@@ -1,4 +1,6 @@
-import { pgTable, text, timestamp } from 'drizzle-orm/pg-core';
+import { pgEnum, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
+
+export const commentStatusEnum = pgEnum('comment_status', ['pending', 'approved', 'rejected']);
 
 export const communityComments = pgTable('community_comments', {
   id: text('id').primaryKey(), // nanoid
@@ -6,6 +8,7 @@ export const communityComments = pgTable('community_comments', {
   nickname: text('nickname').notNull().default('匿名'),
   content: text('content').notNull(),
   ipHash: text('ip_hash').notNull(),
+  status: commentStatusEnum('status').notNull().default('pending'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
 

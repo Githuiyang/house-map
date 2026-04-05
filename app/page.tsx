@@ -123,6 +123,11 @@ export default function Home() {
   // 筛选逻辑
   const filteredCommunities = useMemo(() => {
     return communities.filter(community => {
+      // 隐藏没有价格数据的小区
+      const hasPrice = community.price.min > 0 || community.price.max > 0 ||
+        (community.roomPricing && community.roomPricing.some(rp => rp.shared > 0 || rp.whole > 0));
+      if (!hasPrice) return false;
+
       // 距离筛选：使用计算的道路距离
       if (distanceFilter !== 'all') {
         const distance = community.commute?.roadDistanceKm;

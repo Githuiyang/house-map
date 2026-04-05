@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/src/db';
 import { communityComments, communityImages } from '@/src/db/schema';
-import { eq, desc, sql } from 'drizzle-orm';
+import { eq, desc, sql, and } from 'drizzle-orm';
 import communitiesData from '@/data/communities.json';
 import type { NextRequest } from 'next/server';
 
@@ -48,7 +48,10 @@ export async function GET(
         createdAt: communityComments.createdAt,
       })
       .from(communityComments)
-      .where(eq(communityComments.communityId, communityId))
+      .where(and(
+        eq(communityComments.communityId, communityId),
+        eq(communityComments.status, 'approved'),
+      ))
       .orderBy(desc(communityComments.createdAt))
       .limit(pageSize)
       .offset((page - 1) * pageSize);
@@ -69,7 +72,10 @@ export async function GET(
     const countResult = await db
       .select({ count: sql<number>`count(*)` })
       .from(communityComments)
-      .where(eq(communityComments.communityId, communityId));
+      .where(and(
+        eq(communityComments.communityId, communityId),
+        eq(communityComments.status, 'approved'),
+      ));
 
     const commentCount = countResult[0]?.count ?? 0;
     const hasMore = page * pageSize < commentCount;

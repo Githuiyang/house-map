@@ -57,7 +57,6 @@ export default function CommentSection({ communityId, isAdmin }: CommentSectionP
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
-  const [newCommentId, setNewCommentId] = useState<string | null>(null);
 
   const showToast = useCallback((message: string) => {
     setToast(message);
@@ -85,7 +84,7 @@ export default function CommentSection({ communityId, isAdmin }: CommentSectionP
         setComments(fetchedComments);
       }
       setHasMore(fetchedComments.length >= PAGE_SIZE);
-    } catch (err) {
+    } catch {
       if (!append) {
         setError('评论加载失败，请稍后重试');
       }
@@ -106,19 +105,8 @@ export default function CommentSection({ communityId, isAdmin }: CommentSectionP
       return;
     }
 
-    const optimisticId = `temp-${Date.now()}`;
-    const optimisticComment: Comment = {
-      id: optimisticId,
-      nickname: nickname.trim() || '匿名用户',
-      content: trimmedContent,
-      createdAt: new Date().toISOString(),
-    };
-
-    // Optimistic update
-    setComments(prev => [optimisticComment, ...prev]);
-    setNewCommentId(optimisticId);
-    setContent('');
     setSubmitting(true);
+    setContent('');
 
     try {
       const res = await fetch(`/api/comments`, {
@@ -135,20 +123,11 @@ export default function CommentSection({ communityId, isAdmin }: CommentSectionP
         throw new Error(`提交失败: ${res.status}`);
       }
 
-      const data = await res.json();
-
-      // Replace optimistic comment with real one
-      setComments(prev =>
-        prev.map(c => c.id === optimisticId ? { ...c, id: data.id ?? optimisticId } : c)
-      );
+      showToast('评论已提交，将在审核后显示');
     } catch {
-      // Rollback optimistic update
-      setComments(prev => prev.filter(c => c.id !== optimisticId));
       showToast('评论失败，请重试');
     } finally {
       setSubmitting(false);
-      // Clear new highlight after animation
-      setTimeout(() => setNewCommentId(null), 2000);
     }
   };
 
@@ -158,7 +137,6 @@ export default function CommentSection({ communityId, isAdmin }: CommentSectionP
       return;
     }
 
-    // Optimistic delete
     const previousComments = comments;
     setComments(prev => prev.filter(c => c.id !== commentId));
 
@@ -172,7 +150,6 @@ export default function CommentSection({ communityId, isAdmin }: CommentSectionP
         throw new Error(`删除失败: ${res.status}`);
       }
     } catch {
-      // Rollback
       setComments(previousComments);
       showToast('删除失败，请重试');
     }
@@ -187,7 +164,6 @@ export default function CommentSection({ communityId, isAdmin }: CommentSectionP
   const isContentOverLimit = content.length > MAX_CONTENT_LENGTH;
   const canSubmit = content.trim().length > 0 && !isContentOverLimit && !submitting;
 
-  // Render loading state
   if (loading) {
     return (
       <div className={styles.container}>
@@ -199,7 +175,6 @@ export default function CommentSection({ communityId, isAdmin }: CommentSectionP
     );
   }
 
-  // Render error state
   if (error) {
     return (
       <div className={styles.container}>
@@ -229,7 +204,7 @@ export default function CommentSection({ communityId, isAdmin }: CommentSectionP
           {comments.map(comment => (
             <div
               key={comment.id}
-              className={`${styles.commentItem} ${comment.id === newCommentId ? styles.commentItemNew : ''}`}
+              className={styles.commentItem}
             >
               <div className={styles.commentHeader}>
                 <div className={styles.commentMeta}>

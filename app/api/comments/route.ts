@@ -116,7 +116,7 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json(
-      { id, nickname: safeNickname, content: trimmedContent, createdAt },
+      { id, nickname: safeNickname, content: trimmedContent, createdAt, status: 'pending', message: '评论已提交，等待审核' },
       { status: 201 },
     );
   } catch (error) {

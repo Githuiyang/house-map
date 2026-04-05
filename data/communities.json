@@ -1,13 +1,13 @@
 [
   {
-    "id": "renheyuan",
-    "name": "仁和苑",
+    "id": "beijiao-xiaoqu",
+    "name": "北郊小区",
     "coordinates": [
-      121.512202,
-      31.303093
+      121.490003,
+      31.274292
     ],
-    "distance": "0.6km",
-    "bikeTime": "3分钟",
+    "distance": "3.9km",
+    "bikeTime": "骑车26分钟",
     "price": {
       "min": 0,
       "max": 0,
@@ -21,88 +21,122 @@
     "highlights": [],
     "warnings": [],
     "contributor": "即刻社区",
-    "updatedAt": "2020",
+    "updatedAt": "2022",
     "roomPricing": []
   },
   {
-    "id": "zhengminlu-150",
-    "name": "政民路150弄",
+    "id": "caida-xiaoqu-guodinglu",
+    "name": "国定路财大小区",
     "coordinates": [
-      121.510141,
-      31.303075
-    ],
-    "distance": "0.3km",
-    "bikeTime": "步行3分钟",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [
-      "多层"
-    ],
-    "layouts": [],
-    "elevator": false,
-    "highlights": [],
-    "warnings": [],
-    "contributor": "即刻社区",
-    "updatedAt": "2020",
-    "roomPricing": []
-  },
-  {
-    "id": "zhenglitu-580",
-    "name": "政立路580弄",
-    "coordinates": [
-      121.505805,
-      31.305681
+      121.506,
+      31.304
     ],
     "distance": "0.8km",
     "bikeTime": "步行10分钟",
     "price": {
-      "min": 8000,
-      "max": 8000,
+      "min": 6400,
+      "max": 6500,
       "unit": "月"
     },
     "floorTypes": [
       "多层"
     ],
     "layouts": [
-      "一室一厅",
-      "三室一厅",
       "两室一厅"
     ],
     "elevator": false,
     "highlights": [
-      "8000可谈约看房",
-      "南北通风",
+      "双南",
       "精装修",
-      "采光好"
+      "看房方便"
     ],
-    "warnings": [
-      "隔音差",
-      "装修噪音多",
-      "手机信号差",
-      "马桶经常堵"
-    ],
-    "contributor": "即刻社区",
+    "warnings": [],
+    "contributor": "老大",
     "updatedAt": "2026",
     "roomPricing": [
-      {
-        "layout": "一室一厅",
-        "shared": 0,
-        "whole": 0
-      },
-      {
-        "layout": "三室一厅",
-        "shared": 0,
-        "whole": 0
-      },
       {
         "layout": "两室一厅",
         "shared": 0,
         "whole": 0
       }
     ]
+  },
+  {
+    "id": "chuanzhi-fang",
+    "name": "创智坊 伟德路10弄",
+    "coordinates": [
+      121.50755,
+      31.304333
+    ],
+    "distance": "0.3km",
+    "bikeTime": "步行3分钟",
+    "price": {
+      "min": 9000,
+      "max": 10000,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "高层"
+    ],
+    "layouts": [
+      "两室两厅",
+      "四室两卫"
+    ],
+    "elevator": true,
+    "highlights": [
+      "97平",
+      "南北",
+      "小区新",
+      "挑高4.2米",
+      "水压高",
+      "离公司最近",
+      "近游泳馆",
+      "隔音好"
+    ],
+    "warnings": [
+      "采光一般",
+      "不通风",
+      "神奇户型"
+    ],
+    "contributor": "即刻社区",
+    "updatedAt": "2026",
+    "roomPricing": [
+      {
+        "layout": "两室两厅",
+        "shared": 0,
+        "whole": 0
+      },
+      {
+        "layout": "四室两卫",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
+  },
+  {
+    "id": "dongfang-jinyuan",
+    "name": "东方锦园",
+    "coordinates": [
+      121.500175,
+      31.309834
+    ],
+    "distance": "1.8km",
+    "bikeTime": "骑车10分钟",
+    "price": {
+      "min": 0,
+      "max": 0,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "多层"
+    ],
+    "layouts": [],
+    "elevator": false,
+    "highlights": [],
+    "warnings": [],
+    "contributor": "即刻社区",
+    "updatedAt": "2020",
+    "roomPricing": []
   },
   {
     "id": "fuguangyuan",
@@ -130,50 +164,74 @@
     "roomPricing": []
   },
   {
-    "id": "zhengminlu-230",
-    "name": "政民路230弄",
+    "id": "gongyuan-3000",
+    "name": "公园3000",
     "coordinates": [
-      121.507672,
-      31.302317
+      121.52,
+      31.30
     ],
-    "distance": "0.5km",
-    "bikeTime": "步行7分钟",
+    "distance": "1.0km",
+    "bikeTime": "骑车5分钟",
     "price": {
-      "min": 5800,
-      "max": 5800,
+      "min": 5500,
+      "max": 5500,
       "unit": "月"
     },
     "floorTypes": [
-      "板楼"
+      "高层"
     ],
     "layouts": [
-      "一室",
-      "两室"
+      "一室一厅"
     ],
-    "elevator": false,
+    "elevator": true,
     "highlights": [
-      "中层",
-      "大学路旁边",
-      "小区门口垃圾站随便扔",
-      "河边安静",
-      "精装修全配",
-      "靠虬江视野好"
+      "电梯高区",
+      "装修干净",
+      "大衣帽/可做书房"
     ],
-    "warnings": [
-      "排水偶尔堵",
-      "梅雨季潮湿",
-      "中间户型隔音差"
-    ],
-    "contributor": "即刻社区",
+    "warnings": [],
+    "contributor": "老大",
     "updatedAt": "2026",
     "roomPricing": [
       {
-        "layout": "一室",
+        "layout": "一室一厅",
         "shared": 0,
         "whole": 0
-      },
+      }
+    ]
+  },
+  {
+    "id": "guodinglu-505",
+    "name": "国定路505弄",
+    "coordinates": [
+      121.505,
+      31.304
+    ],
+    "distance": "1.0km",
+    "bikeTime": "步行12分钟",
+    "price": {
+      "min": 5900,
+      "max": 5900,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "多层"
+    ],
+    "layouts": [
+      "两室一厅"
+    ],
+    "elevator": false,
+    "highlights": [
+      "装修干净",
+      "双南",
+      "5楼"
+    ],
+    "warnings": [],
+    "contributor": "老大",
+    "updatedAt": "2026",
+    "roomPricing": [
       {
-        "layout": "两室",
+        "layout": "两室一厅",
         "shared": 0,
         "whole": 0
       }
@@ -296,630 +354,6 @@
     "roomPricing": []
   },
   {
-    "id": "zhenglitu-6nong",
-    "name": "政立路6弄",
-    "coordinates": [
-      121.523818,
-      31.307803
-    ],
-    "distance": "1.3km",
-    "bikeTime": "骑车7分钟",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [
-      "板楼"
-    ],
-    "layouts": [],
-    "elevator": false,
-    "highlights": [],
-    "warnings": [],
-    "contributor": "即刻社区",
-    "updatedAt": "2020",
-    "roomPricing": []
-  },
-  {
-    "id": "zhengtonglu-42",
-    "name": "政通路42弄",
-    "coordinates": [
-      121.520816,
-      31.305346
-    ],
-    "distance": "0.9km",
-    "bikeTime": "步行10分钟",
-    "price": {
-      "min": 4500,
-      "max": 4500,
-      "unit": "月"
-    },
-    "floorTypes": [
-      "多层"
-    ],
-    "layouts": [
-      "一室"
-    ],
-    "elevator": false,
-    "highlights": [
-      "1楼",
-      "南北通透",
-      "隔音好",
-      "靠虬江"
-    ],
-    "warnings": [
-      "水压小",
-      "客厅采光一半不好"
-    ],
-    "contributor": "即刻社区",
-    "updatedAt": "2026",
-    "roomPricing": [
-      {
-        "layout": "一室",
-        "shared": 0,
-        "whole": 0
-      }
-    ]
-  },
-  {
-    "id": "zhengtonglu-100",
-    "name": "政通路100弄",
-    "coordinates": [
-      121.517495,
-      31.304728
-    ],
-    "distance": "0.8km",
-    "bikeTime": "步行10分钟",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [
-      "多层"
-    ],
-    "layouts": [],
-    "elevator": false,
-    "highlights": [],
-    "warnings": [],
-    "contributor": "即刻社区",
-    "updatedAt": "2020",
-    "roomPricing": []
-  },
-  {
-    "id": "zhengtonglu-285",
-    "name": "政通路285弄",
-    "coordinates": [
-      121.511823,
-      31.301372
-    ],
-    "distance": "0.8km",
-    "bikeTime": "步行10分钟",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [
-      "多层"
-    ],
-    "layouts": [],
-    "elevator": false,
-    "highlights": [],
-    "warnings": [],
-    "contributor": "即刻社区",
-    "updatedAt": "2020",
-    "roomPricing": []
-  },
-  {
-    "id": "zhengde-donglu-108",
-    "name": "政德东路108号",
-    "coordinates": [
-      121.518273,
-      31.308893
-    ],
-    "distance": "1.0km",
-    "bikeTime": "步行12分钟",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [
-      "多层"
-    ],
-    "layouts": [
-      "一室一厅"
-    ],
-    "elevator": false,
-    "highlights": [
-      "邻里和睦",
-      "教堂钟声",
-      "星巴克楼下",
-      "物业每晚提醒关门窗"
-    ],
-    "warnings": [
-      "狗屎特别多",
-      "排水反胃"
-    ],
-    "contributor": "即刻社区",
-    "updatedAt": "2026",
-    "roomPricing": [
-      {
-        "layout": "一室一厅",
-        "shared": 0,
-        "whole": 0
-      }
-    ]
-  },
-  {
-    "id": "chuanzhi-fang",
-    "name": "创智坊 伟德路10弄",
-    "coordinates": [
-      121.50755,
-      31.304333
-    ],
-    "distance": "0.3km",
-    "bikeTime": "步行3分钟",
-    "price": {
-      "min": 9000,
-      "max": 10000,
-      "unit": "月"
-    },
-    "floorTypes": [
-      "高层"
-    ],
-    "layouts": [
-      "两室两厅",
-      "四室两卫"
-    ],
-    "elevator": true,
-    "highlights": [
-      "97平",
-      "南北",
-      "小区新",
-      "挑高4.2米",
-      "水压高",
-      "离公司最近",
-      "近游泳馆",
-      "隔音好"
-    ],
-    "warnings": [
-      "采光一般",
-      "不通风",
-      "神奇户型"
-    ],
-    "contributor": "即刻社区",
-    "updatedAt": "2026",
-    "roomPricing": [
-      {
-        "layout": "两室两厅",
-        "shared": 0,
-        "whole": 0
-      },
-      {
-        "layout": "四室两卫",
-        "shared": 0,
-        "whole": 0
-      }
-    ]
-  },
-  {
-    "id": "wenhua-huayuan",
-    "name": "文化花园",
-    "coordinates": [
-      121.490603,
-      31.302897
-    ],
-    "distance": "1.8km",
-    "bikeTime": "骑车10分钟",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [
-      "高层"
-    ],
-    "layouts": [],
-    "elevator": true,
-    "highlights": [],
-    "warnings": [],
-    "contributor": "即刻社区",
-    "updatedAt": "2020",
-    "roomPricing": []
-  },
-  {
-    "id": "dongfang-jinyuan",
-    "name": "东方锦园",
-    "coordinates": [
-      121.500175,
-      31.309834
-    ],
-    "distance": "1.8km",
-    "bikeTime": "骑车10分钟",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [
-      "多层"
-    ],
-    "layouts": [],
-    "elevator": false,
-    "highlights": [],
-    "warnings": [],
-    "contributor": "即刻社区",
-    "updatedAt": "2020",
-    "roomPricing": []
-  },
-  {
-    "id": "yifuyuan",
-    "name": "怡福苑",
-    "coordinates": [
-      121.518614,
-      31.291866
-    ],
-    "distance": "1.9km",
-    "bikeTime": "骑车10分钟",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [
-      "高层"
-    ],
-    "layouts": [],
-    "elevator": true,
-    "highlights": [],
-    "warnings": [],
-    "contributor": "即刻社区",
-    "updatedAt": "2020",
-    "roomPricing": []
-  },
-  {
-    "id": "guoquan-beilu-8nong",
-    "name": "国权北路8弄",
-    "coordinates": [
-      121.494444,
-      31.309973
-    ],
-    "distance": "1.8km",
-    "bikeTime": "骑车10分钟",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [
-      "多层"
-    ],
-    "layouts": [],
-    "elevator": false,
-    "highlights": [],
-    "warnings": [],
-    "contributor": "即刻社区",
-    "updatedAt": "2020",
-    "roomPricing": []
-  },
-  {
-    "id": "jianxin-xiaoqu",
-    "name": "建新小区",
-    "coordinates": [
-      121.511271,
-      31.300837
-    ],
-    "distance": "1.0km",
-    "bikeTime": "步行12分钟",
-    "price": {
-      "min": 5300,
-      "max": 5300,
-      "unit": "月"
-    },
-    "floorTypes": [
-      "多层"
-    ],
-    "layouts": [
-      "一室"
-    ],
-    "elevator": false,
-    "highlights": [
-      "5楼",
-      "精装大一房",
-      "阳台采光好",
-      "随时扔垃圾"
-    ],
-    "warnings": [
-      "很旧",
-      "隔音差",
-      "水压小",
-      "隔壁麻将馆吵",
-      "居委会大爷太热情"
-    ],
-    "contributor": "即刻社区",
-    "updatedAt": "2026",
-    "roomPricing": [
-      {
-        "layout": "一室",
-        "shared": 0,
-        "whole": 0
-      }
-    ]
-  },
-  {
-    "id": "wenhua-mingyuan",
-    "name": "文化名园",
-    "coordinates": [
-      121.49124,
-      31.30718
-    ],
-    "distance": "2.0km",
-    "bikeTime": "骑车12分钟",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [
-      "多层"
-    ],
-    "layouts": [],
-    "elevator": false,
-    "highlights": [],
-    "warnings": [],
-    "contributor": "即刻社区",
-    "updatedAt": "2020",
-    "roomPricing": []
-  },
-  {
-    "id": "zhengwu-huayuan",
-    "name": "正文花园",
-    "coordinates": [
-      121.48859,
-      31.308559
-    ],
-    "distance": "2.0km",
-    "bikeTime": "骑车12分钟",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [
-      "多层"
-    ],
-    "layouts": [],
-    "elevator": false,
-    "highlights": [],
-    "warnings": [],
-    "contributor": "即刻社区",
-    "updatedAt": "2020",
-    "roomPricing": []
-  },
-  {
-    "id": "sipinglu-2555",
-    "name": "四平路2555弄",
-    "coordinates": [
-      121.513252,
-      31.296141
-    ],
-    "distance": "1.2km",
-    "bikeTime": "骑车6分钟",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [
-      "多层"
-    ],
-    "layouts": [],
-    "elevator": false,
-    "highlights": [],
-    "warnings": [],
-    "contributor": "即刻社区",
-    "updatedAt": "2020",
-    "roomPricing": []
-  },
-  {
-    "id": "linlu-jiayuan",
-    "name": "林绿家园",
-    "coordinates": [
-      121.51243,
-      31.290479
-    ],
-    "distance": "1.7km",
-    "bikeTime": "骑车10分钟",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [
-      "高层"
-    ],
-    "layouts": [],
-    "elevator": true,
-    "highlights": [],
-    "warnings": [],
-    "contributor": "即刻社区",
-    "updatedAt": "2022",
-    "roomPricing": []
-  },
-  {
-    "id": "sanmenlu-358",
-    "name": "三门路358弄",
-    "coordinates": [
-      121.492724,
-      31.309768
-    ],
-    "distance": "2.0km",
-    "bikeTime": "骑车15分钟",
-    "price": {
-      "min": 5300,
-      "max": 5800,
-      "unit": "月"
-    },
-    "floorTypes": [
-      "多层"
-    ],
-    "layouts": [
-      "两室一厅"
-    ],
-    "elevator": false,
-    "highlights": [
-      "3楼",
-      "南北朝向",
-      "厕所可直接冲纸",
-      "有钥匙",
-      "看房方便",
-      "社区活动多",
-      "租客转租",
-      "精装修",
-      "随时看房"
-    ],
-    "warnings": [
-      "窗户隔音不行",
-      "采光一般"
-    ],
-    "contributor": "即刻社区",
-    "updatedAt": "2026",
-    "roomPricing": [
-      {
-        "layout": "两室一厅",
-        "shared": 0,
-        "whole": 0
-      }
-    ]
-  },
-  {
-    "id": "nanchayuan",
-    "name": "南茶园",
-    "coordinates": [
-      121.518204,
-      31.290743
-    ],
-    "distance": "2.0km",
-    "bikeTime": "骑车12分钟",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [
-      "多层"
-    ],
-    "layouts": [],
-    "elevator": false,
-    "highlights": [],
-    "warnings": [],
-    "contributor": "即刻社区",
-    "updatedAt": "2020",
-    "roomPricing": []
-  },
-  {
-    "id": "guohu-yicun",
-    "name": "国和一村",
-    "coordinates": [
-      121.529095,
-      31.316401
-    ],
-    "distance": "2.5km",
-    "bikeTime": "骑车20分钟",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [
-      "多层"
-    ],
-    "layouts": [],
-    "elevator": false,
-    "highlights": [],
-    "warnings": [],
-    "contributor": "即刻社区",
-    "updatedAt": "2020",
-    "roomPricing": []
-  },
-  {
-    "id": "huchang-gongyu",
-    "name": "沪昌公寓",
-    "coordinates": [
-      121.515591,
-      31.304317
-    ],
-    "distance": "0.5km",
-    "bikeTime": "步行5分钟",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [
-      "高层"
-    ],
-    "layouts": [],
-    "elevator": true,
-    "highlights": [],
-    "warnings": [],
-    "contributor": "即刻社区",
-    "updatedAt": "2020",
-    "roomPricing": []
-  },
-  {
-    "id": "minfu-jiayuan",
-    "name": "民富家园",
-    "coordinates": [
-      121.514905,
-      31.310033
-    ],
-    "distance": "0.7km",
-    "bikeTime": "步行7分钟",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [
-      "多层"
-    ],
-    "layouts": [],
-    "elevator": false,
-    "highlights": [],
-    "warnings": [],
-    "contributor": "即刻社区",
-    "updatedAt": "2020",
-    "roomPricing": []
-  },
-  {
-    "id": "sanxiang-weilai-haian",
-    "name": "三湘未来海岸",
-    "coordinates": [
-      121.5058,
-      31.316672
-    ],
-    "distance": "2.0km",
-    "bikeTime": "骑车12分钟",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [
-      "高层"
-    ],
-    "layouts": [],
-    "elevator": true,
-    "highlights": [],
-    "warnings": [],
-    "contributor": "即刻社区",
-    "updatedAt": "2020",
-    "roomPricing": []
-  },
-  {
     "id": "guodinglu-700",
     "name": "国定路700弄",
     "coordinates": [
@@ -965,55 +399,49 @@
     ]
   },
   {
-    "id": "wuchuanlu-222",
-    "name": "武川路222弄",
+    "id": "guohelu-610",
+    "name": "国和路610弄",
     "coordinates": [
-      121.496902,
-      31.305494
+      121.52,
+      31.31
     ],
-    "distance": "1.5km",
-    "bikeTime": "骑车10分钟",
+    "distance": "2.0km",
+    "bikeTime": "骑车12分钟",
     "price": {
-      "min": 4400,
-      "max": 4400,
+      "min": 4500,
+      "max": 4500,
       "unit": "月"
     },
     "floorTypes": [
-      "多层",
-      "新楼"
+      "多层"
     ],
     "layouts": [
-      "一室一厅"
+      "一室"
     ],
     "elevator": false,
     "highlights": [
-      "有桂花树",
-      "水压好",
-      "精装修",
-      "通风好",
-      "采光好",
-      "隔音好"
+      "精装修"
     ],
     "warnings": [],
-    "contributor": "即刻社区",
+    "contributor": "老大",
     "updatedAt": "2026",
     "roomPricing": [
       {
-        "layout": "一室一厅",
+        "layout": "一室",
         "shared": 0,
         "whole": 0
       }
     ]
   },
   {
-    "id": "beijiao-xiaoqu",
-    "name": "北郊小区",
+    "id": "guohu-yicun",
+    "name": "国和一村",
     "coordinates": [
-      121.490003,
-      31.274292
+      121.529095,
+      31.316401
     ],
-    "distance": "3.9km",
-    "bikeTime": "骑车26分钟",
+    "distance": "2.5km",
+    "bikeTime": "骑车20分钟",
     "price": {
       "min": 0,
       "max": 0,
@@ -1027,18 +455,18 @@
     "highlights": [],
     "warnings": [],
     "contributor": "即刻社区",
-    "updatedAt": "2022",
+    "updatedAt": "2020",
     "roomPricing": []
   },
   {
-    "id": "henan-zhonglu-575",
-    "name": "山北小区",
+    "id": "guoquan-beilu-8nong",
+    "name": "国权北路8弄",
     "coordinates": [
-      121.483051,
-      31.239909
+      121.494444,
+      31.309973
     ],
-    "distance": "10km",
-    "bikeTime": "地铁35分钟",
+    "distance": "1.8km",
+    "bikeTime": "骑车10分钟",
     "price": {
       "min": 0,
       "max": 0,
@@ -1091,6 +519,212 @@
     ]
   },
   {
+    "id": "henan-zhonglu-575",
+    "name": "山北小区",
+    "coordinates": [
+      121.483051,
+      31.239909
+    ],
+    "distance": "10km",
+    "bikeTime": "地铁35分钟",
+    "price": {
+      "min": 0,
+      "max": 0,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "多层"
+    ],
+    "layouts": [],
+    "elevator": false,
+    "highlights": [],
+    "warnings": [],
+    "contributor": "即刻社区",
+    "updatedAt": "2020",
+    "roomPricing": []
+  },
+  {
+    "id": "huchang-gongyu",
+    "name": "沪昌公寓",
+    "coordinates": [
+      121.515591,
+      31.304317
+    ],
+    "distance": "0.5km",
+    "bikeTime": "步行5分钟",
+    "price": {
+      "min": 0,
+      "max": 0,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "高层"
+    ],
+    "layouts": [],
+    "elevator": true,
+    "highlights": [],
+    "warnings": [],
+    "contributor": "即刻社区",
+    "updatedAt": "2020",
+    "roomPricing": []
+  },
+  {
+    "id": "jianxin-xiaoqu",
+    "name": "建新小区",
+    "coordinates": [
+      121.511271,
+      31.300837
+    ],
+    "distance": "1.0km",
+    "bikeTime": "步行12分钟",
+    "price": {
+      "min": 5300,
+      "max": 5300,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "多层"
+    ],
+    "layouts": [
+      "一室"
+    ],
+    "elevator": false,
+    "highlights": [
+      "5楼",
+      "精装大一房",
+      "阳台采光好",
+      "随时扔垃圾"
+    ],
+    "warnings": [
+      "很旧",
+      "隔音差",
+      "水压小",
+      "隔壁麻将馆吵",
+      "居委会大爷太热情"
+    ],
+    "contributor": "即刻社区",
+    "updatedAt": "2026",
+    "roomPricing": [
+      {
+        "layout": "一室",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
+  },
+  {
+    "id": "linlu-jiayuan",
+    "name": "林绿家园",
+    "coordinates": [
+      121.51243,
+      31.290479
+    ],
+    "distance": "1.7km",
+    "bikeTime": "骑车10分钟",
+    "price": {
+      "min": 0,
+      "max": 0,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "高层"
+    ],
+    "layouts": [],
+    "elevator": true,
+    "highlights": [],
+    "warnings": [],
+    "contributor": "即刻社区",
+    "updatedAt": "2022",
+    "roomPricing": []
+  },
+  {
+    "id": "minfu-jiayuan",
+    "name": "民富家园",
+    "coordinates": [
+      121.514905,
+      31.310033
+    ],
+    "distance": "0.7km",
+    "bikeTime": "步行7分钟",
+    "price": {
+      "min": 0,
+      "max": 0,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "多层"
+    ],
+    "layouts": [],
+    "elevator": false,
+    "highlights": [],
+    "warnings": [],
+    "contributor": "即刻社区",
+    "updatedAt": "2020",
+    "roomPricing": []
+  },
+  {
+    "id": "minjinglu-837",
+    "name": "民京路837弄",
+    "coordinates": [
+      121.52,
+      31.31
+    ],
+    "distance": "2.0km",
+    "bikeTime": "骑车12分钟",
+    "price": {
+      "min": 6000,
+      "max": 6000,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "多层"
+    ],
+    "layouts": [
+      "两室一厅"
+    ],
+    "elevator": false,
+    "highlights": [
+      "4楼",
+      "空关",
+      "看房方便"
+    ],
+    "warnings": [],
+    "contributor": "老大",
+    "updatedAt": "2026",
+    "roomPricing": [
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
+  },
+  {
+    "id": "nanchayuan",
+    "name": "南茶园",
+    "coordinates": [
+      121.518204,
+      31.290743
+    ],
+    "distance": "2.0km",
+    "bikeTime": "骑车12分钟",
+    "price": {
+      "min": 0,
+      "max": 0,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "多层"
+    ],
+    "layouts": [],
+    "elevator": false,
+    "highlights": [],
+    "warnings": [],
+    "contributor": "即刻社区",
+    "updatedAt": "2020",
+    "roomPricing": []
+  },
+  {
     "id": "pulu-615nong",
     "name": "浦路615弄",
     "coordinates": [
@@ -1120,6 +754,391 @@
     "contributor": "老大",
     "updatedAt": "2026",
     "roomPricing": []
+  },
+  {
+    "id": "renheyuan",
+    "name": "仁和苑",
+    "coordinates": [
+      121.512202,
+      31.303093
+    ],
+    "distance": "0.6km",
+    "bikeTime": "3分钟",
+    "price": {
+      "min": 0,
+      "max": 0,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "多层"
+    ],
+    "layouts": [],
+    "elevator": false,
+    "highlights": [],
+    "warnings": [],
+    "contributor": "即刻社区",
+    "updatedAt": "2020",
+    "roomPricing": []
+  },
+  {
+    "id": "sanmenlu-358",
+    "name": "三门路358弄",
+    "coordinates": [
+      121.492724,
+      31.309768
+    ],
+    "distance": "2.0km",
+    "bikeTime": "骑车15分钟",
+    "price": {
+      "min": 5300,
+      "max": 5800,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "多层"
+    ],
+    "layouts": [
+      "两室一厅"
+    ],
+    "elevator": false,
+    "highlights": [
+      "3楼",
+      "南北朝向",
+      "厕所可直接冲纸",
+      "有钥匙",
+      "看房方便",
+      "社区活动多",
+      "租客转租",
+      "精装修",
+      "随时看房"
+    ],
+    "warnings": [
+      "窗户隔音不行",
+      "采光一般"
+    ],
+    "contributor": "即刻社区",
+    "updatedAt": "2026",
+    "roomPricing": [
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
+  },
+  {
+    "id": "sanmenlu-555",
+    "name": "三门路555弄",
+    "coordinates": [
+      121.49,
+      31.31
+    ],
+    "distance": "2.0km",
+    "bikeTime": "骑车12分钟",
+    "price": {
+      "min": 3500,
+      "max": 3500,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "多层"
+    ],
+    "layouts": [
+      "一室一厅"
+    ],
+    "elevator": false,
+    "highlights": [
+      "4楼"
+    ],
+    "warnings": [],
+    "contributor": "老大",
+    "updatedAt": "2026",
+    "roomPricing": [
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
+  },
+  {
+    "id": "sanxiang-weilai-haian",
+    "name": "三湘未来海岸",
+    "coordinates": [
+      121.5058,
+      31.316672
+    ],
+    "distance": "2.0km",
+    "bikeTime": "骑车12分钟",
+    "price": {
+      "min": 0,
+      "max": 0,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "高层"
+    ],
+    "layouts": [],
+    "elevator": true,
+    "highlights": [],
+    "warnings": [],
+    "contributor": "即刻社区",
+    "updatedAt": "2020",
+    "roomPricing": []
+  },
+  {
+    "id": "shiguang-yicun",
+    "name": "市光一村",
+    "coordinates": [
+      121.52,
+      31.32
+    ],
+    "distance": "2.0km",
+    "bikeTime": "骑车12分钟",
+    "price": {
+      "min": 4500,
+      "max": 4500,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "多层"
+    ],
+    "layouts": [
+      "一室一厅"
+    ],
+    "elevator": false,
+    "highlights": [
+      "精装修",
+      "4500可谈"
+    ],
+    "warnings": [],
+    "contributor": "老大",
+    "updatedAt": "2026",
+    "roomPricing": [
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
+  },
+  {
+    "id": "sipinglu-2065nong",
+    "name": "四平路2065弄",
+    "coordinates": [
+      121.513,
+      31.296
+    ],
+    "distance": "1.2km",
+    "bikeTime": "骑车6分钟",
+    "price": {
+      "min": 0,
+      "max": 0,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "多层"
+    ],
+    "layouts": [
+      "一室"
+    ],
+    "elevator": false,
+    "highlights": [],
+    "warnings": [],
+    "contributor": "老大",
+    "updatedAt": "2026",
+    "roomPricing": []
+  },
+  {
+    "id": "sipinglu-2555",
+    "name": "四平路2555弄",
+    "coordinates": [
+      121.513252,
+      31.296141
+    ],
+    "distance": "1.2km",
+    "bikeTime": "骑车6分钟",
+    "price": {
+      "min": 0,
+      "max": 0,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "多层"
+    ],
+    "layouts": [],
+    "elevator": false,
+    "highlights": [],
+    "warnings": [],
+    "contributor": "即刻社区",
+    "updatedAt": "2020",
+    "roomPricing": []
+  },
+  {
+    "id": "tiecun-xiaoqu",
+    "name": "铁村小区",
+    "coordinates": [
+      121.51,
+      31.30
+    ],
+    "distance": "1.0km",
+    "bikeTime": "骑车5分钟",
+    "price": {
+      "min": 4300,
+      "max": 4300,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "多层"
+    ],
+    "layouts": [
+      "一室"
+    ],
+    "elevator": false,
+    "highlights": [
+      "5楼",
+      "4300可谈",
+      "有钥匙"
+    ],
+    "warnings": [],
+    "contributor": "老大",
+    "updatedAt": "2026",
+    "roomPricing": [
+      {
+        "layout": "一室",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
+  },
+  {
+    "id": "wenhua-huayuan",
+    "name": "文化花园",
+    "coordinates": [
+      121.490603,
+      31.302897
+    ],
+    "distance": "1.8km",
+    "bikeTime": "骑车10分钟",
+    "price": {
+      "min": 0,
+      "max": 0,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "高层"
+    ],
+    "layouts": [],
+    "elevator": true,
+    "highlights": [],
+    "warnings": [],
+    "contributor": "即刻社区",
+    "updatedAt": "2020",
+    "roomPricing": []
+  },
+  {
+    "id": "wenhua-mingyuan",
+    "name": "文化名园",
+    "coordinates": [
+      121.49124,
+      31.30718
+    ],
+    "distance": "2.0km",
+    "bikeTime": "骑车12分钟",
+    "price": {
+      "min": 0,
+      "max": 0,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "多层"
+    ],
+    "layouts": [],
+    "elevator": false,
+    "highlights": [],
+    "warnings": [],
+    "contributor": "即刻社区",
+    "updatedAt": "2020",
+    "roomPricing": []
+  },
+  {
+    "id": "wuchuanlu-222",
+    "name": "武川路222弄",
+    "coordinates": [
+      121.496902,
+      31.305494
+    ],
+    "distance": "1.5km",
+    "bikeTime": "骑车10分钟",
+    "price": {
+      "min": 4400,
+      "max": 4400,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "多层",
+      "新楼"
+    ],
+    "layouts": [
+      "一室一厅"
+    ],
+    "elevator": false,
+    "highlights": [
+      "有桂花树",
+      "水压好",
+      "精装修",
+      "通风好",
+      "采光好",
+      "隔音好"
+    ],
+    "warnings": [],
+    "contributor": "即刻社区",
+    "updatedAt": "2026",
+    "roomPricing": [
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
+  },
+  {
+    "id": "wuchuanlu-245",
+    "name": "武川路245弄",
+    "coordinates": [
+      121.498,
+      31.305
+    ],
+    "distance": "1.5km",
+    "bikeTime": "骑车10分钟",
+    "price": {
+      "min": 4800,
+      "max": 4800,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "多层"
+    ],
+    "layouts": [
+      "一室"
+    ],
+    "elevator": false,
+    "highlights": [
+      "3楼",
+      "38平",
+      "精装修",
+      "价格小谈"
+    ],
+    "warnings": [],
+    "contributor": "老大",
+    "updatedAt": "2026",
+    "roomPricing": [
+      {
+        "layout": "一室",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "wuchuanlu-99nong",
@@ -1152,68 +1171,74 @@
     "roomPricing": []
   },
   {
-    "id": "sipinglu-2065nong",
-    "name": "四平路2065弄",
+    "id": "xinjiangwancheng-shanghaiyuanzi",
+    "name": "新江湾城 上海院子",
     "coordinates": [
-      121.513,
-      31.296
+      121.52,
+      31.33
     ],
-    "distance": "1.2km",
-    "bikeTime": "骑车6分钟",
+    "distance": "4.0km",
+    "bikeTime": "地铁30分钟",
+    "price": {
+      "min": 13500,
+      "max": 14500,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "电梯洋房"
+    ],
+    "layouts": [
+      "三室两厅两卫"
+    ],
+    "elevator": true,
+    "warnings": [
+      "离公司较远"
+    ],
+    "contributor": "老大",
+    "updatedAt": "2026",
+    "roomPricing": [
+      {
+        "layout": "三室两厅两卫",
+        "shared": 0,
+        "whole": 0
+      }
+    ],
+    "highlights": [
+      "10号线地铁口",
+      "14500可谈",
+      "86平",
+      "中央空调地暖",
+      "电梯洋房中区",
+      "空关",
+      "精装修",
+      "随时入住",
+      "高区景观最好的楼层"
+    ]
+  },
+  {
+    "id": "yifuyuan",
+    "name": "怡福苑",
+    "coordinates": [
+      121.518614,
+      31.291866
+    ],
+    "distance": "1.9km",
+    "bikeTime": "骑车10分钟",
     "price": {
       "min": 0,
       "max": 0,
       "unit": "月"
     },
     "floorTypes": [
-      "多层"
-    ],
-    "layouts": [
-      "一室"
-    ],
-    "elevator": false,
-    "highlights": [],
-    "warnings": [],
-    "contributor": "老大",
-    "updatedAt": "2026",
-    "roomPricing": []
-  },
-  {
-    "id": "gongyuan-3000",
-    "name": "公园3000",
-    "coordinates": [
-      121.52,
-      31.30
-    ],
-    "distance": "1.0km",
-    "bikeTime": "骑车5分钟",
-    "price": {
-      "min": 5500,
-      "max": 5500,
-      "unit": "月"
-    },
-    "floorTypes": [
       "高层"
     ],
-    "layouts": [
-      "一室一厅"
-    ],
+    "layouts": [],
     "elevator": true,
-    "highlights": [
-      "电梯高区",
-      "装修干净",
-      "大衣帽/可做书房"
-    ],
+    "highlights": [],
     "warnings": [],
-    "contributor": "老大",
-    "updatedAt": "2026",
-    "roomPricing": [
-      {
-        "layout": "一室一厅",
-        "shared": 0,
-        "whole": 0
-      }
-    ]
+    "contributor": "即刻社区",
+    "updatedAt": "2020",
+    "roomPricing": []
   },
   {
     "id": "yixian-ercun-460",
@@ -1254,17 +1279,17 @@
     ]
   },
   {
-    "id": "shiguang-yicun",
-    "name": "市光一村",
+    "id": "zhengde-donglu-108",
+    "name": "政德东路108号",
     "coordinates": [
-      121.52,
-      31.32
+      121.518273,
+      31.308893
     ],
-    "distance": "2.0km",
-    "bikeTime": "骑车12分钟",
+    "distance": "1.0km",
+    "bikeTime": "步行12分钟",
     "price": {
-      "min": 4500,
-      "max": 4500,
+      "min": 0,
+      "max": 0,
       "unit": "月"
     },
     "floorTypes": [
@@ -1275,11 +1300,16 @@
     ],
     "elevator": false,
     "highlights": [
-      "精装修",
-      "4500可谈"
+      "邻里和睦",
+      "教堂钟声",
+      "星巴克楼下",
+      "物业每晚提醒关门窗"
     ],
-    "warnings": [],
-    "contributor": "老大",
+    "warnings": [
+      "狗屎特别多",
+      "排水反胃"
+    ],
+    "contributor": "即刻社区",
     "updatedAt": "2026",
     "roomPricing": [
       {
@@ -1329,262 +1359,53 @@
     ]
   },
   {
-    "id": "guohelu-610",
-    "name": "国和路610弄",
+    "id": "zhenglitu-580",
+    "name": "政立路580弄",
     "coordinates": [
-      121.52,
-      31.31
+      121.505805,
+      31.305681
     ],
-    "distance": "2.0km",
-    "bikeTime": "骑车12分钟",
+    "distance": "0.8km",
+    "bikeTime": "步行10分钟",
     "price": {
-      "min": 4500,
-      "max": 4500,
+      "min": 8000,
+      "max": 8000,
       "unit": "月"
     },
     "floorTypes": [
       "多层"
     ],
     "layouts": [
-      "一室"
+      "一室一厅",
+      "三室一厅",
+      "两室一厅"
     ],
     "elevator": false,
     "highlights": [
-      "精装修"
+      "8000可谈约看房",
+      "南北通风",
+      "精装修",
+      "采光好"
     ],
-    "warnings": [],
-    "contributor": "老大",
-    "updatedAt": "2026",
-    "roomPricing": [
-      {
-        "layout": "一室",
-        "shared": 0,
-        "whole": 0
-      }
-    ]
-  },
-  {
-    "id": "xinjiangwancheng-shanghaiyuanzi",
-    "name": "新江湾城 上海院子",
-    "coordinates": [
-      121.52,
-      31.33
-    ],
-    "distance": "4.0km",
-    "bikeTime": "地铁30分钟",
-    "price": {
-      "min": 13500,
-      "max": 13500,
-      "unit": "月"
-    },
-    "floorTypes": [
-      "电梯洋房"
-    ],
-    "layouts": [
-      "三室两厅两卫"
-    ],
-    "elevator": true,
     "warnings": [
-      "离公司较远"
+      "隔音差",
+      "装修噪音多",
+      "手机信号差",
+      "马桶经常堵"
     ],
-    "contributor": "老大",
-    "updatedAt": "2026",
-    "roomPricing": [
-      {
-        "layout": "三室两厅两卫",
-        "shared": 0,
-        "whole": 0
-      }
-    ],
-    "highlights": [
-      "86平",
-      "电梯洋房中区",
-      "精装修",
-      "空关",
-      "随时入住",
-      "10号线地铁口"
-    ]
-  },
-  {
-    "id": "xinjiangwancheng-shanghaiyuanzi",
-    "name": "新江湾城 上海院子",
-    "coordinates": [
-      121.52,
-      31.33
-    ],
-    "distance": "4.0km",
-    "bikeTime": "地铁30分钟",
-    "price": {
-      "min": 13500,
-      "max": 13500,
-      "unit": "月"
-    },
-    "floorTypes": [
-      "电梯洋房"
-    ],
-    "layouts": [
-      "三室两厅两卫"
-    ],
-    "elevator": true,
-    "warnings": [],
-    "contributor": "老大",
-    "updatedAt": "2026",
-    "roomPricing": [
-      {
-        "layout": "三室两厅两卫",
-        "shared": 0,
-        "whole": 0
-      }
-    ],
-    "highlights": [
-      "86平",
-      "电梯洋房中区",
-      "精装修",
-      "空关",
-      "随时入住",
-      "10号线地铁口"
-    ]
-  },
-  {
-    "id": "sanmenlu-555",
-    "name": "三门路555弄",
-    "coordinates": [
-      121.49,
-      31.31
-    ],
-    "distance": "2.0km",
-    "bikeTime": "骑车12分钟",
-    "price": {
-      "min": 3500,
-      "max": 3500,
-      "unit": "月"
-    },
-    "floorTypes": [
-      "多层"
-    ],
-    "layouts": [
-      "一室一厅"
-    ],
-    "elevator": false,
-    "highlights": [
-      "4楼"
-    ],
-    "warnings": [],
-    "contributor": "老大",
+    "contributor": "即刻社区",
     "updatedAt": "2026",
     "roomPricing": [
       {
         "layout": "一室一厅",
         "shared": 0,
         "whole": 0
-      }
-    ]
-  },
-  {
-    "id": "wuchuanlu-245",
-    "name": "武川路245弄",
-    "coordinates": [
-      121.498,
-      31.305
-    ],
-    "distance": "1.5km",
-    "bikeTime": "骑车10分钟",
-    "price": {
-      "min": 4800,
-      "max": 4800,
-      "unit": "月"
-    },
-    "floorTypes": [
-      "多层"
-    ],
-    "layouts": [
-      "一室"
-    ],
-    "elevator": false,
-    "highlights": [
-      "3楼",
-      "38平",
-      "精装修",
-      "价格小谈"
-    ],
-    "warnings": [],
-    "contributor": "老大",
-    "updatedAt": "2026",
-    "roomPricing": [
+      },
       {
-        "layout": "一室",
+        "layout": "三室一厅",
         "shared": 0,
         "whole": 0
-      }
-    ]
-  },
-  {
-    "id": "tiecun-xiaoqu",
-    "name": "铁村小区",
-    "coordinates": [
-      121.51,
-      31.30
-    ],
-    "distance": "1.0km",
-    "bikeTime": "骑车5分钟",
-    "price": {
-      "min": 4300,
-      "max": 4300,
-      "unit": "月"
-    },
-    "floorTypes": [
-      "多层"
-    ],
-    "layouts": [
-      "一室"
-    ],
-    "elevator": false,
-    "highlights": [
-      "5楼",
-      "4300可谈",
-      "有钥匙"
-    ],
-    "warnings": [],
-    "contributor": "老大",
-    "updatedAt": "2026",
-    "roomPricing": [
-      {
-        "layout": "一室",
-        "shared": 0,
-        "whole": 0
-      }
-    ]
-  },
-  {
-    "id": "guodinglu-505",
-    "name": "国定路505弄",
-    "coordinates": [
-      121.505,
-      31.304
-    ],
-    "distance": "1.0km",
-    "bikeTime": "步行12分钟",
-    "price": {
-      "min": 5900,
-      "max": 5900,
-      "unit": "月"
-    },
-    "floorTypes": [
-      "多层"
-    ],
-    "layouts": [
-      "两室一厅"
-    ],
-    "elevator": false,
-    "highlights": [
-      "装修干净",
-      "双南",
-      "5楼"
-    ],
-    "warnings": [],
-    "contributor": "老大",
-    "updatedAt": "2026",
-    "roomPricing": [
+      },
       {
         "layout": "两室一厅",
         "shared": 0,
@@ -1593,41 +1414,129 @@
     ]
   },
   {
-    "id": "minjinglu-837",
-    "name": "民京路837弄",
+    "id": "zhenglitu-6nong",
+    "name": "政立路6弄",
     "coordinates": [
-      121.52,
-      31.31
+      121.523818,
+      31.307803
     ],
-    "distance": "2.0km",
-    "bikeTime": "骑车12分钟",
+    "distance": "1.3km",
+    "bikeTime": "骑车7分钟",
     "price": {
-      "min": 6000,
-      "max": 6000,
+      "min": 0,
+      "max": 0,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "板楼"
+    ],
+    "layouts": [],
+    "elevator": false,
+    "highlights": [],
+    "warnings": [],
+    "contributor": "即刻社区",
+    "updatedAt": "2020",
+    "roomPricing": []
+  },
+  {
+    "id": "zhengminlu-150",
+    "name": "政民路150弄",
+    "coordinates": [
+      121.510141,
+      31.303075
+    ],
+    "distance": "0.3km",
+    "bikeTime": "步行3分钟",
+    "price": {
+      "min": 0,
+      "max": 0,
       "unit": "月"
     },
     "floorTypes": [
       "多层"
     ],
+    "layouts": [],
+    "elevator": false,
+    "highlights": [],
+    "warnings": [],
+    "contributor": "即刻社区",
+    "updatedAt": "2020",
+    "roomPricing": []
+  },
+  {
+    "id": "zhengminlu-230",
+    "name": "政民路230弄",
+    "coordinates": [
+      121.507672,
+      31.302317
+    ],
+    "distance": "0.5km",
+    "bikeTime": "步行7分钟",
+    "price": {
+      "min": 5800,
+      "max": 5800,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "板楼"
+    ],
     "layouts": [
-      "两室一厅"
+      "一室",
+      "两室"
     ],
     "elevator": false,
     "highlights": [
-      "4楼",
-      "空关",
-      "看房方便"
+      "中层",
+      "大学路旁边",
+      "小区门口垃圾站随便扔",
+      "河边安静",
+      "精装修全配",
+      "靠虬江视野好"
     ],
-    "warnings": [],
-    "contributor": "老大",
+    "warnings": [
+      "排水偶尔堵",
+      "梅雨季潮湿",
+      "中间户型隔音差"
+    ],
+    "contributor": "即刻社区",
     "updatedAt": "2026",
     "roomPricing": [
       {
-        "layout": "两室一厅",
+        "layout": "一室",
+        "shared": 0,
+        "whole": 0
+      },
+      {
+        "layout": "两室",
         "shared": 0,
         "whole": 0
       }
     ]
+  },
+  {
+    "id": "zhengtonglu-100",
+    "name": "政通路100弄",
+    "coordinates": [
+      121.517495,
+      31.304728
+    ],
+    "distance": "0.8km",
+    "bikeTime": "步行10分钟",
+    "price": {
+      "min": 0,
+      "max": 0,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "多层"
+    ],
+    "layouts": [],
+    "elevator": false,
+    "highlights": [],
+    "warnings": [],
+    "contributor": "即刻社区",
+    "updatedAt": "2020",
+    "roomPricing": []
   },
   {
     "id": "zhengtonglu-118",
@@ -1666,40 +1575,94 @@
     ]
   },
   {
-    "id": "caida-xiaoqu-guodinglu",
-    "name": "国定路财大小区",
+    "id": "zhengtonglu-285",
+    "name": "政通路285弄",
     "coordinates": [
-      121.506,
-      31.304
+      121.511823,
+      31.301372
     ],
     "distance": "0.8km",
     "bikeTime": "步行10分钟",
     "price": {
-      "min": 6400,
-      "max": 6500,
+      "min": 0,
+      "max": 0,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "多层"
+    ],
+    "layouts": [],
+    "elevator": false,
+    "highlights": [],
+    "warnings": [],
+    "contributor": "即刻社区",
+    "updatedAt": "2020",
+    "roomPricing": []
+  },
+  {
+    "id": "zhengtonglu-42",
+    "name": "政通路42弄",
+    "coordinates": [
+      121.520816,
+      31.305346
+    ],
+    "distance": "0.9km",
+    "bikeTime": "步行10分钟",
+    "price": {
+      "min": 4500,
+      "max": 4500,
       "unit": "月"
     },
     "floorTypes": [
       "多层"
     ],
     "layouts": [
-      "两室一厅"
+      "一室"
     ],
     "elevator": false,
     "highlights": [
-      "双南",
-      "精装修",
-      "看房方便"
+      "1楼",
+      "南北通透",
+      "隔音好",
+      "靠虬江"
     ],
-    "warnings": [],
-    "contributor": "老大",
+    "warnings": [
+      "水压小",
+      "客厅采光一半不好"
+    ],
+    "contributor": "即刻社区",
     "updatedAt": "2026",
     "roomPricing": [
       {
-        "layout": "两室一厅",
+        "layout": "一室",
         "shared": 0,
         "whole": 0
       }
     ]
+  },
+  {
+    "id": "zhengwu-huayuan",
+    "name": "正文花园",
+    "coordinates": [
+      121.48859,
+      31.308559
+    ],
+    "distance": "2.0km",
+    "bikeTime": "骑车12分钟",
+    "price": {
+      "min": 0,
+      "max": 0,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "多层"
+    ],
+    "layouts": [],
+    "elevator": false,
+    "highlights": [],
+    "warnings": [],
+    "contributor": "即刻社区",
+    "updatedAt": "2020",
+    "roomPricing": []
   }
 ]
