@@ -33,7 +33,19 @@
       "潮湿需除湿机"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2020"
+    "updatedAt": "2020",
+    "roomPricing": [
+      {
+        "layout": "一室",
+        "shared": 0,
+        "whole": 0
+      },
+      {
+        "layout": "三室",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "zhengminlu-150",
@@ -65,7 +77,14 @@
       "客厅采光不好"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2020"
+    "updatedAt": "2020",
+    "roomPricing": [
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "zhenglitu-580",
@@ -100,7 +119,19 @@
       "马桶经常堵"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2020"
+    "updatedAt": "2020",
+    "roomPricing": [
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 0
+      },
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "fuguangyuan",
@@ -134,7 +165,19 @@
       "限时垃圾分类"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2022"
+    "updatedAt": "2022",
+    "roomPricing": [
+      {
+        "layout": "三室一厅",
+        "shared": 0,
+        "whole": 0
+      },
+      {
+        "layout": "四室两卫",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "zhengminlu-230",
@@ -169,7 +212,19 @@
       "中间户型隔音差"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2020"
+    "updatedAt": "2020",
+    "roomPricing": [
+      {
+        "layout": "一室",
+        "shared": 0,
+        "whole": 0
+      },
+      {
+        "layout": "两室",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "guodinglu-555",
@@ -200,7 +255,14 @@
       "小区旧"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2020"
+    "updatedAt": "2020",
+    "roomPricing": [
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "guodinglu-600",
@@ -232,7 +294,14 @@
       "潮湿"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2020"
+    "updatedAt": "2020",
+    "roomPricing": [
+      {
+        "layout": "一室",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "guodinglu-601",
@@ -264,7 +333,14 @@
       "手机信号弱"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2020"
+    "updatedAt": "2020",
+    "roomPricing": [
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "zhenglitu-6nong",
@@ -298,7 +374,14 @@
       "限时垃圾分类"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2020"
+    "updatedAt": "2020",
+    "roomPricing": [
+      {
+        "layout": "一室",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "zhengtonglu-42",
@@ -331,7 +414,14 @@
       "客厅采光一半不好"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2020"
+    "updatedAt": "2020",
+    "roomPricing": [
+      {
+        "layout": "一室",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "zhengtonglu-100",
@@ -363,7 +453,14 @@
       "手机信号很弱"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2020"
+    "updatedAt": "2020",
+    "roomPricing": [
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "zhengtonglu-285",
@@ -395,7 +492,14 @@
       "略湿"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2020"
+    "updatedAt": "2020",
+    "roomPricing": [
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "zhengde-donglu-108",
@@ -429,7 +533,14 @@
       "排水反胃"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2026"
+    "updatedAt": "2026",
+    "roomPricing": [
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "chuanzhi-fang",
@@ -465,7 +576,14 @@
       "神奇户型"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2020"
+    "updatedAt": "2020",
+    "roomPricing": [
+      {
+        "layout": "四室两卫",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "wenhua-huayuan",
@@ -497,7 +615,14 @@
       "隔音一般"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2020"
+    "updatedAt": "2020",
+    "roomPricing": [
+      {
+        "layout": "三室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "dongfang-jinyuan",
@@ -531,7 +656,19 @@
       "不要住临政立路"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2020"
+    "updatedAt": "2020",
+    "roomPricing": [
+      {
+        "layout": "一室",
+        "shared": 0,
+        "whole": 0
+      },
+      {
+        "layout": "四室顶复",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "yifuyuan",
@@ -566,7 +703,19 @@
       "通风一般"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2020"
+    "updatedAt": "2020",
+    "roomPricing": [
+      {
+        "layout": "一室",
+        "shared": 0,
+        "whole": 0
+      },
+      {
+        "layout": "三室两厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "guoquan-beilu-8nong",
@@ -598,7 +747,14 @@
       "对门邻居精神不正常"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2020"
+    "updatedAt": "2020",
+    "roomPricing": [
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "jianxin-xiaoqu",
@@ -633,7 +789,14 @@
       "居委会大爷太热情"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2025"
+    "updatedAt": "2025",
+    "roomPricing": [
+      {
+        "layout": "一室",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "wenhua-mingyuan",
@@ -667,7 +830,14 @@
       "顶楼靠增压泵"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2020"
+    "updatedAt": "2020",
+    "roomPricing": [
+      {
+        "layout": "一室",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "zhengwu-huayuan",
@@ -701,7 +871,14 @@
       "屋内信号差"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2020"
+    "updatedAt": "2020",
+    "roomPricing": [
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "sipinglu-2555",
@@ -734,7 +911,14 @@
       "无绿化"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2020"
+    "updatedAt": "2020",
+    "roomPricing": [
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "linlu-jiayuan",
@@ -765,7 +949,14 @@
     ],
     "warnings": [],
     "contributor": "即刻社区",
-    "updatedAt": "2022"
+    "updatedAt": "2022",
+    "roomPricing": [
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "sanmenlu-358",
@@ -798,7 +989,14 @@
       "采光一般"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2020"
+    "updatedAt": "2020",
+    "roomPricing": [
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "nanchayuan",
@@ -831,7 +1029,14 @@
       "靠马路灰多"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2020"
+    "updatedAt": "2020",
+    "roomPricing": [
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "guohu-yicun",
@@ -866,7 +1071,14 @@
       "小区修路灰尘多"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2020"
+    "updatedAt": "2020",
+    "roomPricing": [
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "huchang-gongyu",
@@ -898,7 +1110,14 @@
       "采光一般"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2020"
+    "updatedAt": "2020",
+    "roomPricing": [
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "minfu-jiayuan",
@@ -932,7 +1151,14 @@
       "厕所不太通风"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2020"
+    "updatedAt": "2020",
+    "roomPricing": [
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "sanxiang-weilai-haian",
@@ -964,7 +1190,14 @@
       "商用水电"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2020"
+    "updatedAt": "2020",
+    "roomPricing": [
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "guodinglu-700",
@@ -995,7 +1228,14 @@
       "幼儿园广播"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2020"
+    "updatedAt": "2020",
+    "roomPricing": [
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "wuchuanlu-222",
@@ -1028,7 +1268,14 @@
     ],
     "warnings": [],
     "contributor": "即刻社区",
-    "updatedAt": "2022"
+    "updatedAt": "2022",
+    "roomPricing": [
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "beijiao-xiaoqu",
@@ -1062,7 +1309,14 @@
       "老旧小区"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2022"
+    "updatedAt": "2022",
+    "roomPricing": [
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   },
   {
     "id": "henan-zhonglu-575",
@@ -1095,6 +1349,83 @@
       "不在房补范围"
     ],
     "contributor": "即刻社区",
-    "updatedAt": "2020"
+    "updatedAt": "2020",
+    "roomPricing": [
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
+  },
+  {
+    "id": "guoshunlu-400nong",
+    "name": "国顺路400弄",
+    "coordinates": [
+      121.5065,
+      31.3005
+    ],
+    "distance": "0.6km",
+    "bikeTime": "步行7分钟",
+    "price": {
+      "min": 4300,
+      "max": 4300,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "多层"
+    ],
+    "layouts": [
+      "一室半"
+    ],
+    "elevator": false,
+    "highlights": [],
+    "warnings": [],
+    "contributor": "老大",
+    "updatedAt": "2026",
+    "roomPricing": [
+      {
+        "layout": "一室半",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
+  },
+  {
+    "id": "pulu-615nong",
+    "name": "浦路615弄",
+    "coordinates": [
+      121.5145,
+      31.2995
+    ],
+    "distance": "0.9km",
+    "bikeTime": "步行10分钟",
+    "price": {
+      "min": 6300,
+      "max": 6300,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "高层"
+    ],
+    "layouts": [
+      "两房一厅"
+    ],
+    "elevator": true,
+    "highlights": [
+      "南北全明",
+      "精装修",
+      "业主第二次出租"
+    ],
+    "warnings": [],
+    "contributor": "老大",
+    "updatedAt": "2026",
+    "roomPricing": [
+      {
+        "layout": "两房一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   }
 ]
