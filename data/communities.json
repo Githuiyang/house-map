@@ -1664,5 +1664,43 @@
     "contributor": "即刻社区",
     "updatedAt": "2020",
     "roomPricing": []
+  },
+  {
+    "id": "zhengli-xiaoqu",
+    "name": "政立小区",
+    "coordinates": [
+      121.506,
+      31.305
+    ],
+    "distance": "0.9km",
+    "bikeTime": "步行12分钟",
+    "price": {
+      "min": 4200,
+      "max": 4200,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "多层"
+    ],
+    "layouts": [
+      "一室一厅"
+    ],
+    "elevator": false,
+    "highlights": [
+      "家具全配",
+      "5楼",
+      "4200好谈",
+      "看房随时有钥"
+    ],
+    "warnings": [],
+    "contributor": "老大",
+    "updatedAt": "2026",
+    "roomPricing": [
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   }
 ]
