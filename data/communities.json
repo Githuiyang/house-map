@@ -1871,5 +1871,42 @@
         "whole": 0
       }
     ]
+  },
+  {
+    "id": "tiecun-xiaoqu",
+    "name": "铁村小区",
+    "coordinates": [
+      121.51,
+      31.30
+    ],
+    "distance": "1.0km",
+    "bikeTime": "骑车5分钟",
+    "price": {
+      "min": 4300,
+      "max": 4300,
+      "unit": "月"
+    },
+    "floorTypes": [
+      "多层"
+    ],
+    "layouts": [
+      "一室"
+    ],
+    "elevator": false,
+    "highlights": [
+      "5楼",
+      "4300可谈",
+      "有钥匙"
+    ],
+    "warnings": [],
+    "contributor": "老大",
+    "updatedAt": "2026",
+    "roomPricing": [
+      {
+        "layout": "一室",
+        "shared": 0,
+        "whole": 0
+      }
+    ]
   }
 ]
