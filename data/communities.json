@@ -33,20 +33,25 @@
     "distance": "0.8km",
     "bikeTime": "步行10分钟",
     "price": {
-      "min": 6400,
-      "max": 6500,
+      "min": 4500,
+      "max": 7500,
       "unit": "月"
     },
     "floorTypes": [
       "多层"
     ],
     "layouts": [
-      "两室一厅"
+      "两室一厅",
+      "一室一厅",
+      "三室一厅"
     ],
     "elevator": false,
     "highlights": [
       "双南",
-      "精装修"
+      "精装修",
+      "一楼",
+      "看房方便",
+      "约看房"
     ],
     "warnings": [],
     "contributor": "老大",
@@ -57,8 +62,51 @@
         "shared": 0,
         "whole": 0,
         "rooms": 2
+      },
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 5300,
+        "rooms": 1,
+        "area": "53平"
+      },
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 4500,
+        "rooms": 1,
+        "area": "41平"
+      },
+      {
+        "layout": "三室一厅",
+        "shared": 0,
+        "whole": 7500,
+        "rooms": 3,
+        "area": "60平",
+        "pricePerRoom": 2500
+      },
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 5500,
+        "rooms": 2,
+        "area": "54平",
+        "pricePerRoom": 2750
+      },
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 4900,
+        "rooms": 2,
+        "area": "46平",
+        "pricePerRoom": 2450
       }
-    ]
+    ],
+    "pricePerRoomStats": {
+      "min": 2450,
+      "max": 2750,
+      "avg": 2567
+    }
   },
   {
     "id": "chuanzhi-fang",
@@ -297,7 +345,8 @@
     "layouts": [
       "一室",
       "一室一厅",
-      "三室一厅"
+      "三室一厅",
+      "两室一厅"
     ],
     "elevator": false,
     "highlights": [
@@ -332,12 +381,43 @@
         "rooms": 3,
         "area": "62平",
         "pricePerRoom": 2367
+      },
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 4700,
+        "rooms": 1,
+        "area": "30平"
+      },
+      {
+        "layout": "三室一厅",
+        "shared": 0,
+        "whole": 6900,
+        "rooms": 3,
+        "area": "60平",
+        "pricePerRoom": 2300
+      },
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 5400,
+        "rooms": 2,
+        "area": "42平",
+        "pricePerRoom": 2700
+      },
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 5000,
+        "rooms": 2,
+        "area": "54平",
+        "pricePerRoom": 2500
       }
     ],
     "pricePerRoomStats": {
-      "min": 2367,
-      "max": 2367,
-      "avg": 2367
+      "min": 2300,
+      "max": 2700,
+      "avg": 2467
     }
   },
   {
@@ -350,15 +430,17 @@
     "distance": "0.9km",
     "bikeTime": "步行12分钟",
     "price": {
-      "min": 0,
-      "max": 0,
+      "min": 4560,
+      "max": 6000,
       "unit": "月"
     },
     "floorTypes": [
       "旧楼"
     ],
     "layouts": [
-      "一室"
+      "一室",
+      "两室一厅",
+      "一室一厅"
     ],
     "elevator": false,
     "highlights": [
@@ -381,9 +463,52 @@
         "shared": 0,
         "whole": 0,
         "rooms": 1
+      },
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 5199,
+        "rooms": 2,
+        "area": "48平",
+        "pricePerRoom": 2600
+      },
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 4560,
+        "rooms": 1,
+        "area": "32平"
+      },
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 5300,
+        "rooms": 2,
+        "area": "51平",
+        "pricePerRoom": 2650
+      },
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 6000,
+        "rooms": 2,
+        "area": "50平",
+        "pricePerRoom": 3000
+      },
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 6000,
+        "rooms": 1,
+        "area": "45平"
       }
     ],
-    "geocodeSource": "amap"
+    "geocodeSource": "amap",
+    "pricePerRoomStats": {
+      "min": 2600,
+      "max": 3000,
+      "avg": 2750
+    }
   },
   {
     "id": "guodinglu-601",
@@ -395,19 +520,58 @@
     "distance": "1.0km",
     "bikeTime": "步行14分钟",
     "price": {
-      "min": 0,
-      "max": 0,
+      "min": 4100,
+      "max": 6600,
       "unit": "月"
     },
     "floorTypes": [
       "多层"
     ],
-    "layouts": [],
+    "layouts": [
+      "两室一厅",
+      "一室一厅"
+    ],
     "elevator": false,
     "warnings": [],
     "contributor": "即刻社区",
     "updatedAt": "2020",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 6600,
+        "rooms": 2,
+        "area": "51平",
+        "pricePerRoom": 3300
+      },
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 4600,
+        "rooms": 1,
+        "area": "37平"
+      },
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 4100,
+        "rooms": 1,
+        "area": "36平"
+      },
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 5990,
+        "rooms": 2,
+        "area": "56平",
+        "pricePerRoom": 2995
+      }
+    ],
+    "pricePerRoomStats": {
+      "min": 2995,
+      "max": 3300,
+      "avg": 3148
+    }
   },
   {
     "id": "guodinglu-700",
@@ -648,15 +812,17 @@
     "distance": "1.0km",
     "bikeTime": "步行12分钟",
     "price": {
-      "min": 5300,
-      "max": 5300,
+      "min": 4200,
+      "max": 6300,
       "unit": "月"
     },
     "floorTypes": [
       "多层"
     ],
     "layouts": [
-      "一室"
+      "一室",
+      "两室一厅",
+      "一室一厅"
     ],
     "elevator": false,
     "highlights": [
@@ -680,8 +846,51 @@
         "whole": 0,
         "rooms": 1,
         "pricePerRoom": 5300
+      },
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 6300,
+        "rooms": 2,
+        "area": "52平",
+        "pricePerRoom": 3150
+      },
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 4200,
+        "rooms": 1,
+        "area": "34平"
+      },
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 4400,
+        "rooms": 1,
+        "area": "39平"
+      },
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 4500,
+        "rooms": 2,
+        "area": "46平",
+        "pricePerRoom": 2250
+      },
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 5200,
+        "rooms": 2,
+        "area": "53平",
+        "pricePerRoom": 2600
       }
-    ]
+    ],
+    "pricePerRoomStats": {
+      "min": 2250,
+      "max": 3150,
+      "avg": 2667
+    }
   },
   {
     "id": "linlu-jiayuan",
@@ -693,19 +902,58 @@
     "distance": "1.7km",
     "bikeTime": "骑车10分钟",
     "price": {
-      "min": 0,
-      "max": 0,
+      "min": 4200,
+      "max": 6400,
       "unit": "月"
     },
     "floorTypes": [
       "高层"
     ],
-    "layouts": [],
+    "layouts": [
+      "一室一厅",
+      "两室一厅"
+    ],
     "elevator": true,
     "warnings": [],
     "contributor": "即刻社区",
     "updatedAt": "2022",
-    "roomPricing": []
+    "roomPricing": [
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 4200,
+        "rooms": 1,
+        "area": "43平"
+      },
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 6400,
+        "rooms": 2,
+        "area": "56平",
+        "pricePerRoom": 3200
+      },
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 5300,
+        "rooms": 1,
+        "area": "40平"
+      },
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 5400,
+        "rooms": 2,
+        "area": "48平",
+        "pricePerRoom": 2700
+      }
+    ],
+    "pricePerRoomStats": {
+      "min": 2700,
+      "max": 3200,
+      "avg": 2950
+    }
   },
   {
     "id": "minfu-jiayuan",
@@ -1480,7 +1728,7 @@
     "distance": "0.8km",
     "bikeTime": "步行10分钟",
     "price": {
-      "min": 8000,
+      "min": 4800,
       "max": 8000,
       "unit": "月"
     },
@@ -1525,8 +1773,36 @@
         "shared": 0,
         "whole": 0,
         "rooms": 2
+      },
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 4800,
+        "rooms": 2,
+        "area": "65平",
+        "pricePerRoom": 2400
+      },
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 5200,
+        "rooms": 1,
+        "area": "53平"
+      },
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 7800,
+        "rooms": 2,
+        "area": "63平",
+        "pricePerRoom": 3900
       }
-    ]
+    ],
+    "pricePerRoomStats": {
+      "min": 2400,
+      "max": 3900,
+      "avg": 3150
+    }
   },
   {
     "id": "zhenglitu-6nong",
@@ -1723,14 +1999,15 @@
     "bikeTime": "步行10分钟",
     "price": {
       "min": 6900,
-      "max": 6900,
+      "max": 10000,
       "unit": "月"
     },
     "floorTypes": [
       "高层"
     ],
     "layouts": [
-      "一室一厅"
+      "一室一厅",
+      "两室一厅"
     ],
     "elevator": true,
     "highlights": [
@@ -1746,8 +2023,36 @@
         "whole": 0,
         "rooms": 1,
         "pricePerRoom": 6900
+      },
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 10000,
+        "rooms": 2,
+        "area": "91平",
+        "pricePerRoom": 5000
+      },
+      {
+        "layout": "两室一厅",
+        "shared": 0,
+        "whole": 8500,
+        "rooms": 2,
+        "area": "100平",
+        "pricePerRoom": 4250
+      },
+      {
+        "layout": "一室一厅",
+        "shared": 0,
+        "whole": 7000,
+        "rooms": 1,
+        "area": "55平"
       }
-    ]
+    ],
+    "pricePerRoomStats": {
+      "min": 4250,
+      "max": 5000,
+      "avg": 4625
+    }
   },
   {
     "id": "zhengtonglu-285",
@@ -1877,8 +2182,8 @@
     ]
   },
   {
-    "id": "55530",
-    "name": "国定路555弄>一室一厅>30",
+    "id": "48",
+    "name": "三门路48弄",
     "coordinates": [
       0,
       0
@@ -1886,1020 +2191,40 @@
     "distance": "未知",
     "bikeTime": "未知",
     "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
-    "layouts": [
-      "整租"
-    ],
-    "elevator": false,
-    "highlights": [
-      "2026"
-    ],
-    "warnings": [],
-    "contributor": "无电梯",
-    "updatedAt": "未知",
-    "roomPricing": [
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "4700平"
-      }
-    ]
-  },
-  {
-    "id": "55560",
-    "name": "国定路555弄>三室一厅>60",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
-    "layouts": [
-      "整租"
-    ],
-    "elevator": false,
-    "highlights": [
-      "2026"
-    ],
-    "warnings": [],
-    "contributor": "无电梯",
-    "updatedAt": "未知",
-    "roomPricing": [
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "6900平"
-      },
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "6000平"
-      }
-    ]
-  },
-  {
-    "id": "55542",
-    "name": "国定路555弄>两室一厅>42",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
-    "layouts": [
-      "整租"
-    ],
-    "elevator": false,
-    "highlights": [
-      "2026"
-    ],
-    "warnings": [],
-    "contributor": "无电梯",
-    "updatedAt": "未知",
-    "roomPricing": [
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "5400平"
-      }
-    ]
-  },
-  {
-    "id": "55554",
-    "name": "国定路555弄>两室一厅>54",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
-    "layouts": [
-      "整租"
-    ],
-    "elevator": false,
-    "highlights": [
-      "2026"
-    ],
-    "warnings": [],
-    "contributor": "无电梯",
-    "updatedAt": "未知",
-    "roomPricing": [
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "5000平"
-      }
-    ]
-  },
-  {
-    "id": "new-1775458376396",
-    "name": "国定路财大小区>两室一厅",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
+      "min": 4600,
+      "max": 5200,
       "unit": "月"
     },
     "floorTypes": [
-      "精装修"
+      "多层"
     ],
-    "layouts": [],
-    "elevator": false,
-    "highlights": [
-      "老大"
-    ],
-    "warnings": [],
-    "contributor": "2026",
-    "updatedAt": "无电梯",
-    "roomPricing": []
-  },
-  {
-    "id": "53",
-    "name": "国定路财大小区>一室一厅>53",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
     "layouts": [
-      "整租"
+      "一室一厅"
     ],
     "elevator": false,
-    "highlights": [
-      "2026"
-    ],
     "warnings": [],
-    "contributor": "无电梯",
-    "updatedAt": "未知",
+    "contributor": "老大",
+    "updatedAt": "2026",
     "roomPricing": [
       {
-        "layout": "整租",
+        "layout": "一室一厅",
         "shared": 0,
-        "whole": 0,
+        "whole": 4600,
         "rooms": 1,
-        "area": "5300平"
-      }
-    ]
-  },
-  {
-    "id": "41",
-    "name": "国定路财大小区>一室一厅>41",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
-    "layouts": [
-      "整租"
-    ],
-    "elevator": false,
-    "highlights": [
-      "2026"
-    ],
-    "warnings": [],
-    "contributor": "无电梯",
-    "updatedAt": "未知",
-    "roomPricing": [
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "4500平"
-      }
-    ]
-  },
-  {
-    "id": "60",
-    "name": "国定路财大小区>三室一厅>60",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
-    "layouts": [
-      "整租"
-    ],
-    "elevator": false,
-    "highlights": [
-      "2026"
-    ],
-    "warnings": [],
-    "contributor": "无电梯",
-    "updatedAt": "未知",
-    "roomPricing": [
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "7500平"
-      }
-    ]
-  },
-  {
-    "id": "54",
-    "name": "国定路财大小区>两室一厅>54",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
-    "layouts": [
-      "整租"
-    ],
-    "elevator": false,
-    "highlights": [
-      "2026"
-    ],
-    "warnings": [],
-    "contributor": "无电梯",
-    "updatedAt": "未知",
-    "roomPricing": [
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "5500平"
-      }
-    ]
-  },
-  {
-    "id": "46",
-    "name": "国定路财大小区>两室一厅>46",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
-    "layouts": [
-      "整租"
-    ],
-    "elevator": false,
-    "highlights": [
-      "2026"
-    ],
-    "warnings": [],
-    "contributor": "无电梯",
-    "updatedAt": "未知",
-    "roomPricing": [
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "4900平"
-      }
-    ]
-  },
-  {
-    "id": "60048",
-    "name": "国定路600弄>两室一厅>48",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
-    "layouts": [
-      "整租"
-    ],
-    "elevator": false,
-    "highlights": [
-      "2026"
-    ],
-    "warnings": [],
-    "contributor": "无电梯",
-    "updatedAt": "未知",
-    "roomPricing": [
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "5199平"
-      }
-    ]
-  },
-  {
-    "id": "60032",
-    "name": "国定路600弄>一室一厅>32",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
-    "layouts": [
-      "整租"
-    ],
-    "elevator": false,
-    "highlights": [
-      "2026"
-    ],
-    "warnings": [],
-    "contributor": "无电梯",
-    "updatedAt": "未知",
-    "roomPricing": [
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "4560平"
-      }
-    ]
-  },
-  {
-    "id": "60051",
-    "name": "国定路600弄>两室一厅>51",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
-    "layouts": [
-      "整租"
-    ],
-    "elevator": false,
-    "highlights": [
-      "2026"
-    ],
-    "warnings": [],
-    "contributor": "无电梯",
-    "updatedAt": "未知",
-    "roomPricing": [
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "5300平"
-      }
-    ]
-  },
-  {
-    "id": "60050",
-    "name": "国定路600弄>两室一厅>50",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
-    "layouts": [
-      "整租"
-    ],
-    "elevator": false,
-    "highlights": [
-      "2026"
-    ],
-    "warnings": [],
-    "contributor": "无电梯",
-    "updatedAt": "未知",
-    "roomPricing": [
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "6000平"
-      }
-    ]
-  },
-  {
-    "id": "60045",
-    "name": "国定路600弄>一室一厅>45",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
-    "layouts": [
-      "整租"
-    ],
-    "elevator": false,
-    "highlights": [
-      "2026"
-    ],
-    "warnings": [],
-    "contributor": "无电梯",
-    "updatedAt": "未知",
-    "roomPricing": [
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "6000平"
-      }
-    ]
-  },
-  {
-    "id": "58065",
-    "name": "政立路580弄>两室一厅>65",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
-    "layouts": [
-      "整租"
-    ],
-    "elevator": false,
-    "highlights": [
-      "2026"
-    ],
-    "warnings": [],
-    "contributor": "无电梯",
-    "updatedAt": "未知",
-    "roomPricing": [
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "4800平"
-      }
-    ]
-  },
-  {
-    "id": "58053",
-    "name": "政立路580弄>一室一厅>53",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
-    "layouts": [
-      "整租"
-    ],
-    "elevator": false,
-    "highlights": [
-      "2026"
-    ],
-    "warnings": [],
-    "contributor": "无电梯",
-    "updatedAt": "未知",
-    "roomPricing": [
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "5200平"
-      }
-    ]
-  },
-  {
-    "id": "58063",
-    "name": "政立路580弄>两室一厅>63",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
-    "layouts": [
-      "整租"
-    ],
-    "elevator": false,
-    "highlights": [
-      "2026"
-    ],
-    "warnings": [],
-    "contributor": "无电梯",
-    "updatedAt": "未知",
-    "roomPricing": [
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "7800平"
-      }
-    ]
-  },
-  {
-    "id": "60151",
-    "name": "国定路601弄>两室一厅>51",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
-    "layouts": [
-      "整租"
-    ],
-    "elevator": false,
-    "highlights": [
-      "2026"
-    ],
-    "warnings": [],
-    "contributor": "无电梯",
-    "updatedAt": "未知",
-    "roomPricing": [
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "6600平"
-      }
-    ]
-  },
-  {
-    "id": "60137",
-    "name": "国定路601弄>一室一厅>37",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
-    "layouts": [
-      "整租"
-    ],
-    "elevator": false,
-    "highlights": [
-      "2026"
-    ],
-    "warnings": [],
-    "contributor": "无电梯",
-    "updatedAt": "未知",
-    "roomPricing": [
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "4600平"
-      }
-    ]
-  },
-  {
-    "id": "60136",
-    "name": "国定路601弄>一室一厅>36",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
-    "layouts": [
-      "整租"
-    ],
-    "elevator": false,
-    "highlights": [
-      "2026"
-    ],
-    "warnings": [],
-    "contributor": "无电梯",
-    "updatedAt": "未知",
-    "roomPricing": [
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "4100平"
-      }
-    ]
-  },
-  {
-    "id": "60156",
-    "name": "国定路601弄>两室一厅>56",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
-    "layouts": [
-      "整租"
-    ],
-    "elevator": false,
-    "highlights": [
-      "2026"
-    ],
-    "warnings": [],
-    "contributor": "无电梯",
-    "updatedAt": "未知",
-    "roomPricing": [
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "5990平"
-      }
-    ]
-  },
-  {
-    "id": "4829",
-    "name": "三门路48弄>一室一厅>29",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
-    "layouts": [
-      "整租"
-    ],
-    "elevator": false,
-    "highlights": [
-      "2026"
-    ],
-    "warnings": [],
-    "contributor": "无电梯",
-    "updatedAt": "未知",
-    "roomPricing": [
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "4600平"
-      }
-    ]
-  },
-  {
-    "id": "4836",
-    "name": "三门路48弄>一室一厅>36",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
-    "layouts": [
-      "整租"
-    ],
-    "elevator": false,
-    "highlights": [
-      "2026"
-    ],
-    "warnings": [],
-    "contributor": "无电梯",
-    "updatedAt": "未知",
-    "roomPricing": [
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "5200平"
-      }
-    ]
-  },
-  {
-    "id": "11891",
-    "name": "政通路118弄>两室一厅>91",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
-    "layouts": [
-      "整租"
-    ],
-    "elevator": false,
-    "highlights": [
-      "2026"
-    ],
-    "warnings": [],
-    "contributor": "有电梯",
-    "updatedAt": "未知",
-    "roomPricing": [
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "10000平"
-      }
-    ]
-  },
-  {
-    "id": "118100",
-    "name": "政通路118弄>两室一厅>100",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
-    "layouts": [
-      "整租"
-    ],
-    "elevator": false,
-    "highlights": [
-      "2026"
-    ],
-    "warnings": [],
-    "contributor": "有电梯",
-    "updatedAt": "未知",
-    "roomPricing": [
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "8500平"
-      }
-    ]
-  },
-  {
-    "id": "11855",
-    "name": "政通路118弄>一室一厅>55",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
-    "layouts": [
-      "整租"
-    ],
-    "elevator": false,
-    "highlights": [
-      "2026"
-    ],
-    "warnings": [],
-    "contributor": "有电梯",
-    "updatedAt": "未知",
-    "roomPricing": [
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "7000平"
-      }
-    ]
-  },
-  {
-    "id": "44",
-    "name": "北茶园>一室一厅>44",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
-    "layouts": [
-      "整租"
-    ],
-    "elevator": false,
-    "highlights": [
-      "2026"
-    ],
-    "warnings": [],
-    "contributor": "无电梯",
-    "updatedAt": "未知",
-    "roomPricing": [
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "4700平"
-      }
-    ]
-  },
-  {
-    "id": "41",
-    "name": "北茶园>一室一厅>41",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
-    "layouts": [
-      "整租"
-    ],
-    "elevator": false,
-    "highlights": [
-      "2026"
-    ],
-    "warnings": [],
-    "contributor": "无电梯",
-    "updatedAt": "未知",
-    "roomPricing": [
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "4800平"
+        "area": "29平"
       },
       {
-        "layout": "整租",
+        "layout": "一室一厅",
         "shared": 0,
-        "whole": 0,
+        "whole": 5200,
         "rooms": 1,
-        "area": "4300平"
+        "area": "36平"
       }
     ]
   },
   {
-    "id": "43",
-    "name": "林绿家园>一室一厅>43",
+    "id": "new-1775472075179",
+    "name": "北茶园",
     "coordinates": [
       0,
       0
@@ -2907,315 +2232,34 @@
     "distance": "未知",
     "bikeTime": "未知",
     "price": {
-      "min": 0,
-      "max": 0,
+      "min": 4700,
+      "max": 4800,
       "unit": "月"
     },
-    "floorTypes": [],
+    "floorTypes": [
+      "多层"
+    ],
     "layouts": [
-      "整租"
+      "一室一厅"
     ],
     "elevator": false,
-    "highlights": [
-      "2026"
-    ],
     "warnings": [],
-    "contributor": "有电梯",
-    "updatedAt": "未知",
+    "contributor": "老大",
+    "updatedAt": "2026",
     "roomPricing": [
       {
-        "layout": "整租",
+        "layout": "一室一厅",
         "shared": 0,
-        "whole": 0,
+        "whole": 4700,
         "rooms": 1,
-        "area": "4200平"
-      }
-    ]
-  },
-  {
-    "id": "56",
-    "name": "林绿家园>两室一厅>56",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
-    "layouts": [
-      "整租"
-    ],
-    "elevator": false,
-    "highlights": [
-      "2026"
-    ],
-    "warnings": [],
-    "contributor": "有电梯",
-    "updatedAt": "未知",
-    "roomPricing": [
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "6400平"
-      }
-    ]
-  },
-  {
-    "id": "40",
-    "name": "林绿家园>一室一厅>40",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
-    "layouts": [
-      "整租"
-    ],
-    "elevator": false,
-    "highlights": [
-      "2026"
-    ],
-    "warnings": [],
-    "contributor": "有电梯",
-    "updatedAt": "未知",
-    "roomPricing": [
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "5300平"
-      }
-    ]
-  },
-  {
-    "id": "48",
-    "name": "林绿家园>两室一厅>48",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
-    "layouts": [
-      "整租"
-    ],
-    "elevator": false,
-    "highlights": [
-      "2026"
-    ],
-    "warnings": [],
-    "contributor": "有电梯",
-    "updatedAt": "未知",
-    "roomPricing": [
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "5400平"
-      }
-    ]
-  },
-  {
-    "id": "52",
-    "name": "建新小区>两室一厅>52",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
-    "layouts": [
-      "整租"
-    ],
-    "elevator": false,
-    "highlights": [
-      "2026"
-    ],
-    "warnings": [],
-    "contributor": "无电梯",
-    "updatedAt": "未知",
-    "roomPricing": [
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "6300平"
-      }
-    ]
-  },
-  {
-    "id": "34",
-    "name": "建新小区>一室一厅>34",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
-    "layouts": [
-      "整租"
-    ],
-    "elevator": false,
-    "highlights": [
-      "2026"
-    ],
-    "warnings": [],
-    "contributor": "无电梯",
-    "updatedAt": "未知",
-    "roomPricing": [
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "4200平"
-      }
-    ]
-  },
-  {
-    "id": "39",
-    "name": "建新小区>一室一厅>39",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
-    "layouts": [
-      "整租"
-    ],
-    "elevator": false,
-    "highlights": [
-      "2026"
-    ],
-    "warnings": [],
-    "contributor": "无电梯",
-    "updatedAt": "未知",
-    "roomPricing": [
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "4400平"
-      }
-    ]
-  },
-  {
-    "id": "46",
-    "name": "建新小区>两室一厅>46",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
-    "layouts": [
-      "整租"
-    ],
-    "elevator": false,
-    "highlights": [
-      "2026"
-    ],
-    "warnings": [],
-    "contributor": "无电梯",
-    "updatedAt": "未知",
-    "roomPricing": [
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "4500平"
+        "area": "44平"
       },
       {
-        "layout": "整租",
+        "layout": "一室一厅",
         "shared": 0,
-        "whole": 0,
+        "whole": 4800,
         "rooms": 1,
-        "area": "5000平"
-      }
-    ]
-  },
-  {
-    "id": "53",
-    "name": "建新小区>两室一厅>53",
-    "coordinates": [
-      0,
-      0
-    ],
-    "distance": "未知",
-    "bikeTime": "未知",
-    "price": {
-      "min": 0,
-      "max": 0,
-      "unit": "月"
-    },
-    "floorTypes": [],
-    "layouts": [
-      "整租"
-    ],
-    "elevator": false,
-    "highlights": [
-      "2026"
-    ],
-    "warnings": [],
-    "contributor": "无电梯",
-    "updatedAt": "未知",
-    "roomPricing": [
-      {
-        "layout": "整租",
-        "shared": 0,
-        "whole": 0,
-        "rooms": 1,
-        "area": "5200平"
+        "area": "41平"
       }
     ]
   }

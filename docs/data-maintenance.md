@@ -32,12 +32,23 @@ npx drizzle-kit studio
 
 ## 数据文件
 
-- 主数据：`data/communities.json`
+- **唯一数据源**：`data/房源数据存档.csv`（CSV 是 Single Source of Truth）
+- 前端数据：`data/communities.json`（由 `sync-csv.js` 从 CSV 同步生成）
 - 原始/备份：`data/communities_raw.json`、`data/communities.json.bak`
 - 类型定义：`types/community.ts`
-- 数据记录：`memory/topics/rental-data-log.md`（记录所有原始房源信息）
 
 坐标格式统一为 `[lng, lat]`（GCJ-02 坐标系）。
+
+### CSV 格式
+
+```csv
+小区名称,户型,面积(平),租金类型,租金价格(元/月),价格类型,楼层,装修,特色标签,信息来源,录入时间,电梯,备注
+```
+
+同步规则：
+- 只追加/更新，不删除历史记录
+- 亮点自动清洗（移除价格信息、租房流程描述）
+- 自动计算 `pricePerRoomStats`（排除一室户）
 
 ---
 
@@ -241,13 +252,19 @@ git add data/communities.json && git commit -m "fix: 修正吉浦路615弄坐标
 
 ---
 
-## 常用脚本（`node scripts/xxx.js`）
+## 常用脚本
 
-- `scripts/geocode-communities.js`：用高德 Web API 通过小区名补全/更新坐标，会覆盖写回 `data/communities.json`（依赖 `.env.local` 里的 `NEXT_PUBLIC_AMAP_KEY`）
-- `scripts/extract-coords.js`：通过高德短链接提取坐标并写回 `data/communities.json`
-- `scripts/process-data.js`：一次性数据加工脚本（用法：`node scripts/process-data.js <input.json>`）
-- `scripts/release-rental-system.sh`：租房向量化系统上线前检查脚本
-- `scripts/process-pricing.ts`：租金数据处理脚本（读取 raw-pricing.json → 去重取平均 → 更新 communities.json）
+| 脚本 | 用途 |
+|------|------|
+| `scripts/sync-csv.js` | **CSV→JSON 同步（推荐）**：`node scripts/sync-csv.js` 或 `--dry-run` |
+| `scripts/recalc-price-per-room.ts` | 重算所有社区的 `pricePerRoomStats` |
+| `scripts/add-community.js` | 交互式添加新小区，自动获取精确坐标 |
+| `scripts/geocode-communities.js` | 批量用高德 API 补全/更新坐标 |
+| `scripts/validate-communities.js` | 验证数据格式和完整性 |
+| `scripts/diff-communities.js` | 生成数据变更摘要 |
+| `scripts/cleanup-data.js` | 清洗 highlights、重算统计数据 |
+| `scripts/process-pricing.ts` | 旧流程：raw-pricing.json → communities.json（已被 CSV 同步替代） |
+| `scripts/sync-data.sh` | 一键同步：验证 → 提交 → 推送 |
 
 ---
 

@@ -43,35 +43,34 @@ npx drizzle-kit generate  # 生成迁移文件
 
 ## 合租/整租价格体系
 
-**当前状态：价格和户型已下线，等待原始数据补充后重新上架。**
+**当前状态：价格和户型已上架，51 个小区中有 28 个有价格数据。**
 
 数据模型（`types/community.ts`）：
 
 - `Community.price`：概览价格（min/max），作为兜底显示
-- `Community.roomPricing`：按户型的合租/整租价格数组，每个条目包含 `layout`、`shared`（合租）、`whole`（整租）
+- `Community.roomPricing`：按户型的合租/整租价格数组，每个条目包含 `layout`、`shared`（合租）、`whole`（整租）、`rooms`（房间数）、`pricePerRoom`（单间价）、`area`（面积）
+- `Community.pricePerRoomStats`：单间均价统计（min/max/avg），**排除一室户**，仅基于多室户型计算
 - `Community.layouts`：户型列表（与 roomPricing 联动）
 - 无 `roomPricing` 数据或价格为 0 时，价格区域自动隐藏
-- 筛选栏通过 `pricingAvailable` 计算属性自动控制显示/隐藏
 
-数据处理流程：
+数据流（CSV → JSON）：
 
-1. 在 `data/raw-pricing.json` 中补充原始数据（每条：小区名、户型、租法、价格、日期、来源）
-2. 运行 `npx tsx scripts/process-pricing.ts`
-3. 脚本自动：去重（同户型多条取平均）→ 匹配小区 → 更新 roomPricing → 输出报告
-4. 未匹配的小区/户型生成缺失清单
-5. 输出格式：`{小区名称}|{户型ID}|{租金(元/月)}|{更新时间}`
-6. `npm run build` → 部署
+1. `data/房源数据存档.csv` 是**唯一数据源**（Single Source of Truth）
+2. 运行 `node scripts/sync-csv.js` 同步到 `data/communities.json`
+3. 脚本自动：解析 CSV → 按小区聚合 → 清洗亮点（移除价格信息）→ 构建 roomPricing → 计算 pricePerRoomStats
+4. 支持 `--dry-run` 模式预览差异
+5. `npm run build` → 部署
 
 关键文件：
 
-- `data/raw-pricing.json`：原始定价数据（手动补充）
-- `scripts/process-pricing.ts`：数据处理脚本
-- `data/communities.json`：处理后的小区数据
-- `types/community.ts`：`RoomPricing` 接口
-- `utils/communityData.ts`：`normalizeCommunities` 传递 `roomPricing`
-- `components/FilterBar.tsx`：筛选栏（`pricingAvailable` 控制显隐）
+- `data/房源数据存档.csv`：唯一数据源（手动维护）
+- `scripts/sync-csv.js`：CSV → JSON 同步脚本
+- `data/communities.json`：处理后的小区数据（前端直接读取）
+- `utils/priceCalc.ts`：`calcPricePerRoomStats` 排除一室户计算单间均价
+- `utils/price.ts`：`formatPricePerRoom` 格式化单间均价显示
+- `types/community.ts`：`RoomPricing`、`PricePerRoomStats` 接口
+- `components/FilterBar.tsx`：筛选栏（距离/价格/租法/户型）
 - `components/CommunityCard.tsx`：价格切换 tab + 价格表
-- `app/admin/page.tsx`：后台编辑
 
 ## 关键联动关系
 
