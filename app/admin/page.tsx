@@ -79,7 +79,7 @@ export default function AdminPage() {
       <div className={styles.topBar}>
         <h1 className={styles.title}>管理员模式</h1>
         <div className={styles.actions}>
-          <Link className={styles.actionLink} href="/admin/rentals">租房向量化系统</Link>
+          {/* 租房向量化系统已移至 tools/rental-pipeline/ */}
           <Link className={styles.actionLink} href="/admin/comments">评论审核</Link>
           <button onClick={handleCopy}>{copied ? '已复制' : '复制 JSON'}</button>
           <button onClick={handleDownload}>下载 JSON</button>

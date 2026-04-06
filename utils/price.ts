@@ -1,3 +1,8 @@
+/** 格式化价格为 k 单位 (e.g. 3500 → "4k", 800 → "800") */
+export function formatK(n: number): string {
+  return n >= 1000 ? `${Math.round(n / 1000)}k` : `${n}`;
+}
+
 /**
  * 格式化单间均价
  * 有数据时返回 "单间均价 ¥Xk/月"，否则返回 null

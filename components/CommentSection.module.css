@@ -305,32 +305,6 @@
   }
 }
 
-/* Pixel skin overrides */
-:global([data-theme="pixel"]) .composer {
-  border-top: 4px solid var(--color-border);
-}
-
-:global([data-theme="pixel"]) .nicknameInput,
-:global([data-theme="pixel"]) .textarea {
-  border: 2px solid var(--color-border);
-  border-radius: 0;
-  font-family: var(--font-mono);
-}
-
-:global([data-theme="pixel"]) .submitBtn {
-  border: 2px solid var(--color-border);
-  border-radius: 0;
-}
-
-:global([data-theme="pixel"]) .commentItem {
-  border-bottom: 2px dashed var(--color-border);
-}
-
-:global([data-theme="pixel"]) .deleteBtn:hover {
-  background-color: #dc2626;
-  color: #fff;
-}
-
 /* Mobile responsive */
 @media (max-width: 768px) {
   .inputRow {

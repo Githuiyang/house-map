@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { db } from '@/src/db';
 import { communityComments, communityImages } from '@/src/db/schema';
 import { eq, desc, sql, and } from 'drizzle-orm';
-import communitiesData from '@/data/communities.json';
 import type { NextRequest } from 'next/server';
 
 // ---------------------------------------------------------------------------
@@ -10,8 +9,7 @@ import type { NextRequest } from 'next/server';
 // ---------------------------------------------------------------------------
 
 /** Pre-computed set of valid community IDs for O(1) lookups. */
-const VALID_COMMUNITY_IDS = new Set<string>(communitiesData.map((c) => c.id));
-
+import { VALID_COMMUNITY_IDS } from '@/src/lib/api-utils';
 // ---------------------------------------------------------------------------
 // GET /api/community/[id] — fetch community detail (comments + images)
 // ---------------------------------------------------------------------------

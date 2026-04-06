@@ -1,10 +1,10 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Community } from '@/types/community';
 import { calculateDistanceMeters, normalizeLngLat } from '@/utils/geo';
 import { COMPANY_COORDS } from '@/utils/constants';
-import { formatPricePerRoom } from '@/utils/price';
+import { formatK, formatPricePerRoom } from '@/utils/price';
 import styles from './MapView.module.css';
 
 // 高德地图类型声明
@@ -70,35 +70,6 @@ type AMapApi = {
     fillOpacity: number;
   }) => AMapCircle;
   plugin?: (plugins: string | string[], cb: () => void) => void;
-  PlaceSearch?: new (opts: { city?: string; citylimit?: boolean }) => {
-    search: (
-      keyword: string,
-      cb: (
-        status: string,
-        result?: {
-          poiList?: {
-            pois?: Array<{
-              name?: string;
-              location?: unknown;
-            }>;
-          };
-        }
-      ) => void
-    ) => void;
-  };
-  Geocoder?: new (opts: { city?: string }) => {
-    getLocation: (
-      address: string,
-      cb: (
-        status: string,
-        result?: {
-          geocodes?: Array<{
-            location?: unknown;
-          }>;
-        }
-      ) => void
-    ) => void;
-  };
   Pixel: new (x: number, y: number) => AMapPixel;
   Scale: new () => unknown;
 };
@@ -116,40 +87,6 @@ type AMapEventWithTarget = {
   };
 };
 
-type DebugSnapshot = {
-  seq: number;
-  label: string;
-  time: string;
-  company: [number, number];
-  center: [number, number] | null;
-  zoom: number | null;
-  distanceMeters: number | null;
-  viewport: { w: number; h: number };
-  visualViewport: { w: number; h: number; offsetLeft: number; offsetTop: number; scale: number } | null;
-  screen: { w: number; h: number; availW: number; availH: number; pixelDepth: number };
-  container: { w: number; h: number } | null;
-  containerRect: { left: number; top: number; right: number; bottom: number; x: number; y: number; w: number; h: number } | null;
-  dpr: number;
-  platform: string;
-  ua: string;
-  pointer?: {
-    client: { x: number; y: number };
-    container: { x: number; y: number };
-    rect: { left: number; top: number; w: number; h: number };
-  };
-  amapClick?: {
-    lnglat: [number, number] | null;
-    pixel: { x: number; y: number } | null;
-    deltaPx: { x: number; y: number } | null;
-  };
-  hitTest?: {
-    tag: string;
-    id: string | null;
-    className: string | null;
-    inMap: boolean;
-  };
-};
-
 interface MapViewProps {
   communities: Community[];
   selectedCommunity: Community | null;
@@ -157,18 +94,12 @@ interface MapViewProps {
   hoveredCommunity: Community | null;
   onSelectCommunity: (community: Community | null) => void;
   onPreviewCommunity: (community: Community | null) => void;
-  isAdmin?: boolean;
 }
 
-const DESKTOP_CENTER_CORRECTION_BASELINE: [number, number] = [0, 0];
-const DESKTOP_CENTER_CORRECTION_STORAGE_KEY = 'office-map-desktop-center-correction-v2';
 const RECOMMEND_RADIUS = 3000; // 推荐范围3公里（米）
 const DEFAULT_ZOOM = 16;
 
-// 调试地标（GCJ-02 坐标，从高德地图获取）- 已废弃，坐标不准
-const DEBUG_LANDMARKS: { name: string; coords: [number, number] }[] = [];
-
-export default function MapView({ communities, selectedCommunity, previewCommunity, hoveredCommunity, onSelectCommunity, onPreviewCommunity, isAdmin }: MapViewProps) {
+export default function MapView({ communities, selectedCommunity, previewCommunity, hoveredCommunity, onSelectCommunity, onPreviewCommunity }: MapViewProps) {
   const mapRef = useRef<AMapMap | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const markersRef = useRef<Map<string, AMapMarker>>(new Map());
@@ -179,80 +110,34 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
   const isInitializedRef = useRef(false);
   const isDestroyedRef = useRef(false);
   const legendRef = useRef<HTMLDivElement | null>(null);
-  const debugEnabledRef = useRef(false);
-  const layoutSyncRafRef = useRef<number | null>(null);
-  const layoutSyncStateRef = useRef<{ start: number; lastW: number; lastH: number; lastLeft: number; lastTop: number; stable: number; reason: string } | null>(null);
-
-  // 编辑模式状态
-  const [editMode, setEditMode] = useState(false);
-  const [modifiedCoords, setModifiedCoords] = useState<Map<string, { original: [number, number], modified: [number, number] }>>(new Map());
-  const [draggingId, setDraggingId] = useState<string | null>(null);
-  const [saveStatus, setSaveStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
-  const [savingCoords, setSavingCoords] = useState(false);
-  const companyMarkerRef = useRef<AMapMarker | null>(null);
-  const [modifiedCompanyCoords, setModifiedCompanyCoords] = useState<[number, number] | null>(null);
   const previewPopupMarkerRef = useRef<AMapMarker | null>(null);
   const previewCommunityRef = useRef<Community | null>(null);
+  const clusterRef = useRef<unknown>(null);
+  const tooltipMarkersRef = useRef<Map<string, AMapMarker>>(new Map());
+  const layoutSyncRafRef = useRef<number | null>(null);
+  const layoutSyncStateRef = useRef<{ start: number; lastW: number; lastH: number; lastLeft: number; lastTop: number; stable: number; reason: string } | null>(null);
 
   // Keep previewCommunityRef in sync with prop
   useEffect(() => {
     previewCommunityRef.current = previewCommunity;
   }, [previewCommunity]);
 
-  const [debugMode, setDebugMode] = useState(false);
-  const [debugSnapshots, setDebugSnapshots] = useState<DebugSnapshot[]>([]);
-  const [debugCollapsed, setDebugCollapsed] = useState(false);
-  const [debugCopied, setDebugCopied] = useState(false);
-  const [pickMode, setPickMode] = useState(false);
-  const [pickedPoint, setPickedPoint] = useState<[number, number] | null>(null);
-  const [expectedLngInput, setExpectedLngInput] = useState('');
-  const [expectedLatInput, setExpectedLatInput] = useState('');
-  const [rematchRunning, setRematchRunning] = useState(false);
-  const [rematchStats, setRematchStats] = useState<{ matched: number; total: number; unresolved: string[]; reason?: string } | null>(null);
-  const [nudgeStepInput, setNudgeStepInput] = useState('0.000100');
-  const [desktopCenterCorrection, setDesktopCenterCorrection] = useState<[number, number] | null>(DESKTOP_CENTER_CORRECTION_BASELINE);
-  const pickModeRef = useRef(false);
-  const debugSeqRef = useRef(0);
-  const lastPointerRef = useRef<DebugSnapshot['pointer'] | null>(null);
-  const lastInteractionSyncAtRef = useRef(0);
-  const layoutModeRef = useRef<'desktop' | 'mobile' | null>(null);
-  const [disabledLastClick, setDisabledLastClick] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
-
-  useEffect(() => {
-    pickModeRef.current = pickMode;
-  }, [pickMode]);
-
-  useEffect(() => {
-    try {
-      const raw = window.localStorage.getItem(DESKTOP_CENTER_CORRECTION_STORAGE_KEY);
-      if (!raw) return;
-      const parsed = JSON.parse(raw) as unknown;
-      if (!Array.isArray(parsed) || parsed.length < 2) return;
-      const lng = Number(parsed[0]);
-      const lat = Number(parsed[1]);
-      if (!Number.isFinite(lng) || !Number.isFinite(lat)) return;
-      setDesktopCenterCorrection([lng, lat]);
-    } catch {
-      // ignore
+  const extractLngLat = useCallback((value: unknown): [number, number] | null => {
+    if (!value) return null;
+    if (Array.isArray(value) && value.length >= 2) {
+      const lng = Number(value[0]);
+      const lat = Number(value[1]);
+      if (Number.isFinite(lng) && Number.isFinite(lat)) return [lng, lat];
+      return null;
     }
+    const v = value as { lng?: unknown; lat?: unknown; getLng?: () => unknown; getLat?: () => unknown };
+    const lngMaybe = typeof v.getLng === 'function' ? v.getLng() : v.lng;
+    const latMaybe = typeof v.getLat === 'function' ? v.getLat() : v.lat;
+    const lng = Number(lngMaybe);
+    const lat = Number(latMaybe);
+    if (!Number.isFinite(lng) || !Number.isFinite(lat)) return null;
+    return [lng, lat];
   }, []);
-
-  useEffect(() => {
-    try {
-      if (!desktopCenterCorrection) {
-        window.localStorage.removeItem(DESKTOP_CENTER_CORRECTION_STORAGE_KEY);
-        return;
-      }
-      window.localStorage.setItem(DESKTOP_CENTER_CORRECTION_STORAGE_KEY, JSON.stringify(desktopCenterCorrection));
-    } catch {
-      // ignore
-    }
-  }, [desktopCenterCorrection]);
-
-  const getCompanyCoords = useCallback((): [number, number] => {
-    const raw = modifiedCompanyCoords || COMPANY_COORDS;
-    return normalizeLngLat(raw) ?? raw;
-  }, [modifiedCompanyCoords]);
 
   const getDesiredCenter = useCallback((): [number, number] => {
     if (selectedCommunity) {
@@ -263,22 +148,12 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
       const coords = normalizeLngLat(previewCommunity.coordinates);
       if (coords) return coords;
     }
-    return getCompanyCoords();
-  }, [getCompanyCoords, previewCommunity, selectedCommunity]);
+    return normalizeLngLat(COMPANY_COORDS) ?? COMPANY_COORDS;
+  }, [previewCommunity, selectedCommunity]);
 
   const getDesiredZoom = useCallback(() => {
     return DEFAULT_ZOOM;
   }, []);
-
-  const getLayoutMode = useCallback((): 'desktop' | 'mobile' => {
-    return window.innerWidth <= 768 ? 'mobile' : 'desktop';
-  }, []);
-
-  const applyDesktopCorrection = useCallback((center: [number, number]): [number, number] => {
-    if (typeof window === 'undefined') return center;
-    if (getLayoutMode() !== 'desktop' || !desktopCenterCorrection) return center;
-    return [center[0] + desktopCenterCorrection[0], center[1] + desktopCenterCorrection[1]];
-  }, [desktopCenterCorrection, getLayoutMode]);
 
   const applyDesiredViewport = useCallback((label: string) => {
     const map = mapRef.current;
@@ -287,12 +162,11 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
     map.resize?.();
     const baseReason = label.split(':')[0] ?? '';
     const shouldApplyDesiredCenter = baseReason === 'viewportChange' || baseReason === 'mapReady' || baseReason === 'complete' || baseReason === 'created';
-    if (!editMode && shouldApplyDesiredCenter) {
+    if (shouldApplyDesiredCenter) {
       map.setZoom(getDesiredZoom());
-      map.setCenter(applyDesktopCorrection(getDesiredCenter()));
+      map.setCenter(getDesiredCenter());
     }
-    pushDebugSnapshotRef.current(`viewport:${label}`);
-  }, [applyDesktopCorrection, editMode, getDesiredCenter, getDesiredZoom]);
+  }, [getDesiredCenter, getDesiredZoom]);
 
   const applyDesiredViewportRef = useRef<(label: string) => void>(() => {});
   useEffect(() => {
@@ -356,312 +230,6 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
     scheduleViewportSyncRef.current = scheduleViewportSync;
   }, [scheduleViewportSync]);
 
-  const detectDebugMode = useCallback(() => {
-    if (typeof window === 'undefined') return false;
-    const params = new URLSearchParams(window.location.search);
-    const q = params.get('debug');
-    if (q === '1' || q === 'true') return true;
-    try {
-      return window.localStorage.getItem('office-map-debug') === '1';
-    } catch {
-      return false;
-    }
-  }, []);
-
-  const extractLngLat = useCallback((value: unknown): [number, number] | null => {
-    if (!value) return null;
-    if (Array.isArray(value) && value.length >= 2) {
-      const lng = Number(value[0]);
-      const lat = Number(value[1]);
-      if (Number.isFinite(lng) && Number.isFinite(lat)) return [lng, lat];
-      return null;
-    }
-    const v = value as { lng?: unknown; lat?: unknown; getLng?: () => unknown; getLat?: () => unknown };
-    const lngMaybe = typeof v.getLng === 'function' ? v.getLng() : v.lng;
-    const latMaybe = typeof v.getLat === 'function' ? v.getLat() : v.lat;
-    const lng = Number(lngMaybe);
-    const lat = Number(latMaybe);
-    if (!Number.isFinite(lng) || !Number.isFinite(lat)) return null;
-    return [lng, lat];
-  }, []);
-
-  const pushDebugSnapshot = useCallback((label: string, extras?: Pick<DebugSnapshot, 'pointer' | 'amapClick' | 'hitTest'>) => {
-    if (!debugEnabledRef.current) return;
-    const map = mapRef.current;
-    const company = getCompanyCoords();
-    const center = map ? extractLngLat(map.getCenter?.()) : null;
-    const zoom = map?.getZoom?.() ?? null;
-    const container = containerRef.current;
-    const containerRect = container ? container.getBoundingClientRect() : null;
-    const vv = window.visualViewport;
-    debugSeqRef.current += 1;
-    const snapshot: DebugSnapshot = {
-      seq: debugSeqRef.current,
-      label,
-      time: new Date().toISOString(),
-      company,
-      center,
-      zoom: typeof zoom === 'number' && Number.isFinite(zoom) ? zoom : null,
-      distanceMeters: center ? calculateDistanceMeters(center, company) : null,
-      viewport: { w: window.innerWidth, h: window.innerHeight },
-      visualViewport: vv
-        ? {
-            w: Math.round(vv.width),
-            h: Math.round(vv.height),
-            offsetLeft: Math.round(vv.offsetLeft),
-            offsetTop: Math.round(vv.offsetTop),
-            scale: Number(vv.scale.toFixed(4)),
-          }
-        : null,
-      screen: {
-        w: window.screen.width,
-        h: window.screen.height,
-        availW: window.screen.availWidth,
-        availH: window.screen.availHeight,
-        pixelDepth: window.screen.pixelDepth,
-      },
-      container: containerRect ? { w: Math.round(containerRect.width), h: Math.round(containerRect.height) } : null,
-      containerRect: containerRect
-        ? {
-            left: Math.round(containerRect.left),
-            top: Math.round(containerRect.top),
-            right: Math.round(containerRect.right),
-            bottom: Math.round(containerRect.bottom),
-            x: Math.round(containerRect.x),
-            y: Math.round(containerRect.y),
-            w: Math.round(containerRect.width),
-            h: Math.round(containerRect.height),
-          }
-        : null,
-      dpr: window.devicePixelRatio || 1,
-      platform: navigator.platform,
-      ua: navigator.userAgent,
-      pointer: extras?.pointer,
-      amapClick: extras?.amapClick,
-      hitTest: extras?.hitTest,
-    };
-    setDebugSnapshots(prev => [...prev, snapshot].slice(-25));
-  }, [extractLngLat, getCompanyCoords]);
-
-  const pushDebugSnapshotRef = useRef<(label: string, extras?: Pick<DebugSnapshot, 'pointer' | 'amapClick' | 'hitTest'>) => void>(() => {});
-  useEffect(() => {
-    pushDebugSnapshotRef.current = pushDebugSnapshot;
-  }, [pushDebugSnapshot]);
-
-  useEffect(() => {
-    const enabled = detectDebugMode();
-    debugEnabledRef.current = enabled;
-    setDebugMode(enabled);
-  }, [detectDebugMode]);
-
-  const debugSummary = useMemo(() => {
-    const last = debugSnapshots[debugSnapshots.length - 1] ?? null;
-    const first = debugSnapshots[0] ?? null;
-    return { first, last, count: debugSnapshots.length };
-  }, [debugSnapshots]);
-
-  const debugDelta = useMemo(() => {
-    if (debugSnapshots.length < 2) return null;
-    const prev = debugSnapshots[debugSnapshots.length - 2];
-    const last = debugSnapshots[debugSnapshots.length - 1];
-    return {
-      viewportW: last.viewport.w - prev.viewport.w,
-      viewportH: last.viewport.h - prev.viewport.h,
-      rectLeft: (last.containerRect?.left ?? 0) - (prev.containerRect?.left ?? 0),
-      rectTop: (last.containerRect?.top ?? 0) - (prev.containerRect?.top ?? 0),
-      rectW: (last.containerRect?.w ?? 0) - (prev.containerRect?.w ?? 0),
-      rectH: (last.containerRect?.h ?? 0) - (prev.containerRect?.h ?? 0),
-      dpr: Number(((last.dpr ?? 0) - (prev.dpr ?? 0)).toFixed(4)),
-      label: `${prev.label} -> ${last.label}`,
-    };
-  }, [debugSnapshots]);
-
-  const calibrationResult = useMemo(() => {
-    if (!pickedPoint) return null;
-    const expectedLng = Number(expectedLngInput);
-    const expectedLat = Number(expectedLatInput);
-    if (!Number.isFinite(expectedLng) || !Number.isFinite(expectedLat)) return null;
-    const clicked = pickedPoint;
-    const expected: [number, number] = [expectedLng, expectedLat];
-    const deltaLng = expected[0] - clicked[0];
-    const deltaLat = expected[1] - clicked[1];
-    const company = getCompanyCoords();
-    const suggestedCenter: [number, number] = [company[0] + deltaLng, company[1] + deltaLat];
-    return { clicked, expected, deltaLng, deltaLat, suggestedCenter };
-  }, [expectedLatInput, expectedLngInput, getCompanyCoords, pickedPoint]);
-
-  const nudgeStep = useMemo(() => {
-    const n = Number(nudgeStepInput);
-    if (!Number.isFinite(n) || n <= 0) return 0.0001;
-    return n;
-  }, [nudgeStepInput]);
-
-  const adjustDesktopCorrection = useCallback((deltaLng: number, deltaLat: number) => {
-    setDesktopCenterCorrection(prev => {
-      const base = prev ?? DESKTOP_CENTER_CORRECTION_BASELINE;
-      return [base[0] + deltaLng, base[1] + deltaLat];
-    });
-    scheduleViewportSyncRef.current('desktopCorrection:nudge');
-  }, []);
-
-  const alignCurrentCenterToCompany = useCallback(() => {
-    const map = mapRef.current;
-    if (!map?.getCenter) return;
-    const center = extractLngLat(map.getCenter());
-    if (!center) return;
-    const company = getCompanyCoords();
-    const correction: [number, number] = [company[0] - center[0], company[1] - center[1]];
-    setDesktopCenterCorrection(correction);
-    scheduleViewportSyncRef.current('desktopCorrection:alignCurrent');
-  }, [extractLngLat, getCompanyCoords]);
-
-  const alignPickedPointToCompany = useCallback(() => {
-    if (!pickedPoint) return;
-    const company = getCompanyCoords();
-    const correction: [number, number] = [company[0] - pickedPoint[0], company[1] - pickedPoint[1]];
-    setDesktopCenterCorrection(correction);
-    scheduleViewportSyncRef.current('desktopCorrection:alignPicked');
-  }, [getCompanyCoords, pickedPoint]);
-
-  const batchRematchByName = useCallback(async () => {
-    if (rematchRunning) return;
-    const AMap = AMapRef.current;
-    if (!AMap) return;
-
-    setRematchRunning(true);
-    setRematchStats(null);
-    try {
-      await new Promise<void>((resolve, reject) => {
-        if (AMap.PlaceSearch && AMap.Geocoder) {
-          resolve();
-          return;
-        }
-        if (!AMap.plugin) {
-          reject(new Error('当前地图实例不支持 AMap.plugin，无法加载搜索插件'));
-          return;
-        }
-        const timeout = window.setTimeout(() => reject(new Error('加载 PlaceSearch/Geocoder 超时')), 5000);
-        AMap.plugin(['AMap.PlaceSearch', 'AMap.Geocoder'], () => {
-          window.clearTimeout(timeout);
-          resolve();
-        });
-      });
-
-      if (!AMap.PlaceSearch && !AMap.Geocoder) {
-        setRematchStats({
-          matched: 0,
-          total: communities.length,
-          unresolved: communities.map(c => c.name),
-          reason: 'PlaceSearch/Geocoder 插件未加载成功，请检查高德 Key 安全配置与域名白名单',
-        });
-        return;
-      }
-
-      const placeSearch = AMap.PlaceSearch ? new AMap.PlaceSearch({ city: '上海', citylimit: false }) : null;
-      const geocoder = AMap.Geocoder ? new AMap.Geocoder({ city: '上海' }) : null;
-      const nextMap = new Map(modifiedCoords);
-      const unresolved: string[] = [];
-      let matched = 0;
-
-      const searchOne = (keyword: string) =>
-        new Promise<[number, number] | null>((resolve) => {
-          if (!placeSearch) {
-            resolve(null);
-            return;
-          }
-          placeSearch.search(keyword, (status, result) => {
-            if (status !== 'complete') {
-              resolve(null);
-              return;
-            }
-            const pois = result?.poiList?.pois ?? [];
-            for (const poi of pois) {
-              const loc = extractLngLat(poi.location);
-              if (!loc) continue;
-              resolve(loc);
-              return;
-            }
-            resolve(null);
-          });
-        });
-
-      const geocodeOne = (address: string) =>
-        new Promise<[number, number] | null>((resolve) => {
-          if (!geocoder) {
-            resolve(null);
-            return;
-          }
-          geocoder.getLocation(address, (status, result) => {
-            if (status !== 'complete') {
-              resolve(null);
-              return;
-            }
-            const loc = extractLngLat(result?.geocodes?.[0]?.location);
-            resolve(loc);
-          });
-        });
-
-      for (const c of communities) {
-        const queries = [c.name, `${c.name}小区`, `上海市杨浦区${c.name}`, `杨浦区${c.name}`];
-        const geocodeQueries = [`上海市杨浦区${c.name}`, `上海杨浦${c.name}`, `${c.name}`];
-        let found: [number, number] | null = null;
-        for (const q of queries) {
-          found = await searchOne(q);
-          if (found) break;
-        }
-        if (!found) {
-          for (const q of geocodeQueries) {
-            found = await geocodeOne(q);
-            if (found) break;
-          }
-        }
-        if (!found) {
-          unresolved.push(c.name);
-          continue;
-        }
-        nextMap.set(c.id, { original: c.coordinates, modified: found });
-        matched += 1;
-      }
-
-      setModifiedCoords(nextMap);
-      if (matched > 0) setEditMode(true);
-      setRematchStats({
-        matched,
-        total: communities.length,
-        unresolved,
-        reason: matched === 0 ? '搜索插件可用，但名称无法检索到坐标；建议补充道路门牌或人工采点后批量回填' : undefined,
-      });
-      pushDebugSnapshotRef.current('batchRematch:done');
-    } catch (err) {
-      const reason = err instanceof Error ? err.message : '批量匹配失败';
-      setRematchStats({
-        matched: 0,
-        total: communities.length,
-        unresolved: communities.map(c => c.name),
-        reason,
-      });
-    } finally {
-      setRematchRunning(false);
-    }
-  }, [communities, extractLngLat, modifiedCoords, rematchRunning]);
-
-  const copyDebugInfo = useCallback(async () => {
-    if (!debugEnabledRef.current) return;
-    const payload = {
-      companyCoords: getCompanyCoords(),
-      desktopCenterCorrection,
-      rematchStats,
-      snapshots: debugSnapshots,
-    };
-    try {
-      await navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
-      setDebugCopied(true);
-      setTimeout(() => setDebugCopied(false), 1500);
-    } catch {
-      // ignore
-    }
-  }, [debugSnapshots, desktopCenterCorrection, getCompanyCoords, rematchStats]);
-
   // 初始化地图
   useEffect(() => {
     if (mapDisabled) return;
@@ -678,8 +246,6 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
       if (isDestroyedRef.current) return;
 
       // 安全配置
-      // 注意: API Key 会暴露在客户端代码中
-      // 请确保在高德地图控制台设置域名白名单限制
       window._AMapSecurityConfig = {
         securityJsCode: process.env.NEXT_PUBLIC_AMAP_SECURITY_KEY || '',
       };
@@ -687,7 +253,7 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
       AMapLoader.default.load({
         key: process.env.NEXT_PUBLIC_AMAP_KEY || '',
         version: '2.0',
-        plugins: ['AMap.Scale', 'AMap.PlaceSearch', 'AMap.Geocoder'],
+        plugins: ['AMap.Scale', 'AMap.MarkerCluster'],
       }).then((AMap: AMapApi) => {
         // 检查是否已被销毁
         if (isDestroyedRef.current || !containerRef.current) return;
@@ -701,34 +267,11 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
           center: initialCompanyCoords,
         });
 
-        if (debugEnabledRef.current) {
-          map.on?.('click', (e?: unknown) => {
-            const anyEvent = e as { lnglat?: { lng?: number; lat?: number }; pixel?: { x?: number; y?: number } } | undefined;
-            const lnglat: [number, number] | null = extractLngLat(anyEvent?.lnglat);
-            const pixel =
-              anyEvent?.pixel && typeof anyEvent.pixel.x === 'number' && typeof anyEvent.pixel.y === 'number'
-                ? { x: anyEvent.pixel.x, y: anyEvent.pixel.y }
-                : null;
-            const pointer = lastPointerRef.current;
-            const deltaPx =
-              pixel && pointer ? { x: Math.round(pointer.container.x - pixel.x), y: Math.round(pointer.container.y - pixel.y) } : null;
-            if (pickModeRef.current && lnglat) {
-              setPickedPoint(lnglat);
-            }
-            pushDebugSnapshotRef.current('amap:click', {
-              pointer: pointer ?? undefined,
-              amapClick: { lnglat, pixel, deltaPx },
-            });
-          });
-        }
-
         map.on?.('complete', () => {
           if (isDestroyedRef.current) return;
-          pushDebugSnapshotRef.current('complete:before');
           scheduleViewportSyncRef.current('complete');
           requestAnimationFrame(() => {
             if (isDestroyedRef.current) return;
-            pushDebugSnapshotRef.current('complete:after');
           });
         });
 
@@ -753,67 +296,13 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
           content: `
             <div class="${styles.companyMarker}">
               🏢
-              <div style="font-size: 10px; color: #333; margin-top: 2px;">
-                ${initialCompanyCoords[0].toFixed(4)}, ${initialCompanyCoords[1].toFixed(4)}
-              </div>
             </div>
           `,
-          offset: new AMap.Pixel(-30, -15),
-          draggable: false, // 初始不可拖拽
-        });
-
-        // 公司标记拖拽事件
-        companyMarker.on('dragging', (e: unknown) => {
-          const pos = (e as AMapEventWithTarget).target.getPosition();
-          const newCoords: [number, number] = [pos.lng, pos.lat];
-          setModifiedCompanyCoords(newCoords);
-        });
-
-        companyMarker.on('dragend', (e: unknown) => {
-          const pos = (e as AMapEventWithTarget).target.getPosition();
-          const newCoords: [number, number] = [pos.lng, pos.lat];
-
-          // 更新3km圆心
-          if (circleRef.current) {
-            circleRef.current.setCenter(newCoords);
-          }
-
-          // 更新标记显示
-          (e as AMapEventWithTarget).target.setContent?.(`
-            <div class="${styles.companyMarker} ${styles.editingMarker}">
-              🏢
-              <div style="font-size: 10px; color: #333; margin-top: 2px;">
-                ${newCoords[0].toFixed(4)}, ${newCoords[1].toFixed(4)}
-              </div>
-            </div>
-          `);
+          offset: new AMap.Pixel(-15, -15),
+          draggable: false,
         });
 
         companyMarker.setMap(map);
-        companyMarkerRef.current = companyMarker;
-
-        // 调试：添加地标（用于校正坐标）
-        DEBUG_LANDMARKS.forEach(landmark => {
-          const marker = new AMap.Marker({
-            position: landmark.coords,
-            title: landmark.name,
-            content: `
-              <div style="
-                background: rgba(255, 140, 0, 0.9);
-                color: white;
-                padding: 4px 8px;
-                border-radius: 4px;
-                font-size: 11px;
-                white-space: nowrap;
-                box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-              ">
-                ${landmark.name}
-              </div>
-            `,
-            offset: new AMap.Pixel(-40, -15),
-          });
-          marker.setMap(map);
-        });
 
         // 添加图例
         const legendDiv = document.createElement('div');
@@ -830,7 +319,6 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
 
         mapRef.current = map;
         setMapReady(true);
-        pushDebugSnapshotRef.current('created');
       }).catch((e: Error) => {
         console.error('地图加载失败:', e);
       });
@@ -845,6 +333,15 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
       layoutSyncStateRef.current = null;
       if (legendRef.current) {
         legendRef.current.remove();
+      }
+      // Clean up cluster
+      if (clusterRef.current) {
+        try {
+          (clusterRef.current as { setMap: (m: null) => void }).setMap(null);
+        } catch {
+          // ignore
+        }
+        clusterRef.current = null;
       }
       if (mapRef.current) {
         try {
@@ -867,7 +364,7 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
   useEffect(() => {
     if (!mapReady) return;
     scheduleViewportSync('viewportChange');
-  }, [mapReady, selectedCommunity, previewCommunity, modifiedCompanyCoords, editMode, scheduleViewportSync]);
+  }, [mapReady, selectedCommunity, previewCommunity, scheduleViewportSync]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -883,33 +380,6 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
 
   useEffect(() => {
     if (!mapReady) return;
-    const mode = getLayoutMode();
-    layoutModeRef.current = mode;
-    pushDebugSnapshotRef.current(`layoutMode:init:${mode}`);
-  }, [getLayoutMode, mapReady]);
-
-  useEffect(() => {
-    if (!mapReady) return;
-    if (desktopCenterCorrection) return;
-    if (selectedCommunity || previewCommunity) return;
-    if (getLayoutMode() !== 'desktop') return;
-    const map = mapRef.current;
-    if (!map?.getCenter) return;
-    const center = extractLngLat(map.getCenter());
-    if (!center) return;
-    const company = getCompanyCoords();
-    const dist = calculateDistanceMeters(center, company);
-    if (!Number.isFinite(dist) || dist < 200) return;
-    const correction: [number, number] = [company[0] - center[0], company[1] - center[1]];
-    setDesktopCenterCorrection(correction);
-    pushDebugSnapshotRef.current('desktopCorrection:auto', {
-      amapClick: { lnglat: center, pixel: null, deltaPx: null },
-    });
-    scheduleViewportSyncRef.current('desktopCorrection:auto');
-  }, [desktopCenterCorrection, extractLngLat, getCompanyCoords, getLayoutMode, mapReady, previewCommunity, selectedCommunity]);
-
-  useEffect(() => {
-    if (!mapReady) return;
     const handler = () => scheduleViewportSync('windowResize');
     window.addEventListener('resize', handler);
     window.addEventListener('orientationchange', handler);
@@ -918,23 +388,6 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
       window.removeEventListener('orientationchange', handler);
     };
   }, [mapReady, scheduleViewportSync]);
-
-  useEffect(() => {
-    if (!mapReady) return;
-    const handler = () => {
-      const mode = getLayoutMode();
-      if (layoutModeRef.current !== mode) {
-        layoutModeRef.current = mode;
-        pushDebugSnapshotRef.current(`layoutMode:changed:${mode}`);
-      }
-    };
-    window.addEventListener('resize', handler);
-    window.addEventListener('orientationchange', handler);
-    return () => {
-      window.removeEventListener('resize', handler);
-      window.removeEventListener('orientationchange', handler);
-    };
-  }, [getLayoutMode, mapReady]);
 
   useEffect(() => {
     if (!mapReady) return;
@@ -947,116 +400,130 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
       vv.removeEventListener('resize', handler);
       vv.removeEventListener('scroll', handler);
     };
-  }, [extractLngLat, mapReady]);
+  }, [mapReady]);
 
-  useEffect(() => {
-    if (!mapReady) return;
-    const el = containerRef.current;
-    if (!el) return;
-    const onPointerDown = (ev: PointerEvent) => {
-      const now = Date.now();
-      if (now - lastInteractionSyncAtRef.current < 200) return;
-      lastInteractionSyncAtRef.current = now;
-
-      const rect = el.getBoundingClientRect();
-      const pointer: DebugSnapshot['pointer'] = {
-        client: { x: Math.round(ev.clientX), y: Math.round(ev.clientY) },
-        container: { x: Math.round(ev.clientX - rect.left), y: Math.round(ev.clientY - rect.top) },
-        rect: { left: Math.round(rect.left), top: Math.round(rect.top), w: Math.round(rect.width), h: Math.round(rect.height) },
-      };
-      lastPointerRef.current = pointer;
-      const hit = document.elementFromPoint(ev.clientX, ev.clientY) as Element | null;
-      const hitTest: DebugSnapshot['hitTest'] | undefined = hit
-        ? {
-            tag: hit.tagName,
-            id: hit instanceof HTMLElement ? hit.id || null : null,
-            className: hit instanceof HTMLElement ? hit.className ? String(hit.className) : null : null,
-            inMap: el.contains(hit),
-          }
-        : undefined;
-
-      const map = mapRef.current;
-      const AMap = AMapRef.current;
-      const pixel = AMap?.Pixel ? new AMap.Pixel(pointer.container.x, pointer.container.y) : null;
-      const inferredLngLat =
-        map && pixel
-          ? extractLngLat(map.containerToLngLat?.(pixel) ?? map.pixelToLngLat?.(pixel))
-          : null;
-
-      pushDebugSnapshotRef.current('pointerdown', {
-        pointer,
-        hitTest,
-        amapClick: inferredLngLat ? { lnglat: inferredLngLat, pixel: { x: pointer.container.x, y: pointer.container.y }, deltaPx: null } : undefined,
-      });
-      scheduleViewportSyncRef.current('pointerdown');
-    };
-    const onClick = (ev: MouseEvent) => {
-      const rect = el.getBoundingClientRect();
-      const pointer: DebugSnapshot['pointer'] = {
-        client: { x: Math.round(ev.clientX), y: Math.round(ev.clientY) },
-        container: { x: Math.round(ev.clientX - rect.left), y: Math.round(ev.clientY - rect.top) },
-        rect: { left: Math.round(rect.left), top: Math.round(rect.top), w: Math.round(rect.width), h: Math.round(rect.height) },
-      };
-      const hit = document.elementFromPoint(ev.clientX, ev.clientY) as Element | null;
-      const hitTest: DebugSnapshot['hitTest'] | undefined = hit
-        ? {
-            tag: hit.tagName,
-            id: hit instanceof HTMLElement ? hit.id || null : null,
-            className: hit instanceof HTMLElement ? hit.className ? String(hit.className) : null : null,
-            inMap: el.contains(hit),
-          }
-        : undefined;
-
-      const map = mapRef.current;
-      const AMap = AMapRef.current;
-      const pixel = AMap?.Pixel ? new AMap.Pixel(pointer.container.x, pointer.container.y) : null;
-      const inferredLngLat =
-        map && pixel
-          ? extractLngLat(map.containerToLngLat?.(pixel) ?? map.pixelToLngLat?.(pixel))
-          : null;
-
-      if (pickModeRef.current && inferredLngLat) {
-        setPickedPoint(inferredLngLat);
-      }
-
-      pushDebugSnapshotRef.current('dom:click', {
-        pointer,
-        hitTest,
-        amapClick: inferredLngLat ? { lnglat: inferredLngLat, pixel: { x: pointer.container.x, y: pointer.container.y }, deltaPx: null } : undefined,
-      });
-    };
-    el.addEventListener('pointerdown', onPointerDown, { capture: true, passive: true });
-    el.addEventListener('click', onClick, { capture: true, passive: true });
-    return () => {
-      el.removeEventListener('pointerdown', onPointerDown, { capture: true } as AddEventListenerOptions);
-      el.removeEventListener('click', onClick, { capture: true } as AddEventListenerOptions);
-    };
-  }, [extractLngLat, mapReady]);
-
-  // 添加小区标记
+  // 添加小区标记（带聚合）
   useEffect(() => {
     const map = mapRef.current;
     const AMap = AMapRef.current;
     if (!map || !mapReady || !AMap) return;
 
+    // 清除旧的聚合实例
+    const oldCluster = clusterRef.current as { setMap?: (m: unknown) => void; destroy?: () => void } | null;
+    if (oldCluster) {
+      try { oldCluster.setMap?.(null); } catch { /* ignore */ }
+      try { oldCluster.destroy?.(); } catch { /* ignore */ }
+      clusterRef.current = null;
+    }
+
     // 清除旧标记
     markersRef.current.forEach(marker => {
-      try {
-        marker.setMap(null);
-      } catch {
-        // 忽略已销毁的标记
-      }
+      try { marker.setMap(null); } catch { /* ignore */ }
     });
     markersRef.current.clear();
+    tooltipMarkersRef.current.forEach(m => {
+      try { m.setMap(null); } catch { /* ignore */ }
+    });
+    tooltipMarkersRef.current.clear();
 
-    // 添加新标记 - 使用图标+小区名
+    // 格式化价格 (简化为 k 单位)
+    const formatPrice = (min: number, max: number): string => {
+      if (min === max) return formatK(min);
+      return `${formatK(min)}-${formatK(max)}`;
+    };
+
+    // 准备聚合数据点
+    const companyCoords = normalizeLngLat(COMPANY_COORDS) ?? COMPANY_COORDS;
+    const clusterPoints = communities
+      .map(community => {
+        const coords = normalizeLngLat(community.coordinates);
+        if (!coords) return null;
+        const distance = calculateDistanceMeters(coords, companyCoords);
+        const isRecommended = distance <= RECOMMEND_RADIUS;
+        return { lnglat: coords, name: community.name, id: community.id, community, isRecommended };
+      })
+      .filter((p): p is NonNullable<typeof p> => p !== null);
+
+    // 尝试使用 MarkerCluster 聚合
+    const MarkerClusterCtor = (AMap as Record<string, unknown>).MarkerCluster as
+      | (new (map: unknown, data: unknown[], opts: Record<string, unknown>) => { setMap: (m: unknown) => void; destroy: () => void })
+      | undefined;
+
+    if (MarkerClusterCtor && clusterPoints.length > 0) {
+      try {
+        const cluster = new MarkerClusterCtor(map, clusterPoints as unknown[], {
+          gridSize: 60,
+          maxZoom: 14,
+          renderMarker: (context: Record<string, unknown>) => {
+            const data = context.data as { community: Community; isRecommended: boolean; id: string }[];
+            const community = data[0]?.community;
+            const isRecommended = data[0]?.isRecommended ?? false;
+            if (!community) return;
+
+            const markerObj = context.marker as AMapMarker;
+            markerObj.setContent(`
+              <div class="${styles.communityLabel}" data-community-id="${community.id}" style="background: ${isRecommended ? 'rgba(76, 175, 80, 0.9)' : 'rgba(150, 150, 150, 0.9)'}">
+                <span class="${styles.communityIcon}">🏠</span>
+                <span class="${styles.communityName}">${community.name}</span>
+              </div>
+            `);
+
+            // Hover tooltip
+            markerObj.on('mouseover', (e: unknown) => {
+              if (previewCommunityRef.current?.id === community.id) return;
+              const priceText = formatPricePerRoom(community.pricePerRoomStats?.avg)
+                ?? `¥${formatPrice(community.price.min, community.price.max)}/月`;
+              const distText = community.commute
+                ? `${community.commute.roadDistanceKm}km · 步行${community.commute.walkMinutes}min · 骑行${community.commute.bikeMinutes}min`
+                : `${community.distance} · 骑行${community.bikeTime}`;
+              const tooltipMarker = new AMap.Marker({
+                position: (() => {
+                  const pos = (e as AMapEventWithTarget).target.getPosition();
+                  return [pos.lng, pos.lat] as [number, number];
+                })(),
+                content: `<div class="${styles.hoverTooltip}"><div class="${styles.tooltipRow}">${distText}</div><div class="${styles.tooltipRow}">${priceText}</div></div>`,
+                offset: new AMap.Pixel(-60, -60),
+                zIndex: 9999,
+              });
+              tooltipMarker.setMap(map);
+              tooltipMarkersRef.current.set(`tooltip-${community.id}`, tooltipMarker);
+            });
+
+            markerObj.on('mouseout', () => {
+              const tm = tooltipMarkersRef.current.get(`tooltip-${community.id}`);
+              if (tm) { tm.setMap(null); tooltipMarkersRef.current.delete(`tooltip-${community.id}`); }
+            });
+
+            markerObj.on('click', () => {
+              onPreviewCommunity(community);
+            });
+
+            markersRef.current.set(community.id, markerObj);
+          },
+          renderClusterMarker: (context: Record<string, unknown>) => {
+            const count = context.count as number;
+            const markerObj = context.marker as AMapMarker;
+            markerObj.setContent(`
+              <div class="${styles.clusterMarker}">
+                <span>${count}</span>
+              </div>
+            `);
+          },
+        });
+
+        clusterRef.current = cluster;
+        return; // cluster handles markers
+      } catch {
+        // MarkerCluster failed, fall through to manual markers
+        clusterRef.current = null;
+      }
+    }
+
+    // Fallback: manual markers (no cluster)
     communities.forEach(community => {
-      const isModified = modifiedCoords.has(community.id);
-      const currentCoordsRaw = isModified ? modifiedCoords.get(community.id)!.modified : community.coordinates;
-      const currentCoords = normalizeLngLat(currentCoordsRaw);
+      const currentCoords = normalizeLngLat(community.coordinates);
       if (!currentCoords) return;
 
-      const companyCoords = getCompanyCoords();
       const distance = calculateDistanceMeters(currentCoords, companyCoords);
       const isRecommended = distance <= RECOMMEND_RADIUS;
 
@@ -1064,25 +531,15 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
         position: currentCoords,
         title: community.name,
         content: `
-          <div class="${styles.communityLabel} ${editMode ? styles.editingMarker : ''}" data-community-id="${community.id}" style="background: ${isRecommended ? 'rgba(76, 175, 80, 0.9)' : 'rgba(150, 150, 150, 0.9)'}">
+          <div class="${styles.communityLabel}" data-community-id="${community.id}" style="background: ${isRecommended ? 'rgba(76, 175, 80, 0.9)' : 'rgba(150, 150, 150, 0.9)'}">
             <span class="${styles.communityIcon}">🏠</span>
             <span class="${styles.communityName}">${community.name}</span>
-            ${isModified ? `<span class="${styles.modifiedBadge}">✓</span>` : ''}
           </div>
         `,
         offset: new AMap.Pixel(-50, -15),
-        draggable: editMode, // 编辑模式下可拖拽
         zIndex: 100,
       });
 
-      // 格式化价格 (简化为 k 单位)
-      const formatPrice = (min: number, max: number): string => {
-        const formatK = (n: number) => n >= 1000 ? `${Math.round(n / 1000)}k` : `${n}`;
-        if (min === max) return formatK(min);
-        return `${formatK(min)}-${formatK(max)}`;
-      };
-
-      // Hover tooltip - 只显示简单信息（preview 打开时不显示，避免重叠）
       marker.on('mouseover', (e: unknown) => {
         if (previewCommunityRef.current?.id === community.id) return;
         const priceText = formatPricePerRoom(community.pricePerRoomStats?.avg)
@@ -1090,89 +547,39 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
         const distText = community.commute
           ? `${community.commute.roadDistanceKm}km · 步行${community.commute.walkMinutes}min · 骑行${community.commute.bikeMinutes}min`
           : `${community.distance} · 骑行${community.bikeTime}`;
-        const tooltipContent = `
-          <div class="${styles.hoverTooltip}">
-            <div class="${styles.tooltipRow}">${distText}</div>
-            <div class="${styles.tooltipRow}">${priceText}</div>
-          </div>
-        `;
-
-        // 创建 tooltip marker
         const tooltipMarker = new AMap.Marker({
           position: (() => {
             const pos = (e as AMapEventWithTarget).target.getPosition();
             return [pos.lng, pos.lat] as [number, number];
           })(),
-          content: tooltipContent,
+          content: `<div class="${styles.hoverTooltip}"><div class="${styles.tooltipRow}">${distText}</div><div class="${styles.tooltipRow}">${priceText}</div></div>`,
           offset: new AMap.Pixel(-60, -60),
           zIndex: 9999,
         });
         tooltipMarker.setMap(map);
-        markersRef.current.set(`tooltip-${community.id}`, tooltipMarker);
+        tooltipMarkersRef.current.set(`tooltip-${community.id}`, tooltipMarker);
       });
 
       marker.on('mouseout', () => {
-        // 移除 tooltip
-        const tooltipMarker = markersRef.current.get(`tooltip-${community.id}`);
-        if (tooltipMarker) {
-          tooltipMarker.setMap(null);
-          markersRef.current.delete(`tooltip-${community.id}`);
-        }
+        const tm = tooltipMarkersRef.current.get(`tooltip-${community.id}`);
+        if (tm) { tm.setMap(null); tooltipMarkersRef.current.delete(`tooltip-${community.id}`); }
       });
 
-      // 点击弹出详情卡片
       marker.on('click', () => {
-        if (!editMode) {
-          onPreviewCommunity(community);
-        }
+        onPreviewCommunity(community);
       });
-
-      // 编辑模式下的拖拽事件
-      if (editMode) {
-        marker.on('dragstart', () => {
-          setDraggingId(community.id);
-        });
-
-        marker.on('dragend', (e: unknown) => {
-          const pos = (e as AMapEventWithTarget).target.getPosition();
-          const newCoords: [number, number] = [pos.lng, pos.lat];
-
-          setModifiedCoords(prev => {
-            const updated = new Map(prev);
-            updated.set(community.id, {
-              original: community.coordinates,
-              modified: newCoords
-            });
-            return updated;
-          });
-
-          setDraggingId(null);
-
-          // 更新标记显示,添加修改标记
-          const distance = calculateDistanceMeters(newCoords, modifiedCompanyCoords || COMPANY_COORDS);
-          const isRecommended = distance <= RECOMMEND_RADIUS;
-          (e as AMapEventWithTarget).target.setContent?.(`
-            <div class="${styles.communityLabel} ${styles.editingMarker}" data-community-id="${community.id}" style="background: ${isRecommended ? 'rgba(76, 175, 80, 0.9)' : 'rgba(150, 150, 150, 0.9)'}">
-              <span class="${styles.communityIcon}">🏠</span>
-              <span class="${styles.communityName}">${community.name}</span>
-              <span class="${styles.modifiedBadge}">✓</span>
-            </div>
-          `);
-        });
-      }
 
       marker.setMap(map);
       markersRef.current.set(community.id, marker);
     });
-  }, [communities, mapReady, onPreviewCommunity, editMode, modifiedCoords, modifiedCompanyCoords, getCompanyCoords]);
+  }, [communities, mapReady, onPreviewCommunity]);
 
   // 处理 hover 高亮
   useEffect(() => {
     if (!mapReady) return;
 
-    // 通过 AMap setzIndex 提升 hover 的 marker 层级（比 CSS z-index 更可靠）
+    // 通过 AMap setzIndex 提升 hover 的 marker 层级
     markersRef.current.forEach((marker, key) => {
-      if (key.startsWith('tooltip-')) return; // 跳过 tooltip markers
       if (hoveredCommunity && key === hoveredCommunity.id) {
         marker.setzIndex(9998);
       } else {
@@ -1192,6 +599,7 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
     });
   }, [hoveredCommunity, mapReady]);
 
+  // 预览弹窗
   useEffect(() => {
     const map = mapRef.current;
     const AMap = AMapRef.current;
@@ -1202,7 +610,7 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
       previewPopupMarkerRef.current = null;
     }
 
-    if (!previewCommunity || editMode || selectedCommunity) return;
+    if (!previewCommunity || selectedCommunity) return;
 
     const coords = normalizeLngLat(previewCommunity.coordinates);
     if (!coords) return;
@@ -1241,7 +649,7 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
         previewPopupMarkerRef.current = null;
       }
     };
-  }, [mapReady, previewCommunity, editMode, selectedCommunity, onSelectCommunity]);
+  }, [mapReady, previewCommunity, selectedCommunity, onSelectCommunity]);
 
   // 居中到公司位置
   const handleCenterToCompany = () => {
@@ -1250,99 +658,11 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
     requestAnimationFrame(() => scheduleViewportSyncRef.current('centerButton'));
   };
 
-  // 切换编辑模式
-  const toggleEditMode = () => {
-    if (!isAdmin) return;
-    const newEditMode = !editMode;
-    setEditMode(newEditMode);
-
-    if (!newEditMode) {
-      // 退出编辑模式时,清除所有修改状态
-      setModifiedCoords(new Map());
-      setModifiedCompanyCoords(null);
-      setDraggingId(null);
-    }
-
-    // 更新公司标记的可拖拽状态
-    if (companyMarkerRef.current) {
-      companyMarkerRef.current.setDraggable(newEditMode);
-      if (!newEditMode) {
-        // 退出编辑模式时恢复原始坐标和显示
-        companyMarkerRef.current.setPosition(COMPANY_COORDS);
-        companyMarkerRef.current.setContent(`
-          <div class="${styles.companyMarker}">
-            🏢
-            <div style="font-size: 10px; color: #333; margin-top: 2px;">
-              ${COMPANY_COORDS[0].toFixed(4)}, ${COMPANY_COORDS[1].toFixed(4)}
-            </div>
-          </div>
-        `);
-        // 恢复3km圆心
-        if (circleRef.current) {
-          circleRef.current.setCenter(COMPANY_COORDS);
-        }
-      }
-    }
-  };
-
-  // 保存更新后的坐标到 communities.json 并触发部署
-  const saveCoordinates = async () => {
-    const adminKey = sessionStorage.getItem('office-map-admin-key');
-    if (!adminKey) {
-      setSaveStatus({ type: 'error', message: '未登录管理员' });
-      setTimeout(() => setSaveStatus(null), 3000);
-      return;
-    }
-
-    const updates: Array<{ id: string; coordinates: [number, number] }> = [];
-    modifiedCoords.forEach((value, id) => {
-      updates.push({ id, coordinates: value.modified });
-    });
-
-    if (updates.length === 0) return;
-
-    setSavingCoords(true);
-    try {
-      const res = await fetch('/api/admin/communities', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json', 'x-admin-key': adminKey },
-        body: JSON.stringify({ updates }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.message || '保存失败');
-      }
-
-      const msg = data.warning
-        ? `⚠️ ${data.warning}`
-        : `✓ 已保存 ${data.updatedCount} 个并部署`;
-      setSaveStatus({ type: 'success', message: msg });
-      setTimeout(() => setSaveStatus(null), 3000);
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : '保存失败';
-      setSaveStatus({ type: 'error', message: `✗ ${msg}` });
-      setTimeout(() => setSaveStatus(null), 5000);
-    } finally {
-      setSavingCoords(false);
-    }
-  };
-
   return (
     <div
       ref={containerRef}
       className={styles.container}
       data-testid="map-root"
-      data-last-click={disabledLastClick ? `${disabledLastClick.x},${disabledLastClick.y}/${disabledLastClick.w}x${disabledLastClick.h}` : undefined}
-      onPointerDown={(e) => {
-        if (!mapDisabled) return;
-        const el = containerRef.current;
-        if (!el) return;
-        const rect = el.getBoundingClientRect();
-        const x = Math.round(e.clientX - rect.left);
-        const y = Math.round(e.clientY - rect.top);
-        setDisabledLastClick({ x, y, w: Math.round(rect.width), h: Math.round(rect.height) });
-      }}
     >
       {!mapReady && (
         <div className={styles.loading}>
@@ -1358,277 +678,6 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
           >
             🏢
           </button>
-
-          {isAdmin && (
-          <button
-            className={`${styles.editButton} ${editMode ? styles.editButtonActive : ''}`}
-            onClick={toggleEditMode}
-            title={editMode ? '退出编辑模式' : '进入编辑模式'}
-          >
-            {editMode ? '✓ 编辑中' : '✏️ 编辑'}
-          </button>
-          )}
-
-          {editMode && (
-            <div className={styles.editModeHint}>
-              拖拽标记修正位置,完成后点击保存
-            </div>
-          )}
-
-          {editMode && modifiedCoords.size > 0 && (
-            <button
-              className={styles.copyButton}
-              onClick={saveCoordinates}
-              disabled={savingCoords}
-            >
-              {savingCoords ? '保存中...' : saveStatus ? saveStatus.message : `💾 保存 (${modifiedCoords.size})`}
-            </button>
-          )}
-
-          {editMode && draggingId && (
-            <div className={styles.draggingInfo}>
-              正在拖拽: {communities.find(c => c.id === draggingId)?.name}
-            </div>
-          )}
-
-          {editMode && modifiedCoords.size > 0 && (
-            <div className={styles.modifiedList}>
-              <div className={styles.modifiedListTitle}>已修改:</div>
-              {Array.from(modifiedCoords.entries()).map(([id, coords]) => {
-                const community = communities.find(c => c.id === id);
-                return (
-                  <div key={id} className={styles.modifiedItem}>
-                    <strong>{community?.name}</strong>:<br />
-                    [{coords.original[0].toFixed(4)}, {coords.original[1].toFixed(4)}] →<br />
-                    [{coords.modified[0].toFixed(4)}, {coords.modified[1].toFixed(4)}]
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          {debugMode && (
-            <div className={`${styles.debugPanel} ${debugCollapsed ? styles.debugCollapsed : ''}`}>
-              <div className={styles.debugHeader}>
-                <div className={styles.debugTitle}>调试模式</div>
-                <div className={styles.debugActions}>
-                  <button className={styles.debugBtn} onClick={() => setDebugCollapsed(v => !v)}>
-                    {debugCollapsed ? '展开' : '收起'}
-                  </button>
-                  <button className={styles.debugBtn} onClick={copyDebugInfo}>
-                    {debugCopied ? '已复制' : '复制'}
-                  </button>
-                </div>
-              </div>
-              {!debugCollapsed && (
-                <div className={styles.debugBody}>
-                  <div className={styles.debugRow}>
-                    <span className={styles.debugKey}>公司</span>
-                    <span className={styles.debugVal}>{getCompanyCoords()[0].toFixed(6)}, {getCompanyCoords()[1].toFixed(6)}</span>
-                  </div>
-                  <div className={styles.debugRow}>
-                    <span className={styles.debugKey}>采样</span>
-                    <span className={styles.debugVal}>{debugSummary.count}</span>
-                  </div>
-                  {debugSummary.last && (
-                    <>
-                      <div className={styles.debugRow}>
-                        <span className={styles.debugKey}>序号/标签</span>
-                        <span className={styles.debugVal}>#{debugSummary.last.seq} {debugSummary.last.label}</span>
-                      </div>
-                      <div className={styles.debugRow}>
-                        <span className={styles.debugKey}>最后中心</span>
-                        <span className={styles.debugVal}>
-                          {debugSummary.last.center ? `${debugSummary.last.center[0].toFixed(6)}, ${debugSummary.last.center[1].toFixed(6)}` : 'null'}
-                        </span>
-                      </div>
-                      <div className={styles.debugRow}>
-                        <span className={styles.debugKey}>偏移</span>
-                        <span className={styles.debugVal}>
-                          {typeof debugSummary.last.distanceMeters === 'number' ? `${Math.round(debugSummary.last.distanceMeters)}m` : 'null'}
-                        </span>
-                      </div>
-                      <div className={styles.debugRow}>
-                        <span className={styles.debugKey}>缩放</span>
-                        <span className={styles.debugVal}>
-                          {typeof debugSummary.last.zoom === 'number' ? debugSummary.last.zoom : 'null'}
-                        </span>
-                      </div>
-                      <div className={styles.debugRow}>
-                        <span className={styles.debugKey}>DPR/平台</span>
-                        <span className={styles.debugVal}>{debugSummary.last.dpr} / {debugSummary.last.platform}</span>
-                      </div>
-                      <div className={styles.debugRow}>
-                        <span className={styles.debugKey}>容器Rect</span>
-                        <span className={styles.debugVal}>
-                          {debugSummary.last.containerRect
-                            ? `${debugSummary.last.containerRect.left},${debugSummary.last.containerRect.top},${debugSummary.last.containerRect.w}x${debugSummary.last.containerRect.h}`
-                            : 'null'}
-                        </span>
-                      </div>
-                      {debugDelta && (
-                        <div className={styles.debugRow}>
-                          <span className={styles.debugKey}>最近差分</span>
-                          <span className={styles.debugVal}>
-                            Δvw:{debugDelta.viewportW} Δvh:{debugDelta.viewportH} Δleft:{debugDelta.rectLeft} Δtop:{debugDelta.rectTop} Δw:{debugDelta.rectW} Δh:{debugDelta.rectH}
-                          </span>
-                        </div>
-                      )}
-                      <div className={styles.debugRow}>
-                        <span className={styles.debugKey}>桌面修正</span>
-                        <span className={styles.debugVal}>
-                          {desktopCenterCorrection
-                            ? `Δlng:${desktopCenterCorrection[0].toFixed(6)} Δlat:${desktopCenterCorrection[1].toFixed(6)}`
-                            : '未启用'}
-                        </span>
-                      </div>
-                      <div className={styles.debugRow}>
-                        <span className={styles.debugKey}>修正控制</span>
-                        <span className={styles.debugVal}>
-                          <button
-                            className={styles.debugBtn}
-                            onClick={() => {
-                              setDesktopCenterCorrection(DESKTOP_CENTER_CORRECTION_BASELINE);
-                              scheduleViewportSyncRef.current('desktopCorrection:baseline');
-                            }}
-                          >
-                            基线
-                          </button>
-                          {' '}
-                          <button
-                            className={styles.debugBtn}
-                            onClick={() => {
-                              setDesktopCenterCorrection(null);
-                              scheduleViewportSyncRef.current('desktopCorrection:disabled');
-                            }}
-                          >
-                            关闭
-                          </button>
-                        </span>
-                      </div>
-                      <div className={styles.debugRow}>
-                        <span className={styles.debugKey}>微调步长</span>
-                        <span className={styles.debugVal}>
-                          <input
-                            value={nudgeStepInput}
-                            onChange={(e) => setNudgeStepInput(e.target.value)}
-                            placeholder="0.000100"
-                            style={{ width: 120 }}
-                          />
-                        </span>
-                      </div>
-                      <div className={styles.debugRow}>
-                        <span className={styles.debugKey}>微调方向</span>
-                        <span className={styles.debugVal}>
-                          <button className={styles.debugBtn} onClick={() => adjustDesktopCorrection(-nudgeStep, 0)}>←</button>{' '}
-                          <button className={styles.debugBtn} onClick={() => adjustDesktopCorrection(nudgeStep, 0)}>→</button>{' '}
-                          <button className={styles.debugBtn} onClick={() => adjustDesktopCorrection(0, nudgeStep)}>↑</button>{' '}
-                          <button className={styles.debugBtn} onClick={() => adjustDesktopCorrection(0, -nudgeStep)}>↓</button>
-                        </span>
-                      </div>
-                      <div className={styles.debugRow}>
-                        <span className={styles.debugKey}>快速对齐</span>
-                        <span className={styles.debugVal}>
-                          <button className={styles.debugBtn} onClick={alignCurrentCenterToCompany}>当前中心对齐公司</button>{' '}
-                          <button className={styles.debugBtn} onClick={alignPickedPointToCompany}>采点对齐公司</button>
-                        </span>
-                      </div>
-                      <div className={styles.debugRow}>
-                        <span className={styles.debugKey}>批量匹配</span>
-                        <span className={styles.debugVal}>
-                          <button className={styles.debugBtn} onClick={batchRematchByName} disabled={rematchRunning}>
-                            {rematchRunning ? '匹配中...' : '按名称重匹配'}
-                          </button>
-                        </span>
-                      </div>
-                      {rematchStats && (
-                        <div className={styles.debugRow}>
-                          <span className={styles.debugKey}>匹配结果</span>
-                          <span className={styles.debugVal}>
-                            {rematchStats.matched}/{rematchStats.total}
-                            {rematchStats.unresolved.length > 0 ? `，未命中${rematchStats.unresolved.length}` : ''}
-                            {rematchStats.reason ? `，原因: ${rematchStats.reason}` : ''}
-                          </span>
-                        </div>
-                      )}
-                      <div className={styles.debugRow}>
-                        <span className={styles.debugKey}>采点模式</span>
-                        <span className={styles.debugVal}>
-                          <button className={styles.debugBtn} onClick={() => setPickMode(v => !v)}>
-                            {pickMode ? '关闭' : '开启'}
-                          </button>
-                        </span>
-                      </div>
-                      <div className={styles.debugRow}>
-                        <span className={styles.debugKey}>最后采点</span>
-                        <span className={styles.debugVal}>
-                          {pickedPoint ? `${pickedPoint[0].toFixed(6)}, ${pickedPoint[1].toFixed(6)}` : 'null'}
-                        </span>
-                      </div>
-                      <div className={styles.debugRow}>
-                        <span className={styles.debugKey}>期望经度</span>
-                        <span className={styles.debugVal}>
-                          <input
-                            value={expectedLngInput}
-                            onChange={(e) => setExpectedLngInput(e.target.value)}
-                            placeholder="121.512568"
-                            style={{ width: 120 }}
-                          />
-                        </span>
-                      </div>
-                      <div className={styles.debugRow}>
-                        <span className={styles.debugKey}>期望纬度</span>
-                        <span className={styles.debugVal}>
-                          <input
-                            value={expectedLatInput}
-                            onChange={(e) => setExpectedLatInput(e.target.value)}
-                            placeholder="31.304715"
-                            style={{ width: 120 }}
-                          />
-                        </span>
-                      </div>
-                      {calibrationResult && (
-                        <>
-                          <div className={styles.debugRow}>
-                            <span className={styles.debugKey}>偏移量</span>
-                            <span className={styles.debugVal}>
-                              Δlng:{calibrationResult.deltaLng.toFixed(6)} Δlat:{calibrationResult.deltaLat.toFixed(6)}
-                            </span>
-                          </div>
-                          <div className={styles.debugRow}>
-                            <span className={styles.debugKey}>建议中心</span>
-                            <span className={styles.debugVal}>
-                              {calibrationResult.suggestedCenter[0].toFixed(6)}, {calibrationResult.suggestedCenter[1].toFixed(6)}
-                            </span>
-                          </div>
-                          <div className={styles.debugRow}>
-                            <span className={styles.debugKey}>应用修正</span>
-                            <span className={styles.debugVal}>
-                              <button
-                                className={styles.debugBtn}
-                                onClick={() => {
-                                  setDesktopCenterCorrection([calibrationResult.deltaLng, calibrationResult.deltaLat]);
-                                  scheduleViewportSyncRef.current('desktopCorrection:manual');
-                                }}
-                              >
-                                应用到桌面修正
-                              </button>
-                            </span>
-                          </div>
-                        </>
-                      )}
-                      <div className={styles.debugPre}>
-                        {JSON.stringify(debugSummary.last, null, 2)}
-                      </div>
-                    </>
-                  )}
-                  {!debugSummary.last && (
-                    <div className={styles.debugHint}>在 URL 加 ?debug=1 可开启；也可 localStorage.office-map-debug=1</div>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
         </>
       )}
     </div>

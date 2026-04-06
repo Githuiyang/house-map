@@ -143,21 +143,3 @@
   background-color: rgba(255, 255, 255, 0.5);
 }
 
-/* Pixel theme overrides */
-:global([data-theme="pixel"]) .uploadBtn {
-  border: 2px solid var(--color-border);
-  border-radius: 0;
-}
-
-:global([data-theme="pixel"]) .thumbnail {
-  border-radius: 0;
-  border: 2px solid var(--color-border);
-}
-
-:global([data-theme="pixel"]) .errorOverlay {
-  border-radius: 0;
-}
-
-:global([data-theme="pixel"]) .retryBtn {
-  border-radius: 0;
-}

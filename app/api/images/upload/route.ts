@@ -2,30 +2,12 @@ import { NextResponse } from 'next/server';
 import { put } from '@vercel/blob';
 import { db } from '@/src/db';
 import { communityImages } from '@/src/db/schema';
-import communitiesData from '@/data/communities.json';
+import { VALID_COMMUNITY_IDS, simpleHash, getClientIp } from '@/src/lib/api-utils';
 
 export const runtime = 'nodejs';
 
 const ALLOWED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
-const VALID_COMMUNITY_IDS = new Set(communitiesData.map((c) => c.id));
-
-function simpleHash(str: string): string {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash + char) | 0;
-  }
-  return (hash >>> 0).toString(36);
-}
-
-function getClientIp(request: Request): string {
-  const forwarded = request.headers.get('x-forwarded-for');
-  if (forwarded) {
-    return forwarded.split(',')[0].trim();
-  }
-  return 'unknown';
-}
 
 export async function POST(request: Request) {
   try {

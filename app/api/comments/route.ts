@@ -2,21 +2,11 @@ import { NextResponse } from 'next/server';
 import { db } from '@/src/db';
 import { communityComments } from '@/src/db/schema';
 import { eq } from 'drizzle-orm';
-import communitiesData from '@/data/communities.json';
+import { VALID_COMMUNITY_IDS, getClientIp } from '@/src/lib/api-utils';
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
-
-/** Simple HTML-entity escaping (no external dependencies). */
-function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
 
 /** Deterministic-ish hex hash from an IP string (no crypto import). */
 function hashIp(ip: string): string {
@@ -31,14 +21,6 @@ function hashIp(ip: string): string {
 function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
-
-/** Extract the caller IP from request headers. */
-function getIp(request: Request): string {
-  return request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
-}
-
-/** Pre-computed set of valid community IDs for O(1) lookups. */
-const VALID_COMMUNITY_IDS = new Set<string>(communitiesData.map((c) => c.id));
 
 // ---------------------------------------------------------------------------
 // In-memory rate limiter (per IP, 60-second cooldown)
@@ -89,7 +71,7 @@ export async function POST(request: Request) {
     }
 
     // ---- Rate limit ----
-    const ip = getIp(request);
+    const ip = getClientIp(request);
     const ipHash = hashIp(ip);
     const now = Date.now();
     const lastTime = lastCommentAt.get(ip) ?? 0;
@@ -154,7 +136,7 @@ export async function DELETE(request: Request) {
 
     if (!isAdmin) {
       // Non-admin: can only delete own comment within 10 minutes
-      const ip = getIp(request);
+      const ip = getClientIp(request);
       const ipHash = hashIp(ip);
       const elapsed = Date.now() - comment.createdAt.getTime();
 

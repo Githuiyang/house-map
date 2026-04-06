@@ -24,7 +24,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN" data-theme="minimal">
+    <html lang="zh-CN">
       <head>
         <script
           type="application/ld+json"

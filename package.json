@@ -14,7 +14,6 @@
     "test:integration": "playwright test",
     "test:e2e": "playwright test",
     "test:ci": "npm run lint && npm run typecheck && npm run build && npm run test:unit:coverage && npm run test:e2e",
-    "release:rentals": "bash scripts/release-rental-system.sh",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",

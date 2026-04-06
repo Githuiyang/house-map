@@ -3,9 +3,27 @@
   height: 100%;
   min-height: 400px;
   background-color: var(--color-map-bg);
-  border-radius: var(--radius);
   overflow: hidden;
   position: relative;
+}
+
+/* Skeleton pulse animation for loading state */
+.container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--color-map-bg);
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+  z-index: 0;
+  pointer-events: none;
+}
+
+@keyframes skeletonPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
 }
 
 .loading {
@@ -15,6 +33,7 @@
   transform: translate(-50%, -50%);
   color: var(--color-text-secondary);
   font-family: var(--font-body);
+  z-index: 1;
 }
 
 /* 居中按钮 */
@@ -36,166 +55,6 @@
 .centerButton:hover {
   transform: scale(1.05);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-/* 编辑模式按钮 */
-.editButton {
-  position: absolute;
-  top: 12px;
-  right: 60px;
-  background: white;
-  padding: 8px 16px;
-  border: 2px solid #2196F3;
-  border-radius: 8px;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  font-size: 14px;
-  font-weight: 500;
-  color: #2196F3;
-  z-index: 10;
-  transition: all 0.2s ease;
-}
-
-.editButton:hover {
-  background: #2196F3;
-  color: white;
-  transform: scale(1.05);
-}
-
-.editButtonActive {
-  background: #FF9800;
-  border-color: #FF9800;
-  color: white;
-}
-
-.editButtonActive:hover {
-  background: #F57C00;
-  border-color: #F57C00;
-}
-
-/* 编辑模式提示 */
-.editModeHint {
-  position: absolute;
-  top: 60px;
-  left: 12px;
-  background: rgba(255, 152, 0, 0.95);
-  color: white;
-  padding: 10px 16px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 500;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  z-index: 10;
-  animation: slideIn 0.3s ease;
-}
-
-@keyframes slideIn {
-  from {
-    transform: translateY(-10px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-/* 复制坐标按钮 */
-.copyButton {
-  position: absolute;
-  bottom: 60px;
-  left: 12px;
-  background: #4CAF50;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  z-index: 10;
-  transition: all 0.2s ease;
-}
-
-.copyButton:hover {
-  background: #388E3C;
-  transform: scale(1.05);
-}
-
-/* 拖拽信息提示 */
-.draggingInfo {
-  position: absolute;
-  bottom: 100px;
-  left: 12px;
-  background: rgba(33, 150, 243, 0.95);
-  color: white;
-  padding: 8px 14px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 500;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  z-index: 10;
-}
-
-/* 已修改列表 */
-.modifiedList {
-  position: absolute;
-  bottom: 140px;
-  left: 12px;
-  background: rgba(255, 255, 255, 0.95);
-  padding: 12px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  z-index: 10;
-  max-height: 200px;
-  overflow-y: auto;
-  max-width: 280px;
-}
-
-.modifiedListTitle {
-  font-weight: 600;
-  margin-bottom: 8px;
-  color: #333;
-  font-size: 13px;
-}
-
-.modifiedItem {
-  padding: 6px 0;
-  border-bottom: 1px solid #eee;
-  font-size: 11px;
-  color: #666;
-}
-
-.modifiedItem:last-child {
-  border-bottom: none;
-}
-
-.modifiedItem strong {
-  color: #333;
-}
-
-/* 编辑模式下的标记样式 */
-.editingMarker {
-  border: 2px dashed #FF9800 !important;
-  cursor: move !important;
-  animation: pulse 1.5s ease infinite;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    box-shadow: 0 2px 8px rgba(255, 152, 0, 0.4);
-  }
-  50% {
-    box-shadow: 0 4px 16px rgba(255, 152, 0, 0.6);
-  }
-}
-
-/* 修改标记 */
-.modifiedBadge {
-  font-size: 12px;
-  margin-left: 4px;
-  color: #FF9800;
 }
 
 .companyMarker {
@@ -225,7 +84,7 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-/* Hover 高亮状态（从列表联动） */
+/* Hover 高亮状态 */
 .communityLabelHovered {
   transform: scale(1.2) !important;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4) !important;
@@ -241,42 +100,24 @@
   line-height: 1.2;
 }
 
-/* 旧样式保留兼容 */
-.communityMarker,
-.recommendedMarker {
-  font-size: 22px;
-  cursor: pointer;
-  transition: transform 0.2s ease;
+/* Cluster marker */
+.clusterMarker {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(91, 143, 168, 0.85);
+  color: white;
   display: flex;
   align-items: center;
-  gap: 2px;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
 }
 
-.communityMarker:hover,
-.recommendedMarker:hover {
-  transform: scale(1.1);
-}
-
-/* 推荐小区 - 绿色背景 */
-.recommendedMarker {
-  background: linear-gradient(135deg, #e8f5e 0%, #c8f5e 100%);
-  border-radius: 50%;
-  padding: 3px 8px;
-}
-
-/* 金币图标 - 柔和弹跳 */
-.coin {
-  font-size: 11px;
-  animation: coinBounce 1.5s ease infinite;
-  opacity: 0.9;
-}
-
-@keyframes coinBounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-2px); }
-}
-
-/* Hover tooltip - 简化信息 */
+/* Hover tooltip */
 .hoverTooltip {
   background: rgba(0, 0, 0, 0.85);
   color: white;
@@ -302,105 +143,7 @@
   color: #90EE90;
 }
 
-.debugPanel {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 320px;
-  max-width: calc(100% - 24px);
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 12px;
-  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.18);
-  color: #1f2d3a;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  z-index: 500;
-  backdrop-filter: blur(8px);
-}
-
-.debugCollapsed .debugBody {
-  display: none;
-}
-
-.debugHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 10px 12px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-}
-
-.debugTitle {
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.2px;
-}
-
-.debugActions {
-  display: flex;
-  gap: 8px;
-}
-
-.debugBtn {
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  background: rgba(255, 255, 255, 0.7);
-  border-radius: 8px;
-  padding: 6px 10px;
-  font-size: 11px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.debugBtn:hover {
-  background: rgba(255, 255, 255, 0.95);
-}
-
-.debugBody {
-  padding: 10px 12px 12px;
-  max-height: 52vh;
-  overflow: auto;
-}
-
-.debugRow {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  font-size: 11px;
-  line-height: 1.3;
-  padding: 4px 0;
-}
-
-.debugKey {
-  color: #51606d;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.debugVal {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-.debugPre {
-  margin-top: 10px;
-  padding: 10px;
-  border-radius: 10px;
-  background: rgba(0, 0, 0, 0.04);
-  font-size: 10px;
-  line-height: 1.35;
-  white-space: pre-wrap;
-  word-break: break-word;
-  font-variant-numeric: tabular-nums;
-}
-
-.debugHint {
-  margin-top: 8px;
-  font-size: 11px;
-  color: #51606d;
-  line-height: 1.4;
-}
-
+/* 预览弹窗 */
 .previewPopup {
   background: rgba(255, 255, 255, 0.96);
   border: 1px solid rgba(0, 0, 0, 0.08);
@@ -452,21 +195,15 @@
   gap: 8px;
   pointer-events: none;
 }
+
 .legendDot {
   width: 12px;
   height: 12px;
   border-radius: 50%;
 }
-.legendDot.recommended {
-  background: linear-gradient(135deg, #e8f5e 0%, #c8f5e 100%);
-}
-.legendDot.normal {
-  background: #ccc;
-}
-/* 嚐素模式适配 */
-:global([data-theme="pixel"]) .companyMarker,
-:global([data-theme="pixel"]) .communityMarker,
-:global([data-theme="pixel"]) .recommendedMarker {
-  font-size: 16px;
-  image-rendering: pixelated;
+
+.recommendedMarker {
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  border-radius: 50%;
+  padding: 3px 8px;
 }

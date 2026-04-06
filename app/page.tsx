@@ -1,14 +1,13 @@
 'use client';
 
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import FilterBar from '@/components/FilterBar';
 import CommunityCard from '@/components/CommunityCard';
-import ThemeToggle from '@/components/ThemeToggle';
 import communitiesData from '@/data/communities.json';
 import type { Community } from '@/types/community';
 import { normalizeCommunities } from '@/utils/communityData';
-import { formatPricePerRoom } from '@/utils/price';
+import { formatK, formatPricePerRoom } from '@/utils/price';
 import styles from './page.module.css';
 
 // 动态导入 MapView，禁用 SSR
@@ -19,8 +18,7 @@ const MapView = dynamic(() => import('@/components/MapView'), {
 
 // 格式化价格显示 (简化为 k 单位)
 function formatPrice(min: number, max: number): string {
-  const formatK = (n: number) => n >= 1000 ? `${Math.round(n / 1000)}k` : `${n}`;
-  if (min === max) return formatK(min);
+    if (min === max) return formatK(min);
   return `${formatK(min)}-${formatK(max)}`;
 }
 
@@ -36,16 +34,13 @@ function getRentalPriceText(
   community: Community,
   rentalType: string
 ): string {
-  // 价格已下线时返回空
   if (community.price.min === 0 && community.price.max === 0 && (!community.roomPricing || community.roomPricing.length === 0)) {
     return '';
   }
-  // 优先使用单间均价
   const avgPerRoom = community.pricePerRoomStats?.avg;
   if (avgPerRoom) {
     return formatPricePerRoom(avgPerRoom) ?? formatPrice(community.price.min, community.price.max);
   }
-  // fallback: 原有逻辑
   if (rentalType === 'all' || !community.roomPricing || community.roomPricing.length === 0) {
     return formatPrice(community.price.min, community.price.max);
   }
@@ -61,61 +56,17 @@ function getRentalPriceText(
   return formatPrice(min, max);
 }
 
-// 获取户型显示文本 (取前2个)
-function getLayoutsText(layouts?: string[]): string {
-  if (!layouts || layouts.length === 0) return '';
-  return layouts.slice(0, 2).join('/');
-}
-
 export default function Home() {
   const [selectedCommunity, setSelectedCommunity] = useState<Community | null>(null);
   const [previewCommunity, setPreviewCommunity] = useState<Community | null>(null);
   const [hoveredCommunity, setHoveredCommunity] = useState<Community | null>(null);
-  const [distanceFilter, setDistanceFilter] = useState('all');
+  const [distanceFilter, setDistanceFilter] = useState('2');
   const [priceFilter, setPriceFilter] = useState('all');
   const [layoutFilter, setLayoutFilter] = useState('all');
   const [rentalTypeFilter, setRentalTypeFilter] = useState('all');
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [bottomSheetExpanded, setBottomSheetExpanded] = useState(false);
   const [showMobileFilter, setShowMobileFilter] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  // 管理员身份检测：sessionStorage > URL ?admin=XXX
-  useEffect(() => {
-    // 1. 先检查 sessionStorage 缓存
-    if (sessionStorage.getItem('office-map-admin') === '1') {
-      setIsAdmin(true);
-      return;
-    }
-
-    // 2. 检查 URL 参数 ?admin=XXX
-    const params = new URLSearchParams(window.location.search);
-    const adminKey = params.get('admin');
-
-    if (adminKey) {
-      // 清除 URL 中的 admin 参数（防止 key 泄露）
-      params.delete('admin');
-      const newSearch = params.toString();
-      const newUrl = window.location.pathname + (newSearch ? `?${newSearch}` : '');
-      window.history.replaceState({}, '', newUrl);
-
-      // 调用服务端验证
-      fetch('/api/admin/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ key: adminKey }),
-      })
-        .then(res => res.json())
-        .then(data => {
-          if (data.valid) {
-            sessionStorage.setItem('office-map-admin-key', adminKey);
-            sessionStorage.setItem('office-map-admin', '1');
-            setIsAdmin(true);
-          }
-        })
-        .catch(() => {
-          // 静默忽略错误
-        });
-    }
-  }, []);
 
   // 规范化数据
   const communities = useMemo(() => normalizeCommunities(communitiesData), []);
@@ -141,16 +92,14 @@ export default function Home() {
         if (distance === undefined || distance > parseFloat(distanceFilter)) return false;
       }
 
-      // 租法筛选（独立于价格筛选）
+      // 租法筛选
       if (rentalTypeFilter !== 'all' && community.roomPricing && community.roomPricing.length > 0) {
         if (rentalTypeFilter === 'shared') {
-          // 合租：仅看多室户型的 shared 价格
           const hasShared = community.roomPricing.some(
             rp => !rp.layout?.includes('一室') && rp.shared > 0
           );
           if (!hasShared) return false;
         } else {
-          // 整租：看所有户型的 whole 或 pricePerRoom
           const hasWhole = community.roomPricing.some(
             rp => rp.whole > 0 || (rp.pricePerRoom != null && rp.pricePerRoom > 0)
           );
@@ -158,7 +107,7 @@ export default function Home() {
         }
       }
 
-      // 价格筛选（根据租法类型选择价格范围）
+      // 价格筛选
       if (priceFilter !== 'all') {
         const priceRanges: Record<string, { min: number; max: number }> = {
           '3000': { min: 0, max: 3000 },
@@ -169,21 +118,18 @@ export default function Home() {
         const range = priceRanges[priceFilter];
         if (range) {
           if (rentalTypeFilter === 'shared' && community.roomPricing && community.roomPricing.length > 0) {
-            // 合租：仅匹配多室户型的 shared 价格
             const hasMatch = community.roomPricing.some(rp => {
               if (rp.layout?.includes('一室')) return false;
               return rp.shared > 0 && rp.shared >= range.min && rp.shared <= range.max;
             });
             if (!hasMatch) return false;
           } else if (rentalTypeFilter === 'whole' && community.roomPricing && community.roomPricing.length > 0) {
-            // 整租：匹配 whole 或 pricePerRoom（一室户用 pricePerRoom）
             const hasMatch = community.roomPricing.some(rp => {
               const price = rp.whole || (rp.layout?.includes('一室') ? (rp.pricePerRoom || 0) : 0);
               return price > 0 && price >= range.min && price <= range.max;
             });
             if (!hasMatch) return false;
           } else {
-            // 全部租法：使用概览价格
             const hasOverlap = community.price.min <= range.max && community.price.max >= range.min;
             if (!hasOverlap) return false;
           }
@@ -214,7 +160,6 @@ export default function Home() {
     setSelectedCommunity(null);
   }, []);
 
-  // 合租和一室户不兼容，切换到合租时自动重置户型筛选
   const handleRentalTypeChange = useCallback((value: string) => {
     setRentalTypeFilter(value);
     if (value === 'shared' && layoutFilter === '一室') {
@@ -222,17 +167,52 @@ export default function Home() {
     }
   }, [layoutFilter]);
 
+  // Render a community list item (shared between drawer and mobile)
+  const renderListItem = (community: Community) => (
+    <div
+      key={community.id}
+      className={styles.listItem}
+      onClick={() => {
+        handlePreviewCommunity(community);
+        setDrawerOpen(false);
+      }}
+      onMouseEnter={() => setHoveredCommunity(community)}
+      onMouseLeave={() => setHoveredCommunity(null)}
+    >
+      <div className={styles.itemRow1}>
+        <span className={styles.itemName}>🏠 {community.name}</span>
+      </div>
+      <div className={styles.itemRow2}>
+        <span className={styles.itemMeta}>
+          {community.commute
+            ? `${community.commute.roadDistanceKm}km · 步行${community.commute.walkMinutes}min · 骑行${community.commute.bikeMinutes}min`
+            : `${community.distance} · 骑行${community.bikeTime}`}
+        </span>
+      </div>
+      <div className={styles.itemRow3}>
+        <span className={styles.itemMeta}>
+          {getRentalPriceText(community, rentalTypeFilter)}
+          {getElevatorText(community.elevator) && ` · ${getElevatorText(community.elevator)}`}
+        </span>
+      </div>
+    </div>
+  );
+
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
-        <h1 className={styles.title}>公司附近租房地图</h1>
-        <p className={styles.subtitle}>新同事租房参考 · {filteredCommunities.length} 个小区</p>
-        <ThemeToggle />
-      </header>
-
-      <main className={styles.main}>
-        <aside className={styles.sidebar}>
+      {/* Navbar */}
+      <nav className={styles.navbar}>
+        <button
+          className={styles.hamburger}
+          onClick={() => setDrawerOpen(!drawerOpen)}
+          aria-label="菜单"
+        >
+          ≡
+        </button>
+        <h1 className={styles.slogan}>找到你公司附近最合适的房子</h1>
+        <div className={styles.navbarFilters}>
           <FilterBar
+            variant="compact"
             distanceFilter={distanceFilter}
             priceFilter={priceFilter}
             layoutFilter={layoutFilter}
@@ -243,67 +223,75 @@ export default function Home() {
             onRentalTypeChange={handleRentalTypeChange}
             pricingAvailable={pricingAvailable}
           />
+        </div>
+      </nav>
 
+      {/* Map area */}
+      <div className={styles.mapArea}>
+        <MapView
+          communities={filteredCommunities}
+          selectedCommunity={selectedCommunity}
+          previewCommunity={previewCommunity}
+          hoveredCommunity={hoveredCommunity}
+          onSelectCommunity={handleSelectCommunity}
+          onPreviewCommunity={handlePreviewCommunity}
+        />
+      </div>
+
+      {/* Drawer overlay */}
+      {drawerOpen && (
+        <div
+          className={styles.drawerOverlay}
+          onClick={() => setDrawerOpen(false)}
+        />
+      )}
+
+      {/* Side drawer (desktop) */}
+      <aside className={`${styles.drawer} ${drawerOpen ? styles.drawerOpen : ''}`}>
+        <div className={styles.drawerHeader}>
+          <h2 className={styles.drawerTitle}>筛选 & 列表</h2>
+          <button
+            className={styles.drawerClose}
+            onClick={() => setDrawerOpen(false)}
+          >
+            ✕
+          </button>
+        </div>
+        <div className={styles.drawerContent}>
+          <FilterBar
+            variant="full"
+            distanceFilter={distanceFilter}
+            priceFilter={priceFilter}
+            layoutFilter={layoutFilter}
+            rentalTypeFilter={rentalTypeFilter}
+            onDistanceChange={setDistanceFilter}
+            onPriceChange={setPriceFilter}
+            onLayoutChange={setLayoutFilter}
+            onRentalTypeChange={handleRentalTypeChange}
+            pricingAvailable={pricingAvailable}
+          />
           <div className={styles.list}>
-            <h2 className={styles.listTitle}>小区列表</h2>
             {filteredCommunities.length === 0 ? (
               <p className={styles.empty}>没有符合条件的小区</p>
             ) : (
-              filteredCommunities.map(community => (
-                <div
-                  key={community.id}
-                  className={styles.listItem}
-                  onClick={() => handlePreviewCommunity(community)}
-                  onMouseEnter={() => setHoveredCommunity(community)}
-                  onMouseLeave={() => setHoveredCommunity(null)}
-                >
-                  <div className={styles.itemRow1}>
-                    <span className={styles.itemName}>🏠 {community.name}</span>
-                  </div>
-                  <div className={styles.itemRow2}>
-                    <span className={styles.itemMeta}>
-                      {community.commute
-                        ? `${community.commute.roadDistanceKm}km · 步行${community.commute.walkMinutes}min · 骑行${community.commute.bikeMinutes}min`
-                        : `${community.distance} · 骑行${community.bikeTime}`}
-                    </span>
-                  </div>
-                  <div className={styles.itemRow3}>
-                    <span className={styles.itemMeta}>
-                      {getRentalPriceText(community, rentalTypeFilter)}
-                      {getElevatorText(community.elevator) && ` · ${getElevatorText(community.elevator)}`}
-                    </span>
-                  </div>
-                </div>
-              ))
+              filteredCommunities.map(renderListItem)
             )}
           </div>
-        </aside>
-
-        <div className={styles.mapContainer}>
-          <MapView
-            communities={filteredCommunities}
-            selectedCommunity={selectedCommunity}
-            previewCommunity={previewCommunity}
-            hoveredCommunity={hoveredCommunity}
-            onSelectCommunity={handleSelectCommunity}
-            onPreviewCommunity={handlePreviewCommunity}
-            isAdmin={isAdmin}
-          />
         </div>
-      </main>
+      </aside>
 
-      {/* 移动端筛选按钮 */}
+      {/* Mobile filter FAB */}
       <button
-        className={`${styles.mobileFilterBtn} ${showMobileFilter ? styles.active : ''}`}
-        onClick={() => setShowMobileFilter(!showMobileFilter)}
+        className={styles.mobileFilterFab}
+        onClick={() => setShowMobileFilter(true)}
         aria-label="筛选"
       >
-        {showMobileFilter ? '✕' : '⚙'}
+        ⚙
       </button>
 
-      {/* 移动端筛选面板 */}
+      {/* Mobile filter sheet */}
       <div
-        className={`${styles.mobileFilterPanel} ${showMobileFilter ? styles.show : ''}`}
+        className={`${styles.mobileFilterSheet} ${showMobileFilter ? styles.show : ''}`}
         onClick={() => setShowMobileFilter(false)}
       >
         <div
@@ -319,28 +307,70 @@ export default function Home() {
               ✕
             </button>
           </div>
-          <div className={styles.mobileFilterBody}>
-            <FilterBar
-              distanceFilter={distanceFilter}
-              priceFilter={priceFilter}
-              layoutFilter={layoutFilter}
-              rentalTypeFilter={rentalTypeFilter}
-              onDistanceChange={setDistanceFilter}
-              onPriceChange={setPriceFilter}
-              onLayoutChange={setLayoutFilter}
-              onRentalTypeChange={handleRentalTypeChange}
-              pricingAvailable={pricingAvailable}
-            />
-          </div>
+          <FilterBar
+            variant="full"
+            distanceFilter={distanceFilter}
+            priceFilter={priceFilter}
+            layoutFilter={layoutFilter}
+            rentalTypeFilter={rentalTypeFilter}
+            onDistanceChange={setDistanceFilter}
+            onPriceChange={setPriceFilter}
+            onLayoutChange={setLayoutFilter}
+            onRentalTypeChange={handleRentalTypeChange}
+            pricingAvailable={pricingAvailable}
+          />
         </div>
       </div>
 
+      {/* Mobile bottom sheet */}
+      <div
+        className={`${styles.mobileBottomSheet} ${bottomSheetExpanded ? styles.mobileBottomSheetExpanded : ''}`}
+        onClick={() => setBottomSheetExpanded(!bottomSheetExpanded)}
+      >
+        <div className={styles.mobileSheetHandle}>
+          <div className={styles.mobileSheetHandleBar} />
+        </div>
+        <div className={styles.mobileSheetSummary}>
+          {filteredCommunities.length} 个小区 · 点击{bottomSheetExpanded ? '收起' : '展开'}
+        </div>
+        {bottomSheetExpanded && (
+          <div className={styles.mobileSheetList}>
+            {filteredCommunities.map(community => (
+              <div
+                key={community.id}
+                className={styles.listItem}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handlePreviewCommunity(community);
+                }}
+              >
+                <div className={styles.itemRow1}>
+                  <span className={styles.itemName}>🏠 {community.name}</span>
+                </div>
+                <div className={styles.itemRow2}>
+                  <span className={styles.itemMeta}>
+                    {community.commute
+                      ? `${community.commute.roadDistanceKm}km · 步行${community.commute.walkMinutes}min`
+                      : `${community.distance}`}
+                  </span>
+                </div>
+                <div className={styles.itemRow3}>
+                  <span className={styles.itemMeta}>
+                    {getRentalPriceText(community, rentalTypeFilter)}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Community detail card */}
       {selectedCommunity && (
         <CommunityCard
           key={selectedCommunity.id}
           community={selectedCommunity}
           onClose={handleCloseCard}
-          isAdmin={isAdmin}
         />
       )}
     </div>

@@ -2,93 +2,23 @@
 
 import { useState } from 'react';
 import type { Community, RoomPricing } from '@/types/community';
+import { formatK } from '@/utils/price';
 import styles from './CommunityCard.module.css';
 import CommentSection from './CommentSection';
 import ImageGallery from './ImageGallery';
-import ImageUploader from './ImageUploader';
 
-type TabKey = 'info' | 'images' | 'comments';
 type RentalMode = 'shared' | 'whole';
 
-/** 一室户不能合租，需要过滤 */
 const isOneRoom = (layout: string) => layout?.includes('一室');
 
 interface CommunityCardProps {
   community: Community;
   onClose: () => void;
-  isAdmin?: boolean;
 }
 
-function formatK(n: number): string {
-  return n >= 1000 ? `${Math.round(n / 1000)}k` : `${n}`;
-}
-
-function renderInfoTab(community: Community) {
-  return (
-    <>
-      {(community.layouts || []).length > 0 && (
-        <div className={styles.section}>
-          <h3 className={styles.sectionTitle}>户型</h3>
-          <div className={styles.tags}>
-            {(community.layouts || []).map(layout => (
-              <span key={layout} className={styles.tag}>{layout}</span>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <div className={styles.section}>
-        <h3 className={styles.sectionTitle}>楼层类型</h3>
-        <div className={styles.tags}>
-          {(community.floorTypes || []).map(type => (
-            <span key={type} className={styles.tag}>{type}</span>
-          ))}
-          {community.elevator && <span className={styles.tag}>有电梯</span>}
-        </div>
-      </div>
-
-      {(community.highlights || []).length > 0 && (
-        <div className={styles.section}>
-          <h3 className={styles.sectionTitle}>优点</h3>
-          <ul className={styles.list}>
-            {(community.highlights || []).map((item, i) => (
-              <li key={i} className={styles.highlightItem}>{'\u2713'} {item}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {(community.warnings || []).length > 0 && (
-        <div className={styles.section}>
-          <h3 className={styles.sectionTitle}>注意事项</h3>
-          <ul className={styles.list}>
-            {(community.warnings || []).map((item, i) => (
-              <li key={i} className={styles.warningItem}>{'\u26A0'} {item}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      <div className={styles.footer}>
-        <span>数据来源: {community.contributor || '即刻社区'}</span>
-        <span>更新于 {community.updatedAt || '未知'}</span>
-      </div>
-    </>
-  );
-}
-
-const TABS: { key: TabKey; label: string }[] = [
-  { key: 'info', label: '信息' },
-  { key: 'images', label: '图片' },
-  { key: 'comments', label: '评论' },
-];
-
-export default function CommunityCard({ community, onClose, isAdmin }: CommunityCardProps) {
-  const [activeTab, setActiveTab] = useState<TabKey>('info');
-  const [imageRefreshKey, setImageRefreshKey] = useState(0);
+export default function CommunityCard({ community, onClose }: CommunityCardProps) {
   const commute = community.commute;
 
-  // 智能默认：有合租数据则默认合租，否则默认整租
   const hasMultiRoomShared = community.roomPricing?.some(
     rp => !isOneRoom(rp.layout) && rp.shared > 0
   );
@@ -101,12 +31,10 @@ export default function CommunityCard({ community, onClose, isAdmin }: Community
     community.roomPricing.length > 0 &&
     community.roomPricing.some(rp => rp.shared > 0 || rp.whole > 0 || (rp.pricePerRoom ?? 0) > 0);
 
-  // 合租模式过滤掉一室户
   const displayedPricing = rentalMode === 'shared'
     ? community.roomPricing!.filter(rp => !isOneRoom(rp.layout))
     : community.roomPricing!;
 
-  // 获取展示价格：整租模式下一室户用 pricePerRoom 兜底
   const getDisplayPrice = (rp: RoomPricing): number => {
     if (rentalMode === 'shared') return rp.shared;
     return rp.whole || (isOneRoom(rp.layout) ? (rp.pricePerRoom || 0) : 0);
@@ -192,37 +120,66 @@ export default function CommunityCard({ community, onClose, isAdmin }: Community
           </div>
         ) : null}
 
-        <div className={styles.tabBar}>
-          {TABS.map(tab => (
-            <button
-              key={tab.key}
-              className={`${styles.tab} ${activeTab === tab.key ? styles.tabActive : ''}`}
-              onClick={() => setActiveTab(tab.key)}
-            >
-              {tab.label}
-            </button>
-          ))}
+        <div className={styles.divider} />
+
+        {(community.layouts || []).length > 0 && (
+          <div className={styles.section}>
+            <h3 className={styles.sectionTitle}>户型</h3>
+            <div className={styles.tags}>
+              {(community.layouts || []).map(layout => (
+                <span key={layout} className={styles.tag}>{layout}</span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className={styles.section}>
+          <h3 className={styles.sectionTitle}>楼层类型</h3>
+          <div className={styles.tags}>
+            {(community.floorTypes || []).map(type => (
+              <span key={type} className={styles.tag}>{type}</span>
+            ))}
+            {community.elevator && <span className={styles.tag}>有电梯</span>}
+          </div>
         </div>
 
-        <div className={styles.tabContent}>
-          {activeTab === 'info' && renderInfoTab(community)}
-          {activeTab === 'images' && (
-            <div>
-              <ImageUploader
-                communityId={community.id}
-                isAdmin={isAdmin}
-                onUploadComplete={() => setImageRefreshKey(k => k + 1)}
-              />
-              <ImageGallery
-                communityId={community.id}
-                isAdmin={isAdmin}
-                refreshKey={imageRefreshKey}
-              />
-            </div>
-          )}
-          {activeTab === 'comments' && (
-            <CommentSection communityId={community.id} isAdmin={isAdmin} />
-          )}
+        {(community.highlights || []).length > 0 && (
+          <div className={styles.section}>
+            <h3 className={styles.sectionTitle}>优点</h3>
+            <ul className={styles.list}>
+              {(community.highlights || []).map((item, i) => (
+                <li key={i} className={styles.highlightItem}>{'\u2713'} {item}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {(community.warnings || []).length > 0 && (
+          <div className={styles.section}>
+            <h3 className={styles.sectionTitle}>注意事项</h3>
+            <ul className={styles.list}>
+              {(community.warnings || []).map((item, i) => (
+                <li key={i} className={styles.warningItem}>{'\u26A0'} {item}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        <div className={styles.divider} />
+
+        <div className={styles.section}>
+          <h3 className={styles.sectionTitle}>图片</h3>
+          <ImageGallery communityId={community.id} />
+        </div>
+
+        <div className={styles.section}>
+          <h3 className={styles.sectionTitle}>评论</h3>
+          <CommentSection communityId={community.id} />
+        </div>
+
+        <div className={styles.footer}>
+          <span>数据来源: {community.contributor || '即刻社区'}</span>
+          <span>更新于 {community.updatedAt || '未知'}</span>
         </div>
       </div>
     </div>
