@@ -2,8 +2,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const dataDir = path.join(__dirname, '../data');
-const backup = JSON.parse(fs.readFileSync(path.join(dataDir, 'communities.json.bak'), 'utf8'));
+const dataDir = path.join(__dirname, '../../data');
+const backup = JSON.parse(fs.readFileSync(path.join(dataDir, 'archive', 'communities.json.bak'), 'utf8'));
 const current = JSON.parse(fs.readFileSync(path.join(dataDir, 'communities.json'), 'utf8'));
 
 // 创建备份的 name -> layouts 映射

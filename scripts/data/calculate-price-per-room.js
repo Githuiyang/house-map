@@ -7,7 +7,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const dataPath = path.join(__dirname, '../data/communities.json');
+const dataPath = path.join(__dirname, '../../data/communities.json');
 const communities = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
 
 // 户型 → 房间数映射

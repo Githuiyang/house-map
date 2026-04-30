@@ -1,10 +1,10 @@
 const fs = require('fs');
 const path = require('path');
 
-const root = path.join(__dirname, '..');
+const root = path.join(__dirname, '../..');
 const dataPath = path.join(root, 'data', 'communities.json');
-const backupPath = path.join(root, 'data', 'communities.json.bak');
-const reportPath = path.join(root, 'data', 'communities.rematch-report.json');
+const backupPath = path.join(root, 'data', 'archive', 'communities.json.bak');
+const reportPath = path.join(root, 'data', 'reports', 'communities.rematch-report.json');
 const COMPANY = [121.512568, 31.304715];
 
 const apiKey = process.env.AMAP_WEB_KEY || '';

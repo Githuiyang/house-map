@@ -39,7 +39,7 @@ function calcPricePerRoomStats(
 }
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const dataPath = resolve(__dirname, '../data/communities.json');
+const dataPath = resolve(__dirname, '../../data/communities.json');
 
 const raw = readFileSync(dataPath, 'utf-8');
 const communities = JSON.parse(raw);

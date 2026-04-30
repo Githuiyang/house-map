@@ -13,7 +13,7 @@ const shortMode = process.argv.includes('--short');
 try {
   const diff = execSync(
     'git diff data/communities.json',
-    { encoding: 'utf-8', cwd: path.join(__dirname, '..') }
+    { encoding: 'utf-8', cwd: path.join(__dirname, '../..') }
   );
   
   if (!diff.trim()) {

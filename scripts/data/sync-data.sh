@@ -2,22 +2,22 @@
 # 数据同步脚本：验证 → 提交 → 推送
 set -e
 
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/../.."
 
 echo "📊 验证数据格式..."
-node scripts/validate-communities.js
+node scripts/validate/validate-communities.js
 
 echo "🔍 检查变更..."
 git diff --exit-code data/communities.json > /dev/null && echo "❌ 没有数据变更" && exit 0
 
 echo "📝 生成变更摘要..."
-node scripts/diff-communities.js
+node scripts/validate/diff-communities.js
 
 echo "✅ 提交变更..."
 git add data/communities.json
 git commit -m "chore: update communities data
 
-$(node scripts/diff-communities.js --short)"
+$(node scripts/validate/diff-communities.js --short)"
 
 echo "🚀 推送到远程..."
 git push origin main

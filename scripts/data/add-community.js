@@ -19,7 +19,7 @@ if (!name || !layouts || !price) {
 }
 
 // 读取 API key
-const envPath = path.join(__dirname, '../.env.local');
+const envPath = path.join(__dirname, '../../.env.local');
 const envContent = fs.readFileSync(envPath, 'utf8');
 const apiKeyMatch = envContent.match(/NEXT_PUBLIC_AMAP_KEY=(.+)/);
 const apiKey = apiKeyMatch ? apiKeyMatch[1].trim() : null;
@@ -143,7 +143,7 @@ async function main() {
   };
   
   // 读取现有数据
-  const dataPath = path.join(__dirname, '../data/communities.json');
+  const dataPath = path.join(__dirname, '../../data/communities.json');
   const communities = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
   communities.push(community);
   

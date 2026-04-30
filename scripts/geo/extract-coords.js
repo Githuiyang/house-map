@@ -48,7 +48,7 @@ async function main() {
   }
   
   // 读取并更新数据
-  const dataPath = path.join(__dirname, '../data/communities.json');
+  const dataPath = path.join(__dirname, '../../data/communities.json');
   const communities = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
   
   let updatedCount = 0;

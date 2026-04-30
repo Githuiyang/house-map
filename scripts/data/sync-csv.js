@@ -2,7 +2,7 @@
  * CSV → JSON 同步脚本
  * 数据流: 房源数据存档.csv → communities.json
  *
- * 用法: node scripts/sync-csv.js [--dry-run]
+ * 用法: node scripts/data/sync-csv.js [--dry-run]
  *
  * 规则:
  *   1. CSV 是唯一数据源 (Single Source of Truth)
@@ -14,8 +14,8 @@
 const fs = require("fs");
 const path = require("path");
 
-const CSV_PATH = path.join(__dirname, "../data/房源数据存档.csv");
-const JSON_PATH = path.join(__dirname, "../data/communities.json");
+const CSV_PATH = path.join(__dirname, "../../data/房源数据存档.csv");
+const JSON_PATH = path.join(__dirname, "../../data/communities.json");
 
 const isDryRun = process.argv.includes("--dry-run");
 

@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 // 读取配置
-const envPath = path.join(__dirname, '../.env.local');
+const envPath = path.join(__dirname, '../../.env.local');
 const envContent = fs.readFileSync(envPath, 'utf8');
 const apiKeyMatch = envContent.match(/NEXT_PUBLIC_AMAP_KEY=(.+)/);
 const apiKey = apiKeyMatch ? apiKeyMatch[1].trim() : null;
@@ -13,7 +13,7 @@ if (!apiKey) {
 }
 
 // 读取小区数据
-const dataPath = path.join(__dirname, '../data/communities.json');
+const dataPath = path.join(__dirname, '../../data/communities.json');
 const communities = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
 
 console.log(`开始获取 ${communities.length} 个小区的坐标...\n`);
