@@ -39,11 +39,10 @@ npx drizzle-kit generate  # 生成迁移文件
 - `components/MapView.tsx`：地图主逻辑，负责地图初始化、标记渲染、交互事件、调试面板
 - `components/FilterBar.tsx`：筛选 UI
 - `components/CommunityCard.tsx`：详情卡片
-- `components/ThemeToggle.tsx`：主题切换
 
 ## 合租/整租价格体系
 
-**当前状态：价格和户型已上架，51 个小区中有 28 个有价格数据。**
+**当前状态：价格和户型已上架。截至当前数据快照：53 个小区中 36 个含 roomPricing、13 个含 pricePerRoomStats；当前无坐标缺失（三门路48弄、北茶园已于 2026-04-30 补全）。**
 
 数据模型（`types/community.ts`）：
 
@@ -56,7 +55,7 @@ npx drizzle-kit generate  # 生成迁移文件
 数据流（CSV → JSON）：
 
 1. `data/房源数据存档.csv` 是**唯一数据源**（Single Source of Truth）
-2. 运行 `node scripts/sync-csv.js` 同步到 `data/communities.json`
+2. 运行 `node scripts/data/sync-csv.js` 同步到 `data/communities.json`
 3. 脚本自动：解析 CSV → 按小区聚合 → 清洗亮点（移除价格信息）→ 构建 roomPricing → 计算 pricePerRoomStats
 4. 支持 `--dry-run` 模式预览差异
 5. `npm run build` → 部署
@@ -64,10 +63,11 @@ npx drizzle-kit generate  # 生成迁移文件
 关键文件：
 
 - `data/房源数据存档.csv`：唯一数据源（手动维护）
-- `scripts/sync-csv.js`：CSV → JSON 同步脚本
+- `scripts/data/sync-csv.js`：CSV → JSON 同步脚本
 - `data/communities.json`：处理后的小区数据（前端直接读取）
-- `utils/priceCalc.ts`：`calcPricePerRoomStats` 排除一室户计算单间均价
-- `utils/price.ts`：`formatPricePerRoom` 格式化单间均价显示
+- `utils/price.ts`：`formatK`、`formatPricePerRoom` 格式化单间均价显示
+- `scripts/data/recalc-price-per-room.ts`：`calcPricePerRoomStats` 排除一室户计算单间均价
+- `scripts/data/sync-csv.js`：CSV 同步时自动生成/更新 `pricePerRoomStats`
 - `types/community.ts`：`RoomPricing`、`PricePerRoomStats` 接口
 - `components/FilterBar.tsx`：筛选栏（距离/价格/租法/户型）
 - `components/CommunityCard.tsx`：价格切换 tab + 价格表

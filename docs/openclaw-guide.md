@@ -93,4 +93,4 @@
 - 同一轮采集建议带上统一 `capturedAt`
 - 如果采集器已生成唯一 ID，请透传 `externalId`
 - 每日或每小时触发一次 `POST /api/rentals/report`
-- 发布前运行 `npm run release:rentals`
+- 发布前运行 `（该命令已移除）`

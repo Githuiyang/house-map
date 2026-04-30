@@ -33,8 +33,8 @@ npx drizzle-kit studio
 ## 数据文件
 
 - **唯一数据源**：`data/房源数据存档.csv`（CSV 是 Single Source of Truth）
-- 前端数据：`data/communities.json`（由 `sync-csv.js` 从 CSV 同步生成）
-- 原始/备份：`data/communities_raw.json`、`data/communities.json.bak`
+- 前端数据：`data/communities.json`（由 `scripts/data/sync-csv.js` 从 CSV 同步生成）
+- 备份：`data/archive/communities.json.bak`
 - 类型定义：`types/community.ts`
 
 坐标格式统一为 `[lng, lat]`（GCJ-02 坐标系）。
@@ -54,7 +54,7 @@ npx drizzle-kit studio
 
 ## 数据处理脚本
 
-### 1. 添加小区（`scripts/add-community.js`）
+### 1. 添加小区（`scripts/data/add-community.js`）
 
 **用途**：交互式添加新小区，自动获取精确坐标
 
@@ -67,12 +67,12 @@ npx drizzle-kit studio
 
 **使用**：
 ```bash
-node scripts/add-community.js
+node scripts/data/add-community.js
 ```
 
 ---
 
-### 2. 单间价格计算（`scripts/calculate-price-per-room.js`）⭐ 新功能
+### 2. 单间价格计算（`scripts/data/calculate-price-per-room.js`）⭐ 新功能
 
 **用途**：自动计算每个户型的单间价格
 
@@ -94,7 +94,7 @@ node scripts/add-community.js
 
 **使用**：
 ```bash
-node scripts/calculate-price-per-room.js
+node scripts/data/calculate-price-per-room.js
 ```
 
 **输出示例**：
@@ -126,11 +126,11 @@ node scripts/calculate-price-per-room.js
 **用户价值**：
 - 实习生和合租党一眼就能看到每间房多少钱
 - 地图 hover 直接显示单间均价
-- 单间价格排行榜（见 `memory/topics/rental-price-ranking.md`）
+- 单间价格排行榜（见 `docs/price-per-room-feature.md`）
 
 ---
 
-### 3. 数据验证（`scripts/validate-communities.js`）
+### 3. 数据验证（`scripts/validate/validate-communities.js`）
 
 **用途**：验证数据格式和完整性
 
@@ -142,7 +142,7 @@ node scripts/calculate-price-per-room.js
 
 **使用**：
 ```bash
-node scripts/validate-communities.js
+node scripts/validate/validate-communities.js
 ```
 
 **输出示例**：
@@ -150,12 +150,12 @@ node scripts/validate-communities.js
 ⚠️  警告：
   - [0] 北郊小区: layouts 为空
   - [3] 东方锦园: layouts 为空
-✅ 数据验证通过（51个小区）
+✅ 数据验证通过：53 个小区
 ```
 
 ---
 
-### 4. 数据对比（`scripts/diff-communities.js`）
+### 4. 数据对比（`scripts/validate/diff-communities.js`）
 
 **用途**：生成数据变更摘要
 
@@ -167,12 +167,12 @@ node scripts/validate-communities.js
 
 **使用**：
 ```bash
-node scripts/diff-communities.js
+node scripts/validate/diff-communities.js
 ```
 
 ---
 
-### 5. 一键同步（`scripts/sync-data.sh`）
+### 5. 一键同步（`scripts/data/sync-data.sh`）
 
 **用途**：验证 → 提交 → 推送 一键完成
 
@@ -185,7 +185,7 @@ node scripts/diff-communities.js
 
 **使用**：
 ```bash
-bash scripts/sync-data.sh
+bash scripts/data/sync-data.sh
 ```
 
 ---
@@ -200,23 +200,23 @@ bash scripts/sync-data.sh
 
 2. **添加/更新数据**：
    ```bash
-   node scripts/add-community.js
+   node scripts/data/add-community.js
    ```
    或手动编辑 `data/communities.json`
 
 3. **计算单间价格**：
    ```bash
-   node scripts/calculate-price-per-room.js
+   node scripts/data/calculate-price-per-room.js
    ```
 
 4. **验证数据**：
    ```bash
-   node scripts/validate-communities.js
+   node scripts/validate/validate-communities.js
    ```
 
 5. **推送上线**：
    ```bash
-   bash scripts/sync-data.sh
+   bash scripts/data/sync-data.sh
    ```
    或手动：
    ```bash
@@ -244,7 +244,7 @@ jq 'map(if .id == "jipulu-615nong" then . + {"coordinates": [121.492319, 31.3165
 mv /tmp/fixed.json data/communities.json
 
 # 验证
-node scripts/validate-communities.js
+node scripts/validate/validate-communities.js
 
 # 推送
 git add data/communities.json && git commit -m "fix: 修正吉浦路615弄坐标" && git push
@@ -256,15 +256,15 @@ git add data/communities.json && git commit -m "fix: 修正吉浦路615弄坐标
 
 | 脚本 | 用途 |
 |------|------|
-| `scripts/sync-csv.js` | **CSV→JSON 同步（推荐）**：`node scripts/sync-csv.js` 或 `--dry-run` |
-| `scripts/recalc-price-per-room.ts` | 重算所有社区的 `pricePerRoomStats` |
-| `scripts/add-community.js` | 交互式添加新小区，自动获取精确坐标 |
-| `scripts/geocode-communities.js` | 批量用高德 API 补全/更新坐标 |
-| `scripts/validate-communities.js` | 验证数据格式和完整性 |
-| `scripts/diff-communities.js` | 生成数据变更摘要 |
-| `scripts/cleanup-data.js` | 清洗 highlights、重算统计数据 |
-| `scripts/process-pricing.ts` | 旧流程：raw-pricing.json → communities.json（已被 CSV 同步替代） |
-| `scripts/sync-data.sh` | 一键同步：验证 → 提交 → 推送 |
+| `scripts/data/sync-csv.js` | **CSV→JSON 同步（推荐）**：`node scripts/data/sync-csv.js` 或 `--dry-run` |
+| `scripts/data/recalc-price-per-room.ts` | 重算所有社区的 `pricePerRoomStats` |
+| `scripts/data/add-community.js` | 交互式添加新小区，自动获取精确坐标 |
+| `scripts/geo/geocode-communities.js` | 批量用高德 API 补全/更新坐标 |
+| `scripts/validate/validate-communities.js` | 验证数据格式和完整性 |
+| `scripts/validate/diff-communities.js` | 生成数据变更摘要 |
+| `scripts/archive/cleanup-data.js` | 清洗 highlights、重算统计数据 |
+| `scripts/data/process-pricing.ts` | 旧流程：raw-pricing.json → communities.json（已被 CSV 同步替代） |
+| `scripts/data/sync-data.sh` | 一键同步：验证 → 提交 → 推送 |
 
 ---
 
@@ -294,6 +294,5 @@ git add data/communities.json && git commit -m "fix: 修正吉浦路615弄坐标
 
 ## 参考文档
 
-- **单间价格排行榜**：`memory/topics/rental-price-ranking.md`
-- **原始数据记录**：`memory/topics/rental-data-log.md`
+- **单间价格排行榜**：`docs/price-per-room-feature.md`
 - **类型定义**：`types/community.ts`

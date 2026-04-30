@@ -1,5 +1,7 @@
 # 单间价格功能说明
 
+> **注意**：本文档部分内容基于早期开发快照，代码示例和排行榜数据可能已过时。数据统计已更新，核心计算逻辑和接口定义仍然准确。
+
 > 让实习生和合租党一眼看到每间房多少钱
 
 ---
@@ -22,14 +24,13 @@
 ### 1. 计算单间价格
 
 ```bash
-cd ~/Downloads/office-map
-node scripts/calculate-price-per-room.js
+node scripts/data/calculate-price-per-room.js
 ```
 
 **输出**：
 ```
-✅ 已更新 28 个小区的单间价格数据
-📊 新增字段:
+✅ 已更新小区的单间价格数据
+📊 新增/更新字段:
    - roomPricing[].rooms: 房间数
    - roomPricing[].pricePerRoom: 单间价格
    - pricePerRoomStats: {min, max, avg}
@@ -37,9 +38,7 @@ node scripts/calculate-price-per-room.js
 
 ### 2. 查看单间价格排行榜
 
-```bash
-cat memory/topics/rental-price-ranking.md
-```
+排行榜数据见本文档「单间价格排行榜」章节（历史记录 `memory/topics/` 已不存在，不作为当前维护入口）。
 
 ### 3. 地图查看
 
@@ -192,17 +191,17 @@ const tooltipContent = `
 - **创智坊 四室两卫**：2250元/间，0.3km，有电梯 ⭐ **最优选择**
 - **吉浦路615弄 两室一厅**：2050元/间，2.65km（骑行11分钟）⭐ **最便宜**
 
-**完整排行榜**：见 `memory/topics/rental-price-ranking.md`
+**完整排行榜**：见本文档 TOP 5 列表（历史记录 `memory/topics/rental-price-ranking.md` 已不存在）
 
 ---
 
-## 数据统计（2026-04-05）
+## 数据统计（截至当前数据快照）
 
-- **小区总数**：51个
-- **有单间数据**：28个小区
-- **无单间数据**：23个小区（显示总价）
+- **小区总数**：53个
+- **含 roomPricing**：36个小区
+- **含 pricePerRoomStats**：13个小区
+- **坐标状态**：当前无坐标缺失（三门路48弄、北茶园已于 2026-04-30 补全）
 - **单间价格范围**：2050-8000元/间
-- **TOP 10平均**：2854元/间
 
 ---
 
@@ -239,11 +238,11 @@ const tooltipContent = `
 1. 添加房源数据到 `communities.json`
 2. 运行单间价格计算：
    ```bash
-   node scripts/calculate-price-per-room.js
+   node scripts/data/calculate-price-per-room.js
    ```
 3. 验证数据：
    ```bash
-   node scripts/validate-communities.js
+   node scripts/validate/validate-communities.js
    ```
 4. 推送上线：
    ```bash
@@ -255,7 +254,7 @@ const tooltipContent = `
 ### 重新计算所有单间价格
 
 ```bash
-node scripts/calculate-price-per-room.js
+node scripts/data/calculate-price-per-room.js
 git add data/communities.json
 git commit -m "chore: 重新计算单间价格"
 git push
@@ -265,9 +264,9 @@ git push
 
 ## 相关文件
 
-- **计算脚本**：`scripts/calculate-price-per-room.js`
+- **计算脚本**：`scripts/data/calculate-price-per-room.js`
 - **数据文件**：`data/communities.json`
-- **排行榜**：`memory/topics/rental-price-ranking.md`
+- **排行榜**：见本文档「单间价格排行榜」章节
 - **类型定义**：`types/community.ts`
 - **地图组件**：`components/MapView.tsx`
 - **数据维护**：`docs/data-maintenance.md`
@@ -279,7 +278,7 @@ git push
 ### 计算脚本实现
 
 ```javascript
-// scripts/calculate-price-per-room.js
+// scripts/data/calculate-price-per-room.js
 function getRoomCount(layout) {
   if (!layout) return 1;
   

@@ -12,21 +12,23 @@
 - 文档总索引：`docs/README.md`
 - 快速开始（安装/启动/环境变量）：`docs/quickstart.md`
 - 功能与架构（页面结构、地图联动、核心组件）：`docs/architecture.md`
-- 坐标与调试（debug 面板、坐标漂移排查、桌面修正）：`docs/debugging.md`
+- 坐标与调试（debug 面板、坐标漂移排查、桌面修正）：`docs/ops/debugging.md`
 - 数据维护（数据结构、脚本、坐标更新）：`docs/data-maintenance.md`
+- 单间价格功能（计算逻辑、数据结构、排行榜）：`docs/price-per-room-feature.md`
 - 租房向量化系统（Openclaw 入库、向量结构、趋势分析）：`docs/rental-vectorization.md`
 - 数据归档规范（命名、备份、存储路径）：`docs/data-archive-policy.md`
 - Openclaw 接口指南（输入格式、API、错误处理）：`docs/openclaw-guide.md`
-- 测试与发布（CI、E2E、Vercel 部署与回滚）：`docs/testing-and-release.md`
+- 测试与发布（CI、E2E、Vercel 部署与回滚）：`docs/ops/testing-and-release.md`
+- 下一步计划（Codex/Agent 读取用）：`NEXT_STEPS.md`
 
-如果你只需要快速上手，请先看 `docs/quickstart.md`；如果你是维护线上稳定性，请直接看 `docs/debugging.md` + `docs/testing-and-release.md`。
+如果你只需要快速上手，请先看 `docs/quickstart.md`；如果你是维护线上稳定性，请直接看 `docs/ops/debugging.md` + `docs/ops/testing-and-release.md`。
 
 ---
 
 ## 管理员模式
 
 - 管理页面地址：`/admin`
-- 租房向量化管理地址：`/admin/rentals`
+- 租房向量化管理：通过 `tools/rental-pipeline/` 实现
 - 用途：在线编辑每个小区的完整字段（名称、坐标、价格、户型、亮点、注意事项等）
 - 支持：
   - 列表检索与逐项编辑
@@ -106,33 +108,34 @@ ADMIN_KEY=your-admin-key
 
 说明：
 
-- `NEXT_PUBLIC_AMAP_KEY`：高德地图 JSAPI Key
-- `NEXT_PUBLIC_AMAP_SECURITY_KEY`：配合「JS 安全密钥」使用
+- `NEXT_PUBLIC_AMAP_KEY`：高德地图 JSAPI Key（平台类型必须为「Web端(JS API)」）
+- `NEXT_PUBLIC_AMAP_SECURITY_KEY`：配合「JS 安全密钥」使用（在高德控制台 → 我的应用 → Key 设置中查看）
 - `DATABASE_URL`：Supabase PostgreSQL 连接串（东京区域），用于小区评论与图片等数据存储
 - `ADMIN_KEY`：管理员身份验证密钥（服务端使用，不暴露到客户端）。用于 `/admin` 页面登录验证、评论管理、图片上传等管理员操作。通过 URL 参数 `?admin=XXX` 传入，服务端校验后写入 sessionStorage
-- 高德 Key 会暴露在浏览器端，请务必在高德控制台配置「域名白名单」
+- 高德 Key 会暴露在浏览器端，请务必在高德控制台配置「域名白名单」（至少包含 `map.lihuiyang.xyz` 和 `localhost`）。域名未授权会导致 `INVALID_USER_DOMAIN` 错误，详见 `docs/ops/debugging.md`
 
 ## 数据维护
 
 页面数据源：
 
 - `data/communities.json`：小区列表与坐标（`[lng, lat]`，GCJ-02）
-- `data/rental-system/`：租房向量化快照、历史、反馈、报告、备份
+- `data/rental-system/`：租房向量化快照、历史、反馈、报告、备份（gitignore，本地运行时生成）
 - 类型定义：`types/community.ts`（含 `RoomPricing` 合租/整租价格接口）
-- 租房类型：`types/rental.ts`
+- 租房类型：`tools/rental-pipeline/` 中的类型定义
 
-常用脚本（`node scripts/xxx.js`）：
+常用脚本：
 
-- `scripts/geocode-communities.js`：用高德 Web API 通过小区名补全/更新坐标，会覆盖写回 `data/communities.json`（依赖 `.env.local` 里的 `NEXT_PUBLIC_AMAP_KEY`）
-- `scripts/extract-coords.js`：通过高德短链接提取坐标并写回 `data/communities.json`
-- `scripts/process-data.js`：一次性数据加工脚本（用法：`node scripts/process-data.js <input.json>`）
-- `scripts/release-rental-system.sh`：租房向量化系统上线前检查脚本
-- `scripts/process-pricing.ts`：租金数据处理脚本（读取 raw-pricing.json → 去重取平均 → 更新 communities.json）
+- 数据同步：`node scripts/data/sync-csv.js [--dry-run]`（CSV → JSON，主力脚本）
+- 地理编码：`node scripts/geo/geocode-communities.js`（用高德 API 补全坐标）
+- 坐标提取：`node scripts/geo/extract-coords.js`（通过高德短链接提取坐标）
+- 价格处理：`node scripts/data/process-pricing.ts`（租金数据去重取平均）
+- 单间均价：`node scripts/data/recalc-price-per-room.ts`（重算单间均价）
+- 数据校验：`node scripts/validate/validate-communities.js`
 
 ## 目录结构（当前状态）
 
 ```
-office-map/
+house-map/
   app/                      Next.js App Router 页面入口
     layout.tsx
     page.tsx                主页面：筛选/列表/地图联动
@@ -140,16 +143,24 @@ office-map/
     MapView.tsx             高德地图加载、标记渲染与联动
     FilterBar.tsx           筛选条
     CommunityCard.tsx       小区详情卡片
-    ThemeToggle.tsx         主题切换
   src/db/                   数据库层（Supabase PostgreSQL）
     index.ts                postgres.js 连接 + Drizzle ORM 初始化
     schema.ts               Drizzle ORM 表定义（pg-core）
   data/
-    communities.json        当前使用的数据
-    communities_raw.json    原始/中间数据（保留参考）
-    communities.json.bak    备份
+    communities.json        当前使用的小区数据
+    房源数据存档.csv         唯一数据源（CSV）
+    raw-pricing.json        原始价格数据
+    archive/                历史备份
+    reports/                数据比对报告
+  scripts/
+    data/                   数据同步、价格处理
+    geo/                    地理编码、坐标匹配
+    validate/               数据校验、比对
+    archive/                一次性/历史脚本
+  tools/                    租房向量化管线
+  docs/
+    ops/                    运维文档（调试、测试与发布）
   drizzle/                  Drizzle Kit 生成的迁移文件
-  scripts/                  数据处理与坐标辅助脚本
   types/                    TypeScript 类型定义
   public/                   静态资源
 ```
@@ -171,7 +182,6 @@ npm run db:generate  # Drizzle Kit 生成迁移文件
 npm run db:migrate   # Drizzle Kit 执行数据库迁移
 npm run db:push      # Drizzle Kit 推送 schema 到数据库
 npm run db:studio    # Drizzle Kit Studio（可视化管理数据库）
-npm run release:rentals  # 租房向量化系统发布前校验
 ```
 
 ## 调试模式（定位偏移排查）
@@ -255,9 +265,10 @@ git push origin main
 发布前检查：
 
 - CI 全绿（lint/build/unit+coverage/e2e）
-- Vercel 环境变量（Production）已配置：`NEXT_PUBLIC_AMAP_KEY` / `NEXT_PUBLIC_AMAP_SECURITY_KEY` / `DATABASE_URL` / `ADMIN_KEY`
+- Vercel 环境变量（Production）已配置：`NEXT_PUBLIC_AMAP_KEY` / `NEXT_PUBLIC_AMAP_SECURITY_KEY`
+- Vercel 环境变量（Production）待配置：`DATABASE_URL`（Supabase 连接串） / `ADMIN_KEY`（管理员密钥）
 - 如有数据库 schema 变更，先运行 `npx drizzle-kit push` 或 `npx drizzle-kit migrate` 同步 Supabase（或使用 package.json 快捷命令：`npm run db:generate` / `db:migrate` / `db:push` / `db:studio`）
-- 高德控制台域名白名单包含 `map.lihuiyang.xyz`
+- 高德控制台域名白名单已包含 `map.lihuiyang.xyz`（已配置）
 
 发布方式：
 

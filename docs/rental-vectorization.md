@@ -7,17 +7,17 @@
 ## 处理链路
 
 1. 输入接入：`POST /api/rentals/ingest`
-2. 字段抽取：`utils/rentalProcessing.ts`
+2. 字段抽取：`tools/rental-pipeline/rentalProcessing.ts`
 3. 数据校验：`validateRentalParsed`
 4. 向量构建：`buildRentalVector`
-5. 增量入库：`utils/rentalStorage.ts`
-6. 小区同步：`utils/communityCatalog.ts`
+5. 增量入库：`tools/rental-pipeline/rentalStorage.ts`
+6. 小区同步：`tools/rental-pipeline/communityCatalog.ts`
 7. 趋势报告：`POST /api/rentals/report`
-8. 管理界面：`/admin/rentals`
+8. 管理界面：`/admin`（计划中）
 
 ## 数据模型
 
-核心类型定义位于 `types/rental.ts`：
+核心类型定义位于 `tools/rental-pipeline/` 中的类型定义：
 
 - `RentalIngestInput`：Openclaw 输入对象
 - `RentalParsedFields`：结构化抽取结果
@@ -86,7 +86,7 @@
 
 ## 趋势分析
 
-`utils/rentalAnalysis.ts` 输出以下指标：
+`tools/rental-pipeline/rentalAnalysis.ts` 输出以下指标：
 
 - 小区租金均价
 - 租金变化率
@@ -98,7 +98,7 @@
 
 ## 管理员使用流程
 
-1. 打开 `/admin/rentals`
+1. 打开 `/admin`（租房向量化管理入口）
 2. 粘贴 Openclaw 文本，一行一条
 3. 点击“批量处理”
 4. 检查抽取结果与异常列表
