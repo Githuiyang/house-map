@@ -105,6 +105,7 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
   const markersRef = useRef<Map<string, AMapMarker>>(new Map());
   const circleRef = useRef<AMapCircle | null>(null);
   const [mapReady, setMapReady] = useState(false);
+  const [mapError, setMapError] = useState<{ type: 'domain' | 'generic'; message: string } | null>(null);
   const mapDisabled = process.env.NEXT_PUBLIC_DISABLE_MAP === '1';
   const AMapRef = useRef<AMapApi | null>(null);
   const isInitializedRef = useRef(false);
@@ -320,7 +321,20 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
         mapRef.current = map;
         setMapReady(true);
       }).catch((e: Error) => {
+        if (isDestroyedRef.current) return;
         console.error('地图加载失败:', e);
+        const msg = e?.message || String(e);
+        if (msg.includes('INVALID_USER_DOMAIN') || msg.includes('INVALID_USER_SCODE')) {
+          setMapError({
+            type: 'domain',
+            message: '当前域名未在高德控制台白名单中，请将访问域名添加到高德应用的「域名白名单」设置中。',
+          });
+        } else {
+          setMapError({
+            type: 'generic',
+            message: `地图加载失败：${msg}`,
+          });
+        }
       });
     });
 
@@ -353,6 +367,7 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
       }
       isInitializedRef.current = false;
       setMapReady(false);
+      setMapError(null);
     };
   }, [extractLngLat, mapDisabled]);
 
@@ -664,9 +679,23 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
       className={styles.container}
       data-testid="map-root"
     >
-      {!mapReady && (
+      {!mapReady && !mapError && (
         <div className={styles.loading}>
           {mapDisabled ? '地图在测试环境已禁用' : '地图加载中...'}
+        </div>
+      )}
+      {mapError && (
+        <div className={styles.errorPanel}>
+          <div className={styles.errorIcon}>⚠️</div>
+          <div className={styles.errorTitle}>
+            {mapError.type === 'domain' ? '地图域名未授权' : '地图加载失败'}
+          </div>
+          <div className={styles.errorMessage}>{mapError.message}</div>
+          {mapError.type === 'domain' && (
+            <div className={styles.errorHint}>
+              解决方法：前往 <a href="https://console.amap.com" target="_blank" rel="noopener noreferrer">高德控制台</a> → 应用管理 → 我的应用 → 找到对应 Key → 平台选择「Web端(JS API)」→ 在「域名白名单」中添加当前访问域名。
+            </div>
+          )}
         </div>
       )}
       {mapReady && (
