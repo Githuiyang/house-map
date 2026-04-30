@@ -512,3 +512,40 @@ scripts/validate/validate-communities.js
 | `npm run lint` | ✅ 0 errors, 0 warnings |
 | `npm run typecheck` | ✅ 通过 |
 | `npm run build` | ✅ 构建成功 |
+
+---
+
+## 2026-04-30 GitHub 同步与 Vercel 部署观察
+
+### Push 结果
+
+- `git push origin main` 成功：`6961801..152607b`
+- 6 个 commit 已全部推送到 `origin/main`
+- 本地 main 与 origin/main 完全同步（不再 ahead）
+- Git 认证方式：HTTPS + PAT + macOS Keychain credential helper
+
+### origin/main 最新 commit
+
+```
+152607b docs: 同步项目文档和 Agent 状态追踪
+```
+
+### Vercel / 线上访问结果
+
+- Vercel 自动部署已触发并完成
+- `https://map.lihuiyang.xyz` 返回 HTTP 200，`age: 0`（新部署）
+- 新 slogan "找到你公司附近最合适的房子" 已上线
+- 地图区域（map-root）、筛选栏、小区列表均可见
+- **未检测到 INVALID_USER_DOMAIN 相关内容**
+
+### 剩余问题
+
+1. **DATABASE_URL / ADMIN_KEY 未配置**：评论/图片上传功能不可用
+2. **17 个小区 layouts 为空**：影响户型筛选完整性
+3. **GitHub PAT 已暴露**：用户需前往 https://github.com/settings/tokens 删除旧 token 并重新生成
+
+### 未执行事项
+
+- 未读取任何密钥、token、`.env`、`office-map` 文件内容
+- 未强推、未 reset
+- 未修改环境变量
