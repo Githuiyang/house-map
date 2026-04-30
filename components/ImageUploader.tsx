@@ -263,6 +263,7 @@ export default function ImageUploader({
         <div className={styles.grid}>
           {items.map((item) => (
             <div key={item.id} className={styles.thumbnail}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={item.previewUrl}
                 alt=""

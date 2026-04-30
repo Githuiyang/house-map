@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/src/db';
 import { communityComments, commentStatusEnum } from '@/src/db/schema';
-import { eq, desc, sql, and, count } from 'drizzle-orm';
+import { eq, desc, count } from 'drizzle-orm';
 import type { NextRequest } from 'next/server';
 
 // ---------------------------------------------------------------------------

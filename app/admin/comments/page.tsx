@@ -249,6 +249,25 @@ export default function AdminCommentsPage() {
               )}
             </div>
           ))}
+          {totalPages > 1 && (
+            <div className={styles.pagination}>
+              <button
+                className={styles.pageBtn}
+                disabled={page <= 1}
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+              >
+                上一页
+              </button>
+              <span className={styles.pageInfo}>{page} / {totalPages}</span>
+              <button
+                className={styles.pageBtn}
+                disabled={page >= totalPages}
+                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              >
+                下一页
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

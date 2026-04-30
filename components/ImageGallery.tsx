@@ -195,6 +195,7 @@ export default function ImageGallery({ communityId, images: imagesProp, isAdmin,
             className={styles.thumbnail}
             onClick={() => openLightbox(index)}
           >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={image.url} alt={image.caption || '小区图片'} loading="lazy" />
             {image.caption && (
               <div className={styles.caption}>{image.caption}</div>
@@ -246,7 +247,7 @@ export default function ImageGallery({ communityId, images: imagesProp, isAdmin,
           </button>
 
           <div className={styles.lightboxScrollContainer} ref={scrollContainerRef}>
-            {images.map((image, index) => (
+            {images.map((image) => (
               <div
                 key={image.id}
                 className={styles.scrollItem}
@@ -256,6 +257,7 @@ export default function ImageGallery({ communityId, images: imagesProp, isAdmin,
                   }
                 }}
               >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   className={styles.lightboxImage}
                   src={image.url}
