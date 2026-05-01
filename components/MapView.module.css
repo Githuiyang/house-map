@@ -130,19 +130,17 @@
   cursor: pointer;
   outline: 2px solid transparent;
   outline-offset: 2px;
-  transition: outline-color 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+  transition: outline-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .communityLabel:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  filter: brightness(1.1);
 }
 
 /* Hover 高亮状态（来自列表 hover，不改变尺寸） */
 .communityLabelHovered {
   outline-color: rgba(255, 255, 255, 0.8) !important;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35) !important;
-  filter: brightness(1.15) !important;
 }
 
 .communityIcon {
