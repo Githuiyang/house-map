@@ -87,6 +87,11 @@
   - 修复：移除所有 transform 动画，改用 outline/box-shadow/filter；tooltip 添加 pointer-events:none + 80ms 延迟移除；React setState 增加幂等守卫
   - 涉及文件：MapView.module.css、MapView.tsx、page.tsx、page.module.css
   - 验证：lint 0 errors、typecheck OK、89 tests pass、build OK、dry-run OK
+- [x] **UI-1.2 地图 hover 命中区域抖动根治** (2026-05-01)
+  - 根因：AMap marker.on('mouseover'/'mouseout') 在内部子元素切换时触发；mouseout ≠ mouseleave
+  - 修复：改为 `.communityLabel` DOM 元素上的 `pointerenter`/`pointerleave`；提取 `bindCommunityHover()` 统一处理；移除 CSS `filter`；hide timer 取消机制
+  - 涉及文件：MapView.tsx、MapView.module.css
+  - 验证：lint 0 errors、typecheck OK、89 tests pass、build OK
 - [ ] **`docs/price-per-room-feature.md` 代码示例过时**：代码示例引用旧版 MapView 逻辑，建议更新
 - [ ] **`scripts/data/` 中 JS 脚本统一改为 TS**：当前混用 JS/TS，建议统一用 TS 以获得类型检查
 - [ ] **17 个小区 layouts 为空**：数据质量问题，影响户型筛选完整性

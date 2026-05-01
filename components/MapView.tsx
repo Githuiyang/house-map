@@ -80,13 +80,6 @@ type AMapLoaderModule = {
   };
 };
 
-type AMapEventWithTarget = {
-  target: {
-    getPosition: () => AMapLngLat;
-    setContent?: (html: string) => void;
-  };
-};
-
 interface MapViewProps {
   communities: Community[];
   selectedCommunity: Community | null;
@@ -115,6 +108,7 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
   const previewCommunityRef = useRef<Community | null>(null);
   const clusterRef = useRef<unknown>(null);
   const tooltipMarkersRef = useRef<Map<string, AMapMarker>>(new Map());
+  const hideTimerRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
   const layoutSyncRafRef = useRef<number | null>(null);
   const layoutSyncStateRef = useRef<{ start: number; lastW: number; lastH: number; lastLeft: number; lastTop: number; stable: number; reason: string } | null>(null);
 
@@ -440,6 +434,9 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
       try { m.setMap(null); } catch { /* ignore */ }
     });
     tooltipMarkersRef.current.clear();
+    // 清除所有 pending hide timers
+    hideTimerRef.current.forEach(timer => clearTimeout(timer));
+    hideTimerRef.current.clear();
 
     // 格式化价格 (简化为 k 单位)
     const formatPrice = (min: number, max: number): string => {
@@ -459,6 +456,72 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
       })
       .filter((p): p is NonNullable<typeof p> => p !== null);
 
+    // 统一 hover 处理：绑定到 .communityLabel DOM 元素的 pointerenter/pointerleave
+    const bindCommunityHover = (
+      community: Community,
+      markerObj: AMapMarker,
+      communityCoords: [number, number],
+    ) => {
+      markerObj.on('click', () => {
+        onPreviewCommunity(community);
+      });
+
+      // 使用 requestAnimationFrame 等待 AMap 将 content 渲染到 DOM
+      requestAnimationFrame(() => {
+        // 通过 marker 的 DomId 找到 AMap 生成的 marker 容器，再定位内部 .communityLabel
+        const markerDom = markerObj as unknown as { DomId?: string; dom?: HTMLElement };
+        let labelEl: HTMLElement | null = null;
+        if (markerDom.dom) {
+          labelEl = markerDom.dom.querySelector(`.${styles.communityLabel}`);
+        }
+        if (!labelEl) {
+          // Fallback: 全局 querySelector
+          labelEl = document.querySelector(`.${styles.communityLabel}[data-community-id="${community.id}"]`);
+        }
+        if (!labelEl) return;
+
+        labelEl.addEventListener('pointerenter', () => {
+          // 取消 pending hide timer
+          const timerKey = community.id;
+          const pending = hideTimerRef.current.get(timerKey);
+          if (pending) {
+            clearTimeout(pending);
+            hideTimerRef.current.delete(timerKey);
+          }
+
+          // 跳过：已有 preview popup 或已有 tooltip
+          if (previewCommunityRef.current?.id === community.id) return;
+          if (tooltipMarkersRef.current.has(`tooltip-${community.id}`)) return;
+
+          const priceText = formatPricePerRoom(community.pricePerRoomStats?.avg)
+            ?? `¥${formatPrice(community.price.min, community.price.max)}/月`;
+          const distText = community.commute
+            ? `${community.commute.roadDistanceKm}km · 步行${community.commute.walkMinutes}min · 骑行${community.commute.bikeMinutes}min`
+            : `${community.distance} · 骑行${community.bikeTime}`;
+          const tooltipMarker = new AMap.Marker({
+            position: communityCoords,
+            content: `<div class="${styles.hoverTooltip}" style="pointer-events:none;"><div class="${styles.tooltipRow}" style="pointer-events:none;">${distText}</div><div class="${styles.tooltipRow}" style="pointer-events:none;">${priceText}</div></div>`,
+            offset: new AMap.Pixel(-60, -60),
+            zIndex: 9999,
+          });
+          tooltipMarker.setMap(map);
+          tooltipMarkersRef.current.set(`tooltip-${community.id}`, tooltipMarker);
+        });
+
+        labelEl.addEventListener('pointerleave', () => {
+          const timerKey = community.id;
+          // 延迟隐藏，给 pointer 重新进入留余量
+          const timer = setTimeout(() => {
+            hideTimerRef.current.delete(timerKey);
+            const key = `tooltip-${community.id}`;
+            const tm = tooltipMarkersRef.current.get(key);
+            if (tm) { tm.setMap(null); tooltipMarkersRef.current.delete(key); }
+          }, 120);
+          hideTimerRef.current.set(timerKey, timer);
+        });
+      });
+    };
+
     // 尝试使用 MarkerCluster 聚合
     const MarkerClusterCtor = (AMap as Record<string, unknown>).MarkerCluster as
       | (new (map: unknown, data: unknown[], opts: Record<string, unknown>) => { setMap: (m: unknown) => void; destroy: () => void })
@@ -470,10 +533,11 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
           gridSize: 60,
           maxZoom: 14,
           renderMarker: (context: Record<string, unknown>) => {
-            const data = context.data as { community: Community; isRecommended: boolean; id: string }[];
+            const data = context.data as { community: Community; isRecommended: boolean; id: string; lnglat: [number, number] }[];
             const community = data[0]?.community;
             const isRecommended = data[0]?.isRecommended ?? false;
-            if (!community) return;
+            const coords = data[0]?.lnglat;
+            if (!community || !coords) return;
 
             const markerObj = context.marker as AMapMarker;
             markerObj.setContent(`
@@ -483,43 +547,7 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
               </div>
             `);
 
-            // Hover tooltip
-            markerObj.on('mouseover', (e: unknown) => {
-              if (previewCommunityRef.current?.id === community.id) return;
-              // Skip if tooltip already exists for this community
-              if (tooltipMarkersRef.current.has(`tooltip-${community.id}`)) return;
-              const priceText = formatPricePerRoom(community.pricePerRoomStats?.avg)
-                ?? `¥${formatPrice(community.price.min, community.price.max)}/月`;
-              const distText = community.commute
-                ? `${community.commute.roadDistanceKm}km · 步行${community.commute.walkMinutes}min · 骑行${community.commute.bikeMinutes}min`
-                : `${community.distance} · 骑行${community.bikeTime}`;
-              const tooltipMarker = new AMap.Marker({
-                position: (() => {
-                  const pos = (e as AMapEventWithTarget).target.getPosition();
-                  return [pos.lng, pos.lat] as [number, number];
-                })(),
-                content: `<div class="${styles.hoverTooltip}" style="pointer-events:none;"><div class="${styles.tooltipRow}" style="pointer-events:none;">${distText}</div><div class="${styles.tooltipRow}" style="pointer-events:none;">${priceText}</div></div>`,
-                offset: new AMap.Pixel(-60, -60),
-                zIndex: 9999,
-              });
-              tooltipMarker.setMap(map);
-              tooltipMarkersRef.current.set(`tooltip-${community.id}`, tooltipMarker);
-            });
-
-            markerObj.on('mouseout', () => {
-              const cid = community.id;
-              const key = `tooltip-${cid}`;
-              // Short delay to avoid flicker when cursor briefly leaves and re-enters
-              setTimeout(() => {
-                const tm = tooltipMarkersRef.current.get(key);
-                if (tm) { tm.setMap(null); tooltipMarkersRef.current.delete(key); }
-              }, 80);
-            });
-
-            markerObj.on('click', () => {
-              onPreviewCommunity(community);
-            });
-
+            bindCommunityHover(community, markerObj, coords);
             markersRef.current.set(community.id, markerObj);
           },
           renderClusterMarker: (context: Record<string, unknown>) => {
@@ -562,42 +590,7 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
         zIndex: 100,
       });
 
-      marker.on('mouseover', (e: unknown) => {
-        if (previewCommunityRef.current?.id === community.id) return;
-        // Skip if tooltip already exists for this community
-        if (tooltipMarkersRef.current.has(`tooltip-${community.id}`)) return;
-        const priceText = formatPricePerRoom(community.pricePerRoomStats?.avg)
-          ?? `¥${formatPrice(community.price.min, community.price.max)}/月`;
-        const distText = community.commute
-          ? `${community.commute.roadDistanceKm}km · 步行${community.commute.walkMinutes}min · 骑行${community.commute.bikeMinutes}min`
-          : `${community.distance} · 骑行${community.bikeTime}`;
-        const tooltipMarker = new AMap.Marker({
-          position: (() => {
-            const pos = (e as AMapEventWithTarget).target.getPosition();
-            return [pos.lng, pos.lat] as [number, number];
-          })(),
-          content: `<div class="${styles.hoverTooltip}" style="pointer-events:none;"><div class="${styles.tooltipRow}" style="pointer-events:none;">${distText}</div><div class="${styles.tooltipRow}" style="pointer-events:none;">${priceText}</div></div>`,
-          offset: new AMap.Pixel(-60, -60),
-          zIndex: 9999,
-        });
-        tooltipMarker.setMap(map);
-        tooltipMarkersRef.current.set(`tooltip-${community.id}`, tooltipMarker);
-      });
-
-      marker.on('mouseout', () => {
-        const cid = community.id;
-        const key = `tooltip-${cid}`;
-        // Short delay to avoid flicker when cursor briefly leaves and re-enters
-        setTimeout(() => {
-          const tm = tooltipMarkersRef.current.get(key);
-          if (tm) { tm.setMap(null); tooltipMarkersRef.current.delete(key); }
-        }, 80);
-      });
-
-      marker.on('click', () => {
-        onPreviewCommunity(community);
-      });
-
+      bindCommunityHover(community, marker, currentCoords);
       marker.setMap(map);
       markersRef.current.set(community.id, marker);
     });

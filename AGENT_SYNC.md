@@ -1644,3 +1644,52 @@ node scripts/data/feishu-to-csv-preview.js --write
 | `--dry-run` | ✅ CSV 去重正常，0 待发布 |
 | dev server | ✅ HTTP 200 |
 | CSV/JSON | ✅ 未修改 |
+
+---
+
+## UI-1.2 — 地图 hover 命中区域抖动根治（2026-05-01）
+
+**目标**：修复"鼠标在小区名上轻微移动时 hover/tooltip 消失再出现"的问题
+
+### 根因（比 UI-1 更深层）
+
+UI-1 修复了 CSS transform 和延迟问题，但用户反馈轻微移动仍触发闪烁。真正的根因是 **AMap marker.on('mouseover'/'mouseout') 语义不稳定**：
+
+| 问题 | 说明 |
+|------|------|
+| mouseover/mouseout ≠ mouseenter/mouseleave | AMap 事件基于 DOM mouseover/mouseout 语义，在父→子元素移动时也会触发 |
+| `.communityLabel` → 内部 `.communityIcon` span | 鼠标从 label 根移到 icon span 时触发 mouseout（离开 label）→ mouseover（进入 icon，冒泡到 marker） |
+| AMap marker 外层容器 | AMap 为每个 marker 包了一层容器 div，命中区域与 `.communityLabel` 不完全一致 |
+| filter: brightness() | 某些浏览器中可能微小影响 hit-test 区域 |
+
+### 修复策略
+
+1. **不再依赖 AMap marker.on('mouseover'/'mouseout')** — 改为在 `.communityLabel` DOM 元素上绑定 `pointerenter` / `pointerleave`
+2. **pointerenter/pointerleave 语义稳定** — 只在真正进入/离开 `.communityLabel` 根元素时触发，内部子元素切换不触发
+3. **提取统一 `bindCommunityHover()` 函数** — cluster renderMarker 和 fallback manual marker 共用
+4. **hide timer 取消机制** — pointerenter 取消 pending hide timer，pointerleave 延迟 120ms 隐藏
+5. **移除 CSS filter** — `.communityLabel:hover` 和 `.communityLabelHovered` 不再使用 `filter: brightness()`
+
+### 改动文件
+
+| 文件 | 改动 |
+|------|------|
+| `components/MapView.tsx` | 新增 `hideTimerRef`；提取 `bindCommunityHover()` 统一绑定 pointerenter/pointerleave；移除 AMap marker.on('mouseover'/'mouseout')；清理时清除所有 pending timers；删除未使用的 `AMapEventWithTarget` 类型 |
+| `components/MapView.module.css` | `.communityLabel` transition 移除 `filter`；`.communityLabel:hover` 移除 `filter: brightness(1.1)`；`.communityLabelHovered` 移除 `filter: brightness(1.15)` |
+
+### 验证结果
+
+| 检查项 | 结果 |
+|--------|------|
+| `npm run lint` | ✅ 0 errors, 0 warnings |
+| `npm run typecheck` | ✅ 通过 |
+| `npm run test:unit` | ✅ 89 tests / 4 files, 全通过 |
+| `NEXT_PUBLIC_DISABLE_MAP=1 npm run build` | ✅ 构建成功 |
+| dev server | ✅ HTTP 200，页面正常渲染 |
+| CSV/JSON | ✅ 未修改 |
+
+### 约束遵守
+
+- 未修改 `data/房源数据存档.csv`
+- 未修改 `data/communities.json`
+- 未执行 git add/commit/push
