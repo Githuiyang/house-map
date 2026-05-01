@@ -47,6 +47,13 @@
   - **下一步**：用户或 Openclaw 产生 `publish_status = "待发布"` 的记录后，执行 P2B-Execution
   - 创建记录指南见 `docs/codex-feishu-sync-guide.md` → "如何创建一条可发布记录"
 - [ ] **P2C：飞书状态回写 + 完整部署**：回写 publish_status + git commit + push
+  - [x] **P2C.0.1**：最终审计 + 推送（2026-05-01 完成）
+  - [x] **P2C.1**：dry-run 端到端测试（2026-05-01 完成）
+    - 修复：`feishu-to-csv-preview.js` 添加 `--format json`（lark-cli 默认输出 markdown）
+    - 新建测试链路：Raw Leads → Parsed Candidates → Publish Queue（各 1 条，北郊小区）
+    - dry-run 成功：1 条可写入，0 条 BLOCKED，禁止字段检查 PASS
+    - CSV/JSON 未变更，未执行 --write
+  - [ ] **P2C.2**：--write 实际写入测试（需用户确认后执行）
 - [ ] **`docs/price-per-room-feature.md` 代码示例过时**：代码示例引用旧版 MapView 逻辑，建议更新
 - [ ] **`scripts/data/` 中 JS 脚本统一改为 TS**：当前混用 JS/TS，建议统一用 TS 以获得类型检查
 - [ ] **17 个小区 layouts 为空**：数据质量问题，影响户型筛选完整性

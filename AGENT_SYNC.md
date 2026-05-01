@@ -1293,3 +1293,48 @@ Publish Queue 为空（0 条记录）。需要在飞书客户端中手动添加"
 - 未修改 `data/communities.json`
 - 未执行 `--write`
 - 未执行 git add/commit/push
+
+---
+
+## P2C.1 — dry-run 端到端测试（2026-05-01）
+
+**目标**：验证 Publish Queue → CSV 的 dry-run 完整链路
+
+### 测试记录链路
+
+Publish Queue 原为空（0 条），因此新建了 3 条测试记录：
+
+| 表 | record_id | 内容摘要 |
+|---|---|---|
+| Raw Leads | `recvimsky4dw4x` | 手动录入, 已解析, 测试文本（无隐私信息） |
+| Parsed Candidates | `recvimsnf33dLX` | 北郊小区, ¥5500, 整租, 一室一厅, 45平, 精装, 有电梯 |
+| Publish Queue | `recvimspr89KZF` | 待发布, 新增社区 |
+
+### 脚本修复
+
+发现 `callLarkCli` 中 `+record-list` 缺少 `--format json` 参数，lark-cli 默认输出 markdown 表格导致脚本解析失败。已在 `feishu-to-csv-preview.js:399` 添加 `--format json`。
+
+### Dry-run 结果
+
+```
+可写入: 1 条
+BLOCKED: 0 条
+CSV 预览: 北郊小区,一室一厅,45,整租,5500,总价,,精装,精装,Openclaw,2026,有电梯,
+禁止字段检查: PASS（无 contact_info / raw_text 等）
+```
+
+### 验证
+
+| 项目 | 结果 |
+|------|------|
+| `data/房源数据存档.csv` 未变更 | 确认 |
+| `data/communities.json` 未变更 | 确认 |
+| 脚本未执行 `--write` | 确认 |
+| 未执行 git add/commit/push | 确认 |
+
+### 约束遵守
+
+- 未修改 `data/房源数据存档.csv`
+- 未修改 `data/communities.json`
+- 未执行 `--write`
+- 未执行 git add/commit/push

@@ -396,7 +396,7 @@ function main() {
   // 1. 读取 Publish Queue
   console.log("[1/4] 读取 Publish Queue...");
   const pqResult = callLarkCli(
-    `+record-list --base-token ${BASE_TOKEN} --table-id ${PUBLISH_QUEUE_TABLE} --limit 200`
+    `+record-list --base-token ${BASE_TOKEN} --table-id ${PUBLISH_QUEUE_TABLE} --limit 200 --format json`
   );
   const allPqRecords = parseRecordListResult(pqResult);
 
