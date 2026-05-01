@@ -29,7 +29,9 @@ type AMapMap = {
   getZoom?: () => number;
   containerToLngLat?: (pixel: AMapPixel) => unknown;
   pixelToLngLat?: (pixel: AMapPixel) => unknown;
+  lngLatToContainer?: (lnglat: [number, number]) => { x: number; y: number } | undefined;
   on?: (event: string, handler: (e?: unknown) => void) => void;
+  off?: (event: string, handler: (e?: unknown) => void) => void;
   resize?: () => void;
   destroy: () => void;
 };
@@ -92,6 +94,14 @@ interface MapViewProps {
 const RECOMMEND_RADIUS = 3000; // 推荐范围3公里（米）
 const DEFAULT_ZOOM = 16;
 
+interface TooltipState {
+  communityId: string;
+  distText: string;
+  priceText: string;
+  x: number;
+  y: number;
+}
+
 export default function MapView({ communities, selectedCommunity, previewCommunity, hoveredCommunity, onSelectCommunity, onPreviewCommunity }: MapViewProps) {
   const mapRef = useRef<AMapMap | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -107,10 +117,14 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
   const previewPopupMarkerRef = useRef<AMapMarker | null>(null);
   const previewCommunityRef = useRef<Community | null>(null);
   const clusterRef = useRef<unknown>(null);
-  const tooltipMarkersRef = useRef<Map<string, AMapMarker>>(new Map());
-  const hideTimerRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+  const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const layoutSyncRafRef = useRef<number | null>(null);
   const layoutSyncStateRef = useRef<{ start: number; lastW: number; lastH: number; lastLeft: number; lastTop: number; stable: number; reason: string } | null>(null);
+
+  // DOM tooltip state — rendered by React, not AMap Marker
+  const [hoverTooltip, setHoverTooltip] = useState<TooltipState | null>(null);
+  const tooltipRef = useRef<TooltipState | null>(null);
+  useEffect(() => { tooltipRef.current = hoverTooltip; }, [hoverTooltip]);
 
   // Keep previewCommunityRef in sync with prop
   useEffect(() => {
@@ -312,6 +326,17 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
         // 添加缩放控件
         map.addControl(new AMap.Scale());
 
+        // 地图移动/缩放时隐藏 tooltip
+        const hideTooltipOnMove = () => {
+          if (hideTimerRef.current) {
+            clearTimeout(hideTimerRef.current);
+            hideTimerRef.current = null;
+          }
+          setHoverTooltip(null);
+        };
+        map.on?.('movestart', hideTooltipOnMove);
+        map.on?.('zoomstart', hideTooltipOnMove);
+
         mapRef.current = map;
         setMapReady(true);
       }).catch((e: Error) => {
@@ -430,13 +455,11 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
       try { marker.setMap(null); } catch { /* ignore */ }
     });
     markersRef.current.clear();
-    tooltipMarkersRef.current.forEach(m => {
-      try { m.setMap(null); } catch { /* ignore */ }
-    });
-    tooltipMarkersRef.current.clear();
-    // 清除所有 pending hide timers
-    hideTimerRef.current.forEach(timer => clearTimeout(timer));
-    hideTimerRef.current.clear();
+    // 清除 pending hide timer
+    if (hideTimerRef.current) {
+      clearTimeout(hideTimerRef.current);
+      hideTimerRef.current = null;
+    }
 
     // 格式化价格 (简化为 k 单位)
     const formatPrice = (min: number, max: number): string => {
@@ -457,67 +480,64 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
       .filter((p): p is NonNullable<typeof p> => p !== null);
 
     // 统一 hover 处理：绑定到 .communityLabel DOM 元素的 pointerenter/pointerleave
+    // Tooltip 是 React DOM 元素，pointer-events:none，不会阻挡 click
     const bindCommunityHover = (
       community: Community,
       markerObj: AMapMarker,
       communityCoords: [number, number],
     ) => {
+      // Click 始终绑定在 AMap marker 级别
       markerObj.on('click', () => {
         onPreviewCommunity(community);
       });
 
       // 使用 requestAnimationFrame 等待 AMap 将 content 渲染到 DOM
       requestAnimationFrame(() => {
-        // 通过 marker 的 DomId 找到 AMap 生成的 marker 容器，再定位内部 .communityLabel
         const markerDom = markerObj as unknown as { DomId?: string; dom?: HTMLElement };
         let labelEl: HTMLElement | null = null;
         if (markerDom.dom) {
           labelEl = markerDom.dom.querySelector(`.${styles.communityLabel}`);
         }
         if (!labelEl) {
-          // Fallback: 全局 querySelector
           labelEl = document.querySelector(`.${styles.communityLabel}[data-community-id="${community.id}"]`);
         }
         if (!labelEl) return;
 
         labelEl.addEventListener('pointerenter', () => {
           // 取消 pending hide timer
-          const timerKey = community.id;
-          const pending = hideTimerRef.current.get(timerKey);
-          if (pending) {
-            clearTimeout(pending);
-            hideTimerRef.current.delete(timerKey);
+          if (hideTimerRef.current) {
+            clearTimeout(hideTimerRef.current);
+            hideTimerRef.current = null;
           }
 
-          // 跳过：已有 preview popup 或已有 tooltip
+          // 已有 preview popup 则不显示 tooltip
           if (previewCommunityRef.current?.id === community.id) return;
-          if (tooltipMarkersRef.current.has(`tooltip-${community.id}`)) return;
 
           const priceText = formatPricePerRoom(community.pricePerRoomStats?.avg)
             ?? `¥${formatPrice(community.price.min, community.price.max)}/月`;
           const distText = community.commute
             ? `${community.commute.roadDistanceKm}km · 步行${community.commute.walkMinutes}min · 骑行${community.commute.bikeMinutes}min`
             : `${community.distance} · 骑行${community.bikeTime}`;
-          const tooltipMarker = new AMap.Marker({
-            position: communityCoords,
-            content: `<div class="${styles.hoverTooltip}" style="pointer-events:none;"><div class="${styles.tooltipRow}" style="pointer-events:none;">${distText}</div><div class="${styles.tooltipRow}" style="pointer-events:none;">${priceText}</div></div>`,
-            offset: new AMap.Pixel(-60, -60),
-            zIndex: 9999,
-          });
-          tooltipMarker.setMap(map);
-          tooltipMarkersRef.current.set(`tooltip-${community.id}`, tooltipMarker);
+
+          // 通过 AMap API 计算 pixel 位置
+          const pixel = map.lngLatToContainer?.(communityCoords);
+          if (pixel) {
+            setHoverTooltip({
+              communityId: community.id,
+              distText,
+              priceText,
+              x: pixel.x,
+              y: pixel.y,
+            });
+          }
         });
 
         labelEl.addEventListener('pointerleave', () => {
-          const timerKey = community.id;
           // 延迟隐藏，给 pointer 重新进入留余量
-          const timer = setTimeout(() => {
-            hideTimerRef.current.delete(timerKey);
-            const key = `tooltip-${community.id}`;
-            const tm = tooltipMarkersRef.current.get(key);
-            if (tm) { tm.setMap(null); tooltipMarkersRef.current.delete(key); }
+          hideTimerRef.current = setTimeout(() => {
+            hideTimerRef.current = null;
+            setHoverTooltip(prev => prev?.communityId === community.id ? null : prev);
           }, 120);
-          hideTimerRef.current.set(timerKey, timer);
         });
       });
     };
@@ -609,7 +629,7 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
       }
     });
 
-    // 同时保留 CSS 高亮效果（缩放、阴影）
+    // 同时保留 CSS 高亮效果（outline + shadow）
     const labelEls = document.querySelectorAll(`.${styles.communityLabel}`);
     labelEls.forEach((el) => {
       const communityId = el.getAttribute('data-community-id');
@@ -715,6 +735,22 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
             🏢
           </button>
         </>
+      )}
+      {/* React DOM tooltip — pointer-events:none, never blocks click */}
+      {hoverTooltip && (
+        <div
+          className={styles.hoverTooltip}
+          style={{
+            position: 'absolute',
+            left: hoverTooltip.x,
+            top: hoverTooltip.y - 50,
+            pointerEvents: 'none',
+            zIndex: 10000,
+          }}
+        >
+          <div className={styles.tooltipRow}>{hoverTooltip.distText}</div>
+          <div className={styles.tooltipRow}>{hoverTooltip.priceText}</div>
+        </div>
       )}
     </div>
   );

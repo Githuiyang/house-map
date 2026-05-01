@@ -1693,3 +1693,48 @@ UI-1 修复了 CSS transform 和延迟问题，但用户反馈轻微移动仍触
 - 未修改 `data/房源数据存档.csv`
 - 未修改 `data/communities.json`
 - 未执行 git add/commit/push
+
+---
+
+## UI-1.3 — hover 阻挡 click + 闪烁根治（2026-05-01）
+
+**目标**：修复 hover tooltip 阻挡 marker click + 彻底消除轻微移动闪烁
+
+### 根因
+
+UI-1.2 将 hover 事件改为 DOM pointerenter/pointerleave，但 tooltip 仍使用 AMap.Marker 创建。这导致两个问题：
+
+1. **click 被阻挡**：AMap.Marker tooltip 即使 content 设了 pointer-events:none，AMap 外层容器 div 仍接收 pointer 事件。tooltip marker z-index=9999 高于 community marker z-index=100，物理覆盖在上方 → 阻挡 marker click
+2. **闪烁残留**：cluster renderMarker 在 zoom/pan 时可能重复调用，每次重新 bindCommunityHover，但旧 DOM listener 未清理
+
+### 修复策略
+
+1. **彻底移除 AMap Marker tooltip** — 不再创建/销毁 AMap.Marker 做 tooltip
+2. **改用 React DOM tooltip** — 维护 hoverTooltip state (communityId, distText, priceText, x, y)
+3. **通过 map.lngLatToContainer() 定位** — 将经纬度转为容器内像素坐标
+4. **tooltip div 设 pointer-events: none** — 永远不接收点击，不阻挡任何 marker click
+5. **地图移动/缩放时自动隐藏 tooltip** — 监听 movestart/zoomstart
+6. **简化 hide timer** — 从 per-community Map 改为单个 timer ref
+
+### 改动文件
+
+| 文件 | 改动 |
+|------|------|
+| `components/MapView.tsx` | 移除 `tooltipMarkersRef` (AMap Marker tooltip)；新增 `TooltipState` + `hoverTooltip` state + `tooltipRef`；新增 `lngLatToContainer` 类型；tooltip 改为 React JSX；地图移动/缩放隐藏 tooltip；`hideTimerRef` 简化为单个 timer |
+
+### 验证结果
+
+| 检查项 | 结果 |
+|--------|------|
+| `npm run lint` | ✅ 0 errors |
+| `npm run typecheck` | ✅ 通过 |
+| `npm run test:unit` | ✅ 89 tests |
+| `NEXT_PUBLIC_DISABLE_MAP=1 npm run build` | ✅ 构建成功 |
+| dev server | ✅ HTTP 200 |
+| CSV/JSON | ✅ 未修改 |
+
+### 约束遵守
+
+- 未修改 `data/房源数据存档.csv`
+- 未修改 `data/communities.json`
+- 未执行 git add/commit/push

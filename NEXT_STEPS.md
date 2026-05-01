@@ -92,6 +92,11 @@
   - 修复：改为 `.communityLabel` DOM 元素上的 `pointerenter`/`pointerleave`；提取 `bindCommunityHover()` 统一处理；移除 CSS `filter`；hide timer 取消机制
   - 涉及文件：MapView.tsx、MapView.module.css
   - 验证：lint 0 errors、typecheck OK、89 tests pass、build OK
+- [x] **UI-1.3 hover 阻挡 click + 轻微移动闪烁根治** (2026-05-01)
+  - 根因：AMap.Marker tooltip 外层容器 div 接收 pointer events（即使内层 pointer-events:none），z-index=9999 覆盖社区标记 z-index=100 → 物理阻挡点击
+  - 修复：完全移除 AMap.Marker tooltip，改用 React DOM tooltip（state + JSX + `lngLatToContainer` 定位）；tooltip div `pointerEvents:'none'` 真正不拦截事件
+  - 涉及文件：MapView.tsx
+  - 验证：lint 0 errors、typecheck OK、89 tests pass、build OK、dev server HTTP 200
 - [ ] **`docs/price-per-room-feature.md` 代码示例过时**：代码示例引用旧版 MapView 逻辑，建议更新
 - [ ] **`scripts/data/` 中 JS 脚本统一改为 TS**：当前混用 JS/TS，建议统一用 TS 以获得类型检查
 - [ ] **17 个小区 layouts 为空**：数据质量问题，影响户型筛选完整性
