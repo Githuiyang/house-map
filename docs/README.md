@@ -12,6 +12,8 @@
 - Openclaw 租房文本怎么入库并生成向量？→ `rental-vectorization.md`
 - 租房数据怎么归档、备份与命名？→ `data-archive-policy.md`
 - Openclaw 接口怎么调用？→ `openclaw-guide.md`
+- **飞书租房后台方案（推荐）**：→ `feishu-rental-workflow.md`
+- **Codex 如何把飞书数据同步到网页？**→ `codex-feishu-sync-guide.md`
 - 如何保证发布质量并上线/回滚？→ `ops/testing-and-release.md`
 - 下一步该做什么？→ `../NEXT_STEPS.md`
 
@@ -73,5 +75,6 @@
 - **价格和户型已上架**：截至当前数据快照，53 个小区中 36 个含 roomPricing、13 个含 pricePerRoomStats，列表卡片显示单间均价，详情卡片显示价格表；当前无坐标缺失（三门路48弄、北茶园已于 2026-04-30 补全）
 - **CSV→JSON 同步**：`data/房源数据存档.csv` 为唯一数据源, 通过 `scripts/data/sync-csv.js` 同步到 `communities.json`
 - 租金同步脚本：`node scripts/data/sync-csv.js`（`--dry-run` 预览差异）
+- 飞书同步：`node scripts/data/feishu-to-csv-preview.js --dry-run`（P2A+P2B 已完成，读取飞书待发布记录并映射为 CSV 行；`--write` 写入 CSV）
 - 已完成 SEO 优化（canonical、Open Graph、JSON-LD 结构化数据）
 - 已修复 A11y 问题（图片 alt 属性、表单标签关联）

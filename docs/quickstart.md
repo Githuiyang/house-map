@@ -21,7 +21,8 @@ NEXT_PUBLIC_AMAP_KEY=你的高德Key
 NEXT_PUBLIC_AMAP_SECURITY_KEY=你的JS安全密钥
 
 # Supabase PostgreSQL（服务端使用，不暴露到客户端）
-DATABASE_URL=postgresql://postgres.rcxcmtqihkakhaxezify:[PASSWORD]@aws-1-ap-northeast-1.pooler.supabase.com:5432/postgres?sslmode=require
+DATABASE_URL=postgresql://postgres.<PROJECT_REF>:[PASSWORD]@<REGION>.pooler.supabase.com:5432/postgres?sslmode=require
+# 真实连接串只放在 .env.local 或 Vercel 环境变量中，不提交到仓库
 
 # 管理员密钥（服务端使用）
 ADMIN_KEY=your-admin-key

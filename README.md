@@ -18,6 +18,8 @@
 - 租房向量化系统（Openclaw 入库、向量结构、趋势分析）：`docs/rental-vectorization.md`
 - 数据归档规范（命名、备份、存储路径）：`docs/data-archive-policy.md`
 - Openclaw 接口指南（输入格式、API、错误处理）：`docs/openclaw-guide.md`
+- **飞书租房后台方案（推荐）**：`docs/feishu-rental-workflow.md`
+- **Codex 飞书同步指南**：`docs/codex-feishu-sync-guide.md`
 - 测试与发布（CI、E2E、Vercel 部署与回滚）：`docs/ops/testing-and-release.md`
 - 下一步计划（Codex/Agent 读取用）：`NEXT_STEPS.md`
 
@@ -100,7 +102,8 @@ NEXT_PUBLIC_AMAP_KEY=你的高德Key
 NEXT_PUBLIC_AMAP_SECURITY_KEY=你的JS安全密钥
 
 # Supabase PostgreSQL（服务端使用，不暴露到客户端）
-DATABASE_URL=postgresql://postgres.rcxcmtqihkakhaxezify:[PASSWORD]@aws-1-ap-northeast-1.pooler.supabase.com:5432/postgres?sslmode=require
+DATABASE_URL=postgresql://postgres.<PROJECT_REF>:[PASSWORD]@<REGION>.pooler.supabase.com:5432/postgres?sslmode=require
+# 真实连接串只放在 .env.local 或 Vercel 环境变量中，不提交到仓库
 
 # 管理员密钥（服务端使用）
 ADMIN_KEY=your-admin-key
@@ -126,6 +129,7 @@ ADMIN_KEY=your-admin-key
 常用脚本：
 
 - 数据同步：`node scripts/data/sync-csv.js [--dry-run]`（CSV → JSON，主力脚本）
+- 飞书预览：`node scripts/data/feishu-to-csv-preview.js --dry-run`（飞书 Publish Queue → CSV dry-run）
 - 地理编码：`node scripts/geo/geocode-communities.js`（用高德 API 补全坐标）
 - 坐标提取：`node scripts/geo/extract-coords.js`（通过高德短链接提取坐标）
 - 价格处理：`node scripts/data/process-pricing.ts`（租金数据去重取平均）
@@ -266,7 +270,7 @@ git push origin main
 
 - CI 全绿（lint/build/unit+coverage/e2e）
 - Vercel 环境变量（Production）已配置：`NEXT_PUBLIC_AMAP_KEY` / `NEXT_PUBLIC_AMAP_SECURITY_KEY`
-- Vercel 环境变量（Production）待配置：`DATABASE_URL`（Supabase 连接串） / `ADMIN_KEY`（管理员密钥）
+- Vercel 环境变量（Production）需用户最终确认：`DATABASE_URL`（Supabase 连接串） / `ADMIN_KEY`（管理员密钥）
 - 如有数据库 schema 变更，先运行 `npx drizzle-kit push` 或 `npx drizzle-kit migrate` 同步 Supabase（或使用 package.json 快捷命令：`npm run db:generate` / `db:migrate` / `db:push` / `db:studio`）
 - 高德控制台域名白名单已包含 `map.lihuiyang.xyz`（已配置）
 
