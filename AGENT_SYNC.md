@@ -1338,3 +1338,169 @@ CSV 预览: 北郊小区,一室一厅,45,整租,5500,总价,,精装,精装,Openc
 - 未修改 `data/communities.json`
 - 未执行 `--write`
 - 未执行 git add/commit/push
+
+---
+
+## P2C.2 — --write 实际写入测试（2026-05-01）
+
+**目标**：验证 --write 完整链路（飞书待发布 → CSV 追加）
+
+### 写入前状态
+
+- Publish Queue：1 条待发布（北郊小区, P2C.1 创建的测试记录）
+- dry-run：可写入 1 / BLOCKED 0
+
+### 写入执行
+
+```
+node scripts/data/feishu-to-csv-preview.js --write
+→ 追加 1 行到 data/房源数据存档.csv
+→ 北郊小区,一室一厅,45,整租,5500,总价,,精装,精装,Openclaw,2026,有电梯,
+```
+
+### 写入后验证
+
+| 项目 | 结果 |
+|------|------|
+| CSV diff | +1 行（第 110 行），无其他变更 |
+| 列数 | 13 列，与表头一致 |
+| 安全字符 | 无英文逗号/换行/双引号破坏 |
+| 禁止字段 | 无 contact_info / raw_text |
+| communities.json | 未变更 |
+| sync-csv --dry-run | 1 个更新（北郊小区: 价格 0→5500, 新增户型一室一厅, 亮点+精装） |
+| lint | ✓ |
+| typecheck | ✓ |
+| test:unit | 76 tests ✓ |
+| build | ✓ |
+
+### 飞书状态
+
+- Publish Queue 记录 `recvimspr89KZF` 状态未回写（仍为"待发布"）
+- 需后续 P2C.3 处理状态回写 + commit + push
+
+### 约束遵守
+
+- 仅修改 `data/房源数据存档.csv`（+1 行测试记录）
+- 未修改 `data/communities.json`
+- 未回写飞书 publish_status
+- 未执行 git add/commit/push
+
+---
+
+## P2C.2R — 回滚 P2C.2 测试写入（2026-05-01）
+
+**目标**：P2C.2 已验证 --write 可用，但测试数据不应进入正式网页，需回滚。
+
+### 回滚操作
+
+1. **CSV 测试行删除**：删除 `data/房源数据存档.csv` 最后一行北郊小区测试记录
+2. **飞书 Publish Queue 关闭**：将测试记录 publish_status 从"待发布"改为"已过期"，rollback_note 记录 `P2C.2 write test passed, CSV rollback completed`
+
+### 回滚验证
+
+| 项目 | 结果 |
+|------|------|
+| CSV diff | 已恢复原状（与 HEAD 一致，0 差异） |
+| sync-csv --dry-run | 无差异，数据已是最新 |
+| feishu-to-csv-preview --dry-run | 待发布 0 条 |
+| communities.json | 未修改 |
+| lint | ✓ |
+| typecheck | ✓ |
+| test:unit | 76 tests ✓ |
+| build | ✓ |
+
+### 结论
+
+- P2C.2 --write 端到端链路已验证成功
+- 测试数据已完整回滚，正式数据不受影响
+- 等待真实 Openclaw/中介房源数据进入 Publish Queue 后执行 P2C.3
+
+### 约束遵守
+
+- CSV 测试行已删除，恢复原状
+- 未修改 `data/communities.json`
+- 未执行 git add/commit/push
+
+---
+
+## P2C.3A-GEO — 地理编码门禁 + 真实房源识别（2026-05-01）
+
+**目标**：加入地理编码门禁，识别最新真实房源，尝试上线前预览
+
+### 真实房源信息
+
+| 字段 | 内容 |
+|------|------|
+| 来源 | Raw Leads RL-0002（手动录入 by Dophin） |
+| 小区 | 盛世豪园1期（电梯房，抖音楼下） |
+| 户型 | 两房两厅 |
+| 价格 | ¥16800 可谈 |
+| 亮点 | 全屋深度AI智能、品牌家电 |
+| 状态 | 待解析（尚未进入 Parsed Candidates） |
+
+### 坐标门禁结果
+
+| 检查项 | 结果 |
+|--------|------|
+| communities.json 匹配 | 无匹配（盛世豪园1期 不在 53 个已知小区中） |
+| 高德 geocode | **不可用**（NEXT_PUBLIC_AMAP_KEY 是 JSAPI Key，调用 Web 服务返回 INVALID_USER_KEY） |
+| AMAP_WEB_SERVICE_KEY | **未配置** |
+| 门禁结论 | **BLOCKED** — 新社区 + 无坐标 + geocode 不可用 |
+
+### 旧测试数据清理
+
+| 表 | 旧状态 | 新状态 | 备注 |
+|----|--------|--------|------|
+| Raw Leads | 已解析 | **已忽略** | parse_note 已更新 |
+| Parsed Candidates | 待审核 | **已忽略** | review_note 已更新 |
+| Publish Queue | 已过期 | **发布失败** | rollback_note 已更新 |
+
+### 文档更新
+
+- `docs/codex-feishu-sync-guide.md`：新增"地理编码门禁"章节
+- `docs/feishu-rental-workflow.md`：可同步条件新增地理编码门禁规则 + 门禁流程图
+
+### 阻塞项（需用户处理）
+
+1. **申请高德 Web 服务 Key**：到 [高德开放平台](https://console.amap.com) 创建 Web 服务类型的应用，获取 Key
+2. **配置 AMAP_WEB_SERVICE_KEY**：添加到 `.env.local`
+3. **或手动提供盛世豪园1期的坐标**：经纬度
+
+### 约束遵守
+
+- 未修改 `data/房源数据存档.csv`
+- 未修改 `data/communities.json`
+- 未执行 git add/commit/push
+
+---
+
+## P2C.3B — 真实房源上线（2026-05-01）
+
+**目标**：用户确认坐标后，完成盛世豪园1期真实房源的完整上线流程
+
+### 坐标确认
+
+用户提供了高德 Web 服务 Key，geocode 成功：
+- 地址：上海市杨浦区盛世豪园
+- 坐标：121.517493, 31.318160（住宅区级别，杨浦区）
+
+### 上线流程
+
+| 步骤 | 结果 |
+|------|------|
+| communities.json 新增 | 54 个社区（+盛世豪园1期，id: shengshi-haoyuan-1qi） |
+| Parsed Candidate 创建 | 两房两厅, ¥16800, 整租, 精装, 高层, 有电梯 |
+| Publish Queue 创建 | 待发布 → 已发布 |
+| Raw Leads 更新 | 待解析 → 已解析 |
+| --dry-run | 可写入 1 / BLOCKED 0 |
+| --write | CSV +1 行：`盛世豪园1期,两房两厅,0,整租,16800,总价,高层,精装,精装,Openclaw,2026,有电梯,` |
+| sync-csv | 1 个更新（盛世豪园1期: 价格 0→16800, 户型+两房两厅, 亮点+精装） |
+| 飞书回写 | Publish Queue → 已发布 / Parsed Candidate → 已发布 |
+| lint | ✓ |
+| typecheck | ✓ |
+| test:unit | 76 tests ✓ |
+| build | ✓ |
+
+### 环境变更
+
+- `.env.local` 新增 `AMAP_WEB_SERVICE_KEY`（高德 Web 服务地理编码 Key）

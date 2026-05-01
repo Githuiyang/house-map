@@ -2262,5 +2262,42 @@
         "area": "41平"
       }
     ]
+  },
+  {
+    "id": "shengshi-haoyuan-1qi",
+    "name": "盛世豪园1期",
+    "coordinates": [
+      121.517493,
+      31.31816
+    ],
+    "distance": "2.2km",
+    "bikeTime": "骑车8分钟",
+    "price": {
+      "min": 16800,
+      "max": 16800,
+      "unit": "月"
+    },
+    "floorTypes": [],
+    "layouts": [
+      "两房两厅"
+    ],
+    "elevator": true,
+    "highlights": [
+      "精装"
+    ],
+    "warnings": [],
+    "contributor": "Dophin",
+    "updatedAt": "2026",
+    "roomPricing": [
+      {
+        "layout": "两房两厅",
+        "shared": 0,
+        "whole": 16800,
+        "rooms": 1,
+        "area": "0平"
+      }
+    ],
+    "geocodeSource": "amap",
+    "geocodeAt": "2026-05-01"
   }
 ]

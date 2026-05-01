@@ -170,7 +170,22 @@ Raw Leads (1) → (N) Parsed Candidates (1) → (1) Publish Queue
 - price > 0
 - community_match 为已知社区或新社区
 - 新社区必须有坐标（不能为 [0,0]）
+- **地理编码门禁**：新社区必须先完成坐标确认（高德 geocode 或人工标注），否则 BLOCKED
 - contact_info 不在同步范围
+
+### 地理编码门禁流程
+
+```
+新小区进入 Parsed Candidates
+  → 检查 communities.json 是否已有坐标
+    → 已有坐标且非 [0,0]：允许发布
+    → 无坐标：
+      → 检查 AMAP_WEB_SERVICE_KEY 是否可用
+        → 可用：调用高德 geocode，返回候选坐标，标记"待人工确认"
+        → 不可用：BLOCKED，要求用户提供坐标
+      → 用户确认坐标后写入 communities.json
+      → 才允许进入 Publish Queue
+```
 
 ### 必须人工确认
 

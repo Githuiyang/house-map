@@ -53,7 +53,24 @@
     - 新建测试链路：Raw Leads → Parsed Candidates → Publish Queue（各 1 条，北郊小区）
     - dry-run 成功：1 条可写入，0 条 BLOCKED，禁止字段检查 PASS
     - CSV/JSON 未变更，未执行 --write
-  - [ ] **P2C.2**：--write 实际写入测试（需用户确认后执行）
+  - [x] **P2C.2**：--write 实际写入测试 → 成功并已回滚（2026-05-01）
+    - [x] P2C.2 执行：--write 成功，CSV 追加 1 行北郊小区测试记录
+    - [x] P2C.2R 回滚：CSV 测试行已删除，飞书测试记录改为"已过期"，数据恢复原状
+    - 端到端链路验证通过，测试数据不影响正式网站
+  - [ ] **P2C.3**：真实房源上线（需先解决坐标门禁）
+    - [x] **P2C.3A-GEO**：地理编码门禁 + 真实房源识别（2026-05-01）
+      - 发现真实房源：盛世豪园1期（Raw Leads RL-0002，两房两厅 ¥16800）
+      - 坐标门禁 BLOCKED：新小区不在 communities.json 中，AMAP_WEB_SERVICE_KEY 未配置
+      - 旧测试数据已清理（Raw Leads/Parsed Candidates→已忽略，Publish Queue→发布失败）
+      - 文档更新：codex-feishu-sync-guide.md 新增地理编码门禁章节，feishu-rental-workflow.md 加入门禁流程
+    - [ ] **P2C.3B**：用户确认坐标后 → sync-csv + 回写飞书 + commit + push 上线
+      - [x] P2C.3B 执行完成（2026-05-01）：盛世豪园1期已上线
+        - 高德 geocode 确认坐标 121.517493, 31.318160（住宅区，杨浦区）
+        - communities.json 53→54 社区
+        - CSV +1 行，sync-csv 1 个更新
+        - 飞书回写已发布
+        - 新增 AMAP_WEB_SERVICE_KEY 到 .env.local
+    - **P2C 飞书同步管线已完整验证并上线**
 - [ ] **`docs/price-per-room-feature.md` 代码示例过时**：代码示例引用旧版 MapView 逻辑，建议更新
 - [ ] **`scripts/data/` 中 JS 脚本统一改为 TS**：当前混用 JS/TS，建议统一用 TS 以获得类型检查
 - [ ] **17 个小区 layouts 为空**：数据质量问题，影响户型筛选完整性

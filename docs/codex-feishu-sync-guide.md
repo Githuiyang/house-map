@@ -318,6 +318,42 @@ FEISHU_PUBLISH_QUEUE_TABLE_ID=your_publish_queue_table_id_here
 
 ---
 
+## 地理编码门禁
+
+### 什么时候触发
+
+当飞书 Parsed Candidates 中的 `community_name` 在 `data/communities.json` 中**找不到匹配**时，该房源不能直接进入 Publish Queue → CSV 同步链路。必须先解决坐标问题。
+
+### 原因
+
+线上地图依赖 `communities.json` 中的 `coordinates` 字段定位小区。没有坐标的小区在地图上不可见，用户无法找到该房源。
+
+### 处理流程
+
+1. **已有小区**（`communities.json` 中存在且 `coordinates` 非 `[0,0]`）→ 允许发布
+2. **新小区 + 高德 geocode 可用**：
+   - 调用 `https://restapi.amap.com/v3/geocode/geo` 查询候选坐标
+   - 需要 `AMAP_WEB_SERVICE_KEY`（Web 服务 Key，**不是** JSAPI Key）
+   - 将候选坐标标记为"待人工确认"
+   - 用户确认后才写入 `communities.json`
+3. **新小区 + 高德 geocode 不可用**：
+   - BLOCKED，要求用户提供小区名/地址/坐标
+   - 不写 CSV，不上线
+
+### 高德 Key 说明
+
+- `NEXT_PUBLIC_AMAP_KEY`：**JSAPI Key**，用于网页前端地图渲染，**不能**调用 Web 服务 API
+- `AMAP_WEB_SERVICE_KEY`：**Web 服务 Key**，用于服务端地理编码等 REST API
+- 两者是不同类型的 Key，需要分别在高德开放平台申请
+- Web 服务 Key 仅放在 `.env.local`，不提交到 Git
+
+### 现有脚本
+
+- `scripts/geo/geocode-communities.js`：批量地理编码（需要 Web 服务 Key）
+- `scripts/data/add-community.js`：交互式添加新小区（含 geocode）
+
+---
+
 ## 相关文档
 
 - 飞书后台方案详情：[docs/feishu-rental-workflow.md](./feishu-rental-workflow.md)
