@@ -231,6 +231,10 @@
   color: var(--color-warning);
 }
 
+.noteItem {
+  color: var(--color-text-secondary);
+}
+
 .footer {
   margin-top: 20px;
   padding-top: 16px;
@@ -246,6 +250,79 @@
   text-align: center;
   color: var(--color-text-secondary);
   font-size: 14px;
+}
+
+/* Price summary row */
+.priceSummaryRow {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.priceBadge {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.priceBadgeLabel {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+/* Data warnings */
+.dataWarnings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.dataWarningChip {
+  display: inline-block;
+  padding: 3px 10px;
+  background-color: rgba(255, 152, 0, 0.1);
+  border-radius: 100px;
+  font-size: 11px;
+  color: var(--color-warning);
+}
+
+/* Table subtle column */
+.tdSubtle {
+  color: var(--color-text-secondary);
+  font-size: 12px;
+}
+
+/* No-price layouts section */
+.noPriceSection {
+  margin-bottom: 12px;
+  padding: 8px 10px;
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 8px;
+}
+
+.noPriceLabel {
+  display: block;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  margin-bottom: 6px;
+}
+
+.noPriceTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.noPriceTag {
+  display: inline-block;
+  padding: 2px 8px;
+  background-color: var(--color-border);
+  border-radius: 100px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
 }
 
 /* Mobile: bottom slide-in */

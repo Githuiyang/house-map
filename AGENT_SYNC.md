@@ -1738,3 +1738,84 @@ UI-1.2 将 hover 事件改为 DOM pointerenter/pointerleave，但 tooltip 仍使
 - 未修改 `data/房源数据存档.csv`
 - 未修改 `data/communities.json`
 - 未执行 git add/commit/push
+
+---
+
+## UI-2A 详情卡片信息模型重构 (2026-05-01)
+
+### 数据统计
+
+| 指标 | 数量 |
+|------|------|
+| 总小区数 | 54 |
+| 有 roomPricing | 37 |
+| 有 shared > 0 | **0** |
+| 有 whole > 0 | 17 |
+| 有 pricePerRoom > 0 | 25 |
+| 有 pricePerRoomStats | 13 |
+| price min=max=0 | 20 |
+| layouts 为空 | 17 |
+
+### 核心发现
+
+- **所有 54 个小区 shared 均为 0**：当前无合租数据，不应显示"合租"切换
+- 20 个小区完全无价格（price min=max=0 + roomPricing 为空）
+- 17 个小区无户型信息
+
+### 改动方案
+
+新增 `utils/communityCardViewModel.ts` — 纯函数 `buildCommunityCardViewModel(Community) → ViewModel`
+
+**ViewModel 字段**：
+- `commuteSummary`：距离/步行/骑行
+- `priceSummary`：整租区间 + 单间最低价 + hasSharedData 标记
+- `priceRows` / `noPriceRows`：有价/无价分离
+- `layoutTags`：户型标签
+- `factChips`：楼层 + 电梯事实标签
+- `pros` / `cons` / `notes`：highlights 分类（"来源"/"有钥匙"/"看房方便"等归入 notes）
+- `dataWarnings`：缺价格/缺户型/缺面积/数据过时提示
+
+**数据规则**：
+- shared 全为 0 → 不显示合租按钮
+- whole > 0 → 显示为整租价
+- pricePerRoom > 0 → 显示为单间估算
+- area === "0平" → 视为未知，显示 `-`
+- 无任何价格的行归入 noPriceRows，主价格表只显示有价行
+- "来源"/"自如"/"有钥匙"/"约看房"/"看房方便" 归入备注区
+
+### CommunityCard 改动
+
+- 移除合租/整租切换（shared 数据为 0）
+- 接入 viewModel（useMemo）
+- 新增价格摘要行（wholeRange + 单间最低价）
+- 表头改为：户型 / 面积 / 整租 / 单间估算
+- 楼层类型区仅在有内容时显示
+- 新增"数据提示"区域
+- 新增"备注"区（highlights 中的来源/看房类信息）
+
+### 修改文件
+
+| 文件 | 改动 |
+|------|------|
+| `utils/communityCardViewModel.ts` | 新增 viewModel 纯函数 |
+| `utils/communityCardViewModel.test.ts` | 新增 19 个单元测试 |
+| `components/CommunityCard.tsx` | 接入 viewModel，移除合租切换，新增数据提示/备注区 |
+| `components/CommunityCard.module.css` | 新增 priceSummaryRow / dataWarnings / noteItem / tdSubtle 样式 |
+
+### 验证结果
+
+| 检查项 | 结果 |
+|--------|------|
+| `npm run lint` | ✅ 0 errors, 0 warnings |
+| `npm run typecheck` | ✅ 通过 |
+| `npm run test:unit` | ✅ 108 tests (5 files) |
+| `NEXT_PUBLIC_DISABLE_MAP=1 npm run build` | ✅ 构建成功 |
+| dev server | ✅ HTTP 200 |
+| CSV/JSON | ✅ 未修改 |
+
+### 约束遵守
+
+- 未修改 `data/房源数据存档.csv`
+- 未修改 `data/communities.json`
+- 未操作飞书
+- 未执行 git add/commit/push

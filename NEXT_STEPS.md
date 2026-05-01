@@ -97,6 +97,18 @@
   - 修复：完全移除 AMap.Marker tooltip，改用 React DOM tooltip（state + JSX + `lngLatToContainer` 定位）；tooltip div `pointerEvents:'none'` 真正不拦截事件
   - 涉及文件：MapView.tsx
   - 验证：lint 0 errors、typecheck OK、89 tests pass、build OK、dev server HTTP 200
+- [x] **UI-2A 详情卡片信息模型重构** (2026-05-01)
+  - 新增 `utils/communityCardViewModel.ts`：纯函数 `buildCommunityCardViewModel(Community) → ViewModel`
+  - 发现所有 54 个小区 shared=0，移除合租/整租切换
+  - highlights 分类为 pros / notes（来源/有钥匙/看房方便等归入备注）
+  - 一室 pricePerRoom 归入整租（一居整租），多室才展示单间估算
+  - priceSummary 改为 priceBadges：整租/单间估算各自带标签+单位
+  - 新增 noPriceRows 展示区（已知户型暂无报价）
+  - 新增数据提示区（缺价格/缺户型/缺面积/数据过时）
+  - 表头改为：户型 / 面积 / 整租 / 单间估算
+  - 新增 27 个单元测试（总计 116 tests）
+  - 验证：lint 0 errors/warnings、typecheck OK、116 tests、build OK
+- [ ] **UI-2B 详情卡片视觉美化**：基于 UI-2A viewModel 做视觉优化（间距、颜色、动画等）
 - [ ] **`docs/price-per-room-feature.md` 代码示例过时**：代码示例引用旧版 MapView 逻辑，建议更新
 - [ ] **`scripts/data/` 中 JS 脚本统一改为 TS**：当前混用 JS/TS，建议统一用 TS 以获得类型检查
 - [ ] **17 个小区 layouts 为空**：数据质量问题，影响户型筛选完整性
