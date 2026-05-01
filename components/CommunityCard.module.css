@@ -21,7 +21,7 @@
   background-color: var(--color-card-bg);
   border-radius: var(--radius);
   box-shadow: var(--shadow-lg);
-  padding: var(--spacing);
+  padding: 20px;
   max-width: 400px;
   width: 90%;
   max-height: 80vh;
@@ -31,25 +31,13 @@
 }
 
 @keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes mobileSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(100%);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(100%); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .closeBtn {
@@ -75,103 +63,72 @@
   background-color: var(--color-border);
 }
 
+/* ── Top zone: title + commute + price badges ── */
+
 .title {
   font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 500;
-  margin-bottom: 8px;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 6px;
   padding-right: 32px;
+  line-height: 1.3;
 }
 
+/* Commute pills */
 .meta {
   display: flex;
-  gap: 12px;
+  gap: 6px;
   flex-wrap: wrap;
-  margin-bottom: 16px;
-  color: var(--color-text-secondary);
-  font-size: 13px;
-}
-
-.divider {
-  height: 1px;
-  background-color: var(--color-border);
-  margin: 16px 0;
-}
-
-/* Pricing section */
-.pricingSection {
-  margin-bottom: 16px;
-}
-
-.rentalToggle {
-  display: flex;
-  gap: 0;
   margin-bottom: 12px;
-  border-radius: 100px;
-  overflow: hidden;
-  border: 1px solid var(--color-border);
 }
 
-.rentalToggleBtn {
-  flex: 1;
-  padding: 6px 16px;
-  border: none;
-  background: transparent;
-  font-size: 13px;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  transition: all var(--duration) var(--ease);
-}
-
-.rentalToggleBtn:hover {
+.meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 8px;
   background-color: var(--color-border);
-}
-
-.rentalToggleActive {
-  background-color: var(--color-primary);
-  color: white;
-}
-
-.pricingTable {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-}
-
-.pricingTable th {
-  text-align: left;
-  padding: 8px;
-  font-size: 12px;
+  border-radius: 100px;
+  font-size: 11px;
   color: var(--color-text-secondary);
-  border-bottom: 1px solid var(--color-border);
-  font-weight: 400;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
-.pricingTable td {
-  padding: 8px;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.priceHighlight {
-  color: var(--color-primary);
-  font-weight: 600;
-  font-family: var(--font-mono);
-}
-
-.priceEmpty {
-  color: var(--color-text-secondary);
-  font-style: italic;
-}
-
-.price {
+/* Price badges — primary visual focus */
+.priceSummaryRow {
   display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.priceBadge {
+  display: inline-flex;
   align-items: baseline;
   gap: 4px;
-  margin-bottom: 16px;
+  padding: 4px 10px;
+  background-color: rgba(59, 130, 246, 0.08);
+  border-radius: 8px;
 }
 
+.priceBadgeLabel {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+.priceBadge .priceValue {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.priceBadge .priceUnit {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+/* Shared priceValue / priceUnit used outside badges */
 .priceValue {
   font-family: var(--font-mono);
   font-size: 28px;
@@ -184,130 +141,71 @@
   color: var(--color-text-secondary);
 }
 
-/* Sections */
-.section {
-  margin-bottom: 16px;
+/* ── Price table ── */
+
+.pricingSection {
+  margin-bottom: 12px;
 }
 
-.sectionTitle {
-  font-family: var(--font-display);
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--color-text-secondary);
-  margin-bottom: 8px;
-}
-
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.tag {
-  display: inline-block;
-  padding: 4px 12px;
-  background-color: var(--color-border);
-  border-radius: 100px;
+.pricingTable {
+  width: 100%;
+  border-collapse: collapse;
   font-size: 13px;
-  color: var(--color-text);
+  table-layout: fixed;
 }
 
-.list {
-  list-style: none;
-  padding: 0;
-}
-
-.list li {
-  padding: 4px 0;
-  font-size: 14px;
-}
-
-.highlightItem {
-  color: var(--color-recommend);
-}
-
-.warningItem {
-  color: var(--color-warning);
-}
-
-.noteItem {
+.pricingTable th {
+  text-align: left;
+  padding: 6px 6px;
+  font-size: 10px;
   color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--color-border);
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
 }
 
-.footer {
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 1px solid var(--color-border);
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  color: var(--color-text-secondary);
+.pricingTable td {
+  padding: 6px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.placeholder {
-  padding: 40px 0;
-  text-align: center;
-  color: var(--color-text-secondary);
-  font-size: 14px;
+.pricingTable td:first-child {
+  width: 40%;
 }
 
-/* Price summary row */
-.priceSummaryRow {
-  display: flex;
-  align-items: baseline;
-  gap: 16px;
-  margin-bottom: 12px;
-  flex-wrap: wrap;
+.priceHighlight {
+  color: var(--color-primary);
+  font-weight: 600;
+  font-family: var(--font-mono);
 }
 
-.priceBadge {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 4px;
+.priceEmpty {
+  color: var(--color-border);
 }
 
-.priceBadgeLabel {
-  font-size: 12px;
-  color: var(--color-text-secondary);
-}
-
-/* Data warnings */
-.dataWarnings {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 12px;
-}
-
-.dataWarningChip {
-  display: inline-block;
-  padding: 3px 10px;
-  background-color: rgba(255, 152, 0, 0.1);
-  border-radius: 100px;
-  font-size: 11px;
-  color: var(--color-warning);
-}
-
-/* Table subtle column */
 .tdSubtle {
   color: var(--color-text-secondary);
   font-size: 12px;
 }
 
-/* No-price layouts section */
+/* No-price layouts — soft info, not an error */
 .noPriceSection {
   margin-bottom: 12px;
-  padding: 8px 10px;
-  background: rgba(0, 0, 0, 0.03);
-  border-radius: 8px;
+  padding: 6px 10px;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 6px;
 }
 
 .noPriceLabel {
   display: block;
-  font-size: 11px;
+  font-size: 10px;
   color: var(--color-text-secondary);
-  margin-bottom: 6px;
+  margin-bottom: 4px;
+  opacity: 0.7;
 }
 
 .noPriceTags {
@@ -318,14 +216,141 @@
 
 .noPriceTag {
   display: inline-block;
+  padding: 1px 8px;
+  background-color: var(--color-border);
+  border-radius: 100px;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  opacity: 0.7;
+}
+
+/* Data quality hints — subtle, not alarming */
+.dataWarnings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.dataWarningChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
   padding: 2px 8px;
+  background-color: rgba(0, 0, 0, 0.03);
+  border-radius: 100px;
+  font-size: 10px;
+  color: var(--color-text-secondary);
+  opacity: 0.75;
+}
+
+/* ── Divider ── */
+
+.divider {
+  height: 1px;
+  background-color: var(--color-border);
+  margin: 14px 0;
+}
+
+/* ── Sections ── */
+
+.section {
+  margin-bottom: 12px;
+}
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 0.3px;
+  color: var(--color-text-secondary);
+  margin-bottom: 6px;
+  opacity: 0.7;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tag {
+  display: inline-block;
+  padding: 3px 10px;
   background-color: var(--color-border);
   border-radius: 100px;
   font-size: 12px;
+  color: var(--color-text);
+}
+
+/* ── Lists: pros / cons / notes ── */
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.list li {
+  padding: 2px 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.highlightItem {
+  color: #16a34a;
+}
+
+.warningItem {
+  color: #d97706;
+}
+
+.noteItem {
   color: var(--color-text-secondary);
 }
 
-/* Mobile: bottom slide-in */
+/* ── Footer ── */
+
+.footer {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  opacity: 0.7;
+}
+
+.placeholder {
+  padding: 40px 0;
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+}
+
+/* ── Unused legacy (kept for safety) ── */
+
+.price {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.rentalToggle {
+  display: none;
+}
+
+.rentalToggleBtn {
+  display: none;
+}
+
+.rentalToggleActive {
+  display: none;
+}
+
+/* ── Mobile ── */
+
 @media (max-width: 768px) {
   .card {
     position: fixed;
@@ -337,9 +362,36 @@
     max-height: 90vh;
     border-radius: 16px 16px 0 0;
     animation: mobileSlideUp var(--duration) var(--ease);
+    padding: 16px;
   }
 
   .overlay {
     align-items: flex-end;
+  }
+
+  .title {
+    font-size: 18px;
+  }
+
+  .pricingTable {
+    font-size: 12px;
+  }
+
+  .pricingTable th {
+    font-size: 9px;
+    padding: 5px 4px;
+  }
+
+  .pricingTable td {
+    padding: 5px 4px;
+  }
+
+  .priceBadge .priceValue {
+    font-size: 14px;
+  }
+
+  .meta span {
+    font-size: 10px;
+    padding: 1px 6px;
   }
 }

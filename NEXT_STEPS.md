@@ -108,7 +108,17 @@
   - 表头改为：户型 / 面积 / 整租 / 单间估算
   - 新增 27 个单元测试（总计 116 tests）
   - 验证：lint 0 errors/warnings、typecheck OK、116 tests、build OK
-- [ ] **UI-2B 详情卡片视觉美化**：基于 UI-2A viewModel 做视觉优化（间距、颜色、动画等）
+- [x] **UI-2B 详情卡片视觉层级优化** (2026-05-02)
+  - 通勤信息改为紧凑 pill/chip 样式
+  - 价格 badge 加蓝色底色块，视觉第一重点
+  - 价格表加 table-layout:fixed 防溢出，空值用淡色 `-`
+  - noPriceSection 淡化（opacity 0.7，浅底色）
+  - dataWarnings 去掉 ⚠ 符号，改为中性灰 chip
+  - 优点/注意事项/备注：绿色克制(#16a34a)/琥珀(#d97706)/灰色
+  - sectionTitle 降为 11px + opacity 0.7 减少视觉噪音
+  - 移动端：表格字号 12px、padding 紧缩、badge 14px
+  - 未修改 viewModel 语义
+  - 验证：lint 0、typecheck OK、116 tests、build OK
 - [ ] **`docs/price-per-room-feature.md` 代码示例过时**：代码示例引用旧版 MapView 逻辑，建议更新
 - [ ] **`scripts/data/` 中 JS 脚本统一改为 TS**：当前混用 JS/TS，建议统一用 TS 以获得类型检查
 - [ ] **17 个小区 layouts 为空**：数据质量问题，影响户型筛选完整性

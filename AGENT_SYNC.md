@@ -1819,3 +1819,53 @@ UI-1.2 将 hover 事件改为 DOM pointerenter/pointerleave，但 tooltip 仍使
 - 未修改 `data/communities.json`
 - 未操作飞书
 - 未执行 git add/commit/push
+
+---
+
+## UI-2B 详情卡片视觉层级优化 (2026-05-02)
+
+### 改动范围
+
+仅修改 CSS 层 + 1 行 TSX（dataWarnings 去 ⚠），未改 viewModel 语义。
+
+### 视觉调整
+
+| 区域 | 调整内容 |
+|------|----------|
+| 通勤 meta | 改为 pill/chip 样式（border-radius 100px + 背景色） |
+| 价格 badge | 加蓝色底色块 `rgba(59,130,246,0.08)` + 圆角 8px，16px 数字 |
+| 价格表 | `table-layout:fixed` 防溢出，border 改为 `rgba(0,0,0,0.04)` |
+| 空值 | `priceEmpty` 改为 border 色而非斜体 |
+| noPriceSection | `opacity: 0.7` + 极浅底色 `rgba(0,0,0,0.02)` |
+| dataWarnings | 去掉 ⚠ 符号，改为中性灰 chip `opacity: 0.75` |
+| 优点 | `#16a34a` 克制绿 |
+| 注意事项 | `#d97706` 琥珀色 |
+| 备注 | 灰色 `var(--color-text-secondary)` |
+| sectionTitle | 11px + `opacity: 0.7` 减少视觉噪音 |
+| 移动端 | 表格 12px、padding 5px 4px、badge 14px、通勤 10px |
+
+### 修改文件
+
+| 文件 | 改动 |
+|------|------|
+| `components/CommunityCard.module.css` | 全面重写视觉层级 |
+| `components/CommunityCard.tsx` | dataWarnings 去 ⚠ 符号 |
+
+### 验证结果
+
+| 检查项 | 结果 |
+|--------|------|
+| `npm run lint` | ✅ 0 errors |
+| `npm run typecheck` | ✅ 通过 |
+| `npm run test:unit` | ✅ 116 tests |
+| `NEXT_PUBLIC_DISABLE_MAP=1 npm run build` | ✅ 构建成功 |
+| dev server | ✅ HTTP 200 |
+| CSV/JSON | ✅ 未修改 |
+| viewModel | ✅ 未修改语义 |
+
+### 约束遵守
+
+- 未修改 `data/房源数据存档.csv`
+- 未修改 `data/communities.json`
+- 未操作飞书
+- 未执行 git add/commit/push

@@ -117,7 +117,7 @@ export default function CommunityCard({ community, onClose }: CommunityCardProps
         {vm.dataWarnings.length > 0 && (
           <div className={styles.dataWarnings}>
             {vm.dataWarnings.map((w, i) => (
-              <span key={i} className={styles.dataWarningChip}>{'\u26A0'} {w.message}</span>
+              <span key={i} className={styles.dataWarningChip}>{w.message}</span>
             ))}
           </div>
         )}
