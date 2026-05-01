@@ -38,12 +38,12 @@
   - 修复 record-get 解析：发现 record-get 返回命名对象（非数组），`parseRecordGetResult` 已修正
   - 增强 `callLarkCli` 错误输出：解析 JSON 错误、keychain 提示
   - 文档口径统一：`highlights`/`warnings` 改为"中文顿号分隔"
-- [ ] **P2B：飞书 → CSV 实际写入**（脚本可用，当前队列为空）
-  - 2026-05-01 完成 P2B-Implementation + P2B.1 + P2B.2 + P2B.3 + P2B.4 + P2B.5：写入 + 预检 + 创建指南 + 审计 + 脱敏 + 最终审计，76 个测试通过
-  - P2B.5 最终审计：残留表 ID + Supabase project ref 已清除，0 个真实标识符残留
-  - P2B.4 脱敏：31 处真实 token/table ID/URL 已替换为环境变量名
+- [x] **P2B：飞书 → CSV 实际写入**（已完成，已推送，线上正常）
+  - 2026-05-01 完成 P2B.1~P2B.7：写入 + 预检 + 创建指南 + 审计 + 脱敏 + 最终审计 + 推送部署，76 个测试通过
+  - P2B.7 推送：2 个 commit 已推送到 origin/main，Vercel 自动部署成功，线上 200 OK
+  - P2B.4-P2B.5 脱敏：所有真实标识符已清除，环境变量化完成
   - P2B-Execution 预检：Publish Queue 为空，未执行 --write
-  - **下一步**：本地 commit，push 需用户确认；用户或 Openclaw 产生 `publish_status = "待发布"` 的记录后，重新执行 P2B-Execution
+  - **下一步**：用户或 Openclaw 产生 `publish_status = "待发布"` 的记录后，执行 P2B-Execution
   - 创建记录指南见 `docs/codex-feishu-sync-guide.md` → "如何创建一条可发布记录"
 - [ ] **P2C：飞书状态回写 + 完整部署**：回写 publish_status + git commit + push
 - [ ] **`docs/price-per-room-feature.md` 代码示例过时**：代码示例引用旧版 MapView 逻辑，建议更新
