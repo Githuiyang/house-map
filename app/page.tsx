@@ -176,8 +176,12 @@ export default function Home() {
         handlePreviewCommunity(community);
         setDrawerOpen(false);
       }}
-      onMouseEnter={() => setHoveredCommunity(community)}
-      onMouseLeave={() => setHoveredCommunity(null)}
+      onMouseEnter={() => {
+        if (hoveredCommunity?.id !== community.id) setHoveredCommunity(community);
+      }}
+      onMouseLeave={() => {
+        if (hoveredCommunity?.id === community.id) setHoveredCommunity(null);
+      }}
     >
       <div className={styles.itemRow1}>
         <span className={styles.itemName}>🏠 {community.name}</span>

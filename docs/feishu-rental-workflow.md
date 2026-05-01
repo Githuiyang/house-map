@@ -241,11 +241,15 @@ Raw Leads (1) → (N) Parsed Candidates (1) → (1) Publish Queue
 - 72 个测试全通过（52 feishu + 20 其他）
 - 当前 Publish Queue 为空，等待用户或 Openclaw 产生 `publish_status = "待发布"` 的记录后执行实际写入
 
-### P2C：飞书状态回写 + 完整部署流程（待实现）
+### P2C：飞书状态回写 + 完整部署流程
 
 - 成功：`publish_status` → `已发布`，`published_at` → 当前时间
 - 失败：`publish_status` → `发布失败`，`rollback_note` → 错误信息
 - git commit + push → Vercel 自动部署
+- **P2C.5 已完成**：防重复发布保护（三层去重 + `--mark-published` 原子回写）
+  - CSV 层去重（`BLOCKED_DUPLICATE`）
+  - 队列内去重（`BLOCKED_DUPLICATE_QUEUE`）
+  - `--mark-published` 配合 `--write` 自动回写飞书状态
 
 ---
 
@@ -256,7 +260,7 @@ Raw Leads (1) → (N) Parsed Candidates (1) → (1) Publish Queue
 | 飞书 API 限流 | 单表写入串行化；批量读取每次 500 条 |
 | CSV 编码问题 | 确认编码格式一致 |
 | 新社区坐标缺失 | 必须人工确认坐标 |
-| 重复数据 | dedup_hash 去重 + sync-csv.js 去重 |
+| 重复数据 | CSV 层去重（BLOCKED_DUPLICATE）+ 队列内去重（BLOCKED_DUPLICATE_QUEUE）+ `--mark-published` 原子回写 |
 | 中介隐私泄露 | contact_info 字段明确排除 |
 | 飞书不可用 | CSV + Git 可独立工作 |
 | Vercel 构建不依赖飞书 | 网站数据来自静态 JSON |

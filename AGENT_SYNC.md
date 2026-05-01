@@ -1549,3 +1549,98 @@ node scripts/data/feishu-to-csv-preview.js --write
 **建议 P2C.5 最小改动**：
 1. `--write` 成功后立即回写飞书 `publish_status`（原子化）
 2. 追加前扫描 CSV 现有行，按社区+价格+户型模糊去重
+
+---
+
+## P2C.5 — 防重复发布机制实现（2026-05-01）
+
+**目标**：解决 --write 成功但飞书回写失败导致重复追加的风险
+
+### 新增功能
+
+| 功能 | 说明 |
+|------|------|
+| `buildCsvDuplicateKey(csvRow)` | 生成去重 key（社区+户型+面积+价格+价格类型+来源+年份） |
+| `loadExistingCsvKeys(csvPath)` | 读取 CSV 现有行，提取所有去重 key 集合 |
+| `findDuplicateCandidates(pendingRecords)` | 检测同一 candidate 被多条 PQ 关联 |
+| `--mark-published` 参数 | 配合 `--write`，CSV 追加成功后自动回写飞书 `publish_status=已发布` |
+
+### BLOCKED 状态分类
+
+| 状态 | 含义 |
+|------|------|
+| `BLOCKED` | 含危险字符（英文逗号/换行/双引号） |
+| `BLOCKED_DUPLICATE` | CSV 中已存在相同行 |
+| `BLOCKED_DUPLICATE_QUEUE` | 同一 candidate 被多条待发布记录关联 |
+
+### 改动文件
+
+| 文件 | 改动 |
+|------|------|
+| `scripts/data/feishu-to-csv-preview.js` | 新增 3 个去重函数 + main() 集成去重检查 + `--mark-published` 回写 + module.exports 更新 |
+| `scripts/data/feishu-to-csv-preview.test.ts` | 新增 13 个去重测试（buildCsvDuplicateKey 5 + loadExistingCsvKeys 3 + findDuplicateCandidates 5） |
+| `docs/codex-feishu-sync-guide.md` | 纯函数列表更新 + 测试数更新 + `--mark-published` 文档 + 三层去重表格 + 步骤 7 跳过说明 |
+| `docs/feishu-rental-workflow.md` | P2C 状态更新 + 风险表去重说明更新 |
+| `NEXT_STEPS.md` | P2C.5 标记完成 + 详细改动记录 |
+| `AGENT_SYNC.md` | 新增本报告 |
+
+### 验证结果
+
+| 检查项 | 结果 |
+|--------|------|
+| `npm run lint` | ✅ 0 errors, 0 warnings |
+| `npm run typecheck` | ✅ 通过 |
+| `npm run test:unit` | ✅ 89 tests / 4 files, 全通过（69 feishu + 20 其他） |
+| `NEXT_PUBLIC_DISABLE_MAP=1 npm run build` | ✅ 构建成功 |
+| `--dry-run` | ✅ CSV 已有 112 行（去重检查生效），0 待发布 |
+
+### 约束遵守
+
+- 未修改 `data/房源数据存档.csv`
+- 未修改 `data/communities.json`
+- 未执行 git add/commit/push
+
+---
+
+## UI-1 — 地图 hover 闪烁修复（2026-05-01）
+
+**目标**：消除列表 hover 和地图 marker hover 导致的闪烁
+
+### 根因
+
+| 问题 | 根因 |
+|------|------|
+| 列表 hover → marker 闪烁 | `.communityLabelHovered` 使用 `transform: scale(1.2)` 改变命中区域，触发 mouseover/mouseout 循环 |
+| marker hover → tooltip 闪烁 | 每次 mouseover 都创建新 tooltip，不检查是否已存在；mouseout 立即删除无延迟 |
+| tooltip 拦截鼠标事件 | `.hoverTooltip` 有 `pointer-events: none` 但 AMap Marker wrapper 没有 |
+| 列表 hover 重复 setState | `onMouseEnter` 每次都调用 `setHoveredCommunity`，即使 id 相同 |
+| 列表项 translateX | `.listItem:hover` 使用 `transform: translateX(4px)` 改变布局 |
+
+### 修复策略
+
+1. **CSS**：移除所有 `transform: scale()` / `translateX()`，改用 `outline` + `box-shadow` + `filter: brightness()` 不改变尺寸
+2. **Tooltip 防重复**：`mouseover` 先检查 `tooltipMarkersRef.current.has(key)` 再创建
+3. **Tooltip 延迟删除**：`mouseout` 加 80ms `setTimeout` 避免闪烁
+4. **Tooltip pointer-events**：内联 `style="pointer-events:none;"` 确保整个 tooltip 链不拦截鼠标
+5. **列表 hover 去重**：`onMouseEnter` 检查 `hoveredCommunity?.id !== community.id` 后才 setState
+
+### 改动文件
+
+| 文件 | 改动 |
+|------|------|
+| `components/MapView.module.css` | `.communityLabel` 移除 `transform`，改用 `outline`/`filter`；`.communityLabelHovered` 移除 `transform: scale(1.2)` |
+| `components/MapView.tsx` | cluster + fallback 两处 mouseover 添加去重检查 + pointer-events 内联；mouseout 添加 80ms 延迟 |
+| `app/page.tsx` | `renderListItem` 的 `onMouseEnter/onMouseLeave` 添加 id 检查 |
+| `app/page.module.css` | `.listItem:hover` 移除 `transform: translateX(4px)` |
+
+### 验证结果
+
+| 检查项 | 结果 |
+|--------|------|
+| `npm run lint` | ✅ 0 errors, 0 warnings |
+| `npm run typecheck` | ✅ 通过 |
+| `npm run test:unit` | ✅ 89 tests / 4 files, 全通过 |
+| `NEXT_PUBLIC_DISABLE_MAP=1 npm run build` | ✅ 构建成功 |
+| `--dry-run` | ✅ CSV 去重正常，0 待发布 |
+| dev server | ✅ HTTP 200 |
+| CSV/JSON | ✅ 未修改 |

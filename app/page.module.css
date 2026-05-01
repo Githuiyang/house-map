@@ -176,7 +176,7 @@
 
 .listItem:hover {
   border-color: var(--color-primary);
-  transform: translateX(4px);
+  background-color: var(--color-card-bg);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 

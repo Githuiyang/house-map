@@ -74,8 +74,19 @@
   - [x] **P2C.4**：上线后验收（2026-05-01）
     - 本地/飞书/线上全链路验收通过，盛世豪园1期可见
     - 防重复发布：已有飞书状态过滤保护，但缺少 --write 后原子回写 + CSV 层去重
-  - [ ] **P2C.5**：防重复发布机制（--write 后原子回写飞书状态 + CSV 去重）
+  - [x] **P2C.5**：防重复发布机制（--write 后原子回写飞书状态 + CSV 去重）（2026-05-01 完成）
+    - 新增 `buildCsvDuplicateKey()` / `loadExistingCsvKeys()` / `findDuplicateCandidates()` 三个去重函数
+    - CSV 层去重：追加前检查社区+户型+面积+价格+价格类型+来源+年份，重复行标记 BLOCKED_DUPLICATE
+    - 队列内去重：同一 candidate 被多条 PQ 关联时标记 BLOCKED_DUPLICATE_QUEUE
+    - `--mark-published` 参数：配合 `--write` 使用，CSV 追加成功后自动回写飞书 `publish_status=已发布`
+    - 新增 13 个单元测试（总计 89 tests / 4 files）
+    - 文档更新：codex-feishu-sync-guide.md + feishu-rental-workflow.md
   - 等待下一条真实飞书待发布记录进入后继续
+- [x] **UI-1 修复 map 标记 hover 闪烁** (2026-05-01)
+  - 根因：CSS `transform: scale()` 改变命中区域触发 mouseover/mouseout 循环；tooltip 重建拦截事件；setState 未去重
+  - 修复：移除所有 transform 动画，改用 outline/box-shadow/filter；tooltip 添加 pointer-events:none + 80ms 延迟移除；React setState 增加幂等守卫
+  - 涉及文件：MapView.module.css、MapView.tsx、page.tsx、page.module.css
+  - 验证：lint 0 errors、typecheck OK、89 tests pass、build OK、dry-run OK
 - [ ] **`docs/price-per-room-feature.md` 代码示例过时**：代码示例引用旧版 MapView 逻辑，建议更新
 - [ ] **`scripts/data/` 中 JS 脚本统一改为 TS**：当前混用 JS/TS，建议统一用 TS 以获得类型检查
 - [ ] **17 个小区 layouts 为空**：数据质量问题，影响户型筛选完整性

@@ -6,6 +6,7 @@
  * 用法:
  *   node scripts/data/feishu-to-csv-preview.js --dry-run   (预览，不写文件)
  *   node scripts/data/feishu-to-csv-preview.js --write     (写入 CSV，需用户确认)
+ *   node scripts/data/feishu-to-csv-preview.js --write --mark-published  (写入 + 回写飞书状态)
  *   node scripts/data/feishu-to-csv-preview.js             (默认 dry-run)
  *
  * 规则:
@@ -13,7 +14,10 @@
  *   2. 多选字段用中文顿号连接，避免破坏 sync-csv.js 的简单 CSV parser
  *   3. CSV cell 不允许含英文逗号、换行、双引号（sync-csv.js 用 line.split(",")）
  *   4. 遇到危险字符的行标记为 BLOCKED，不自动写入
- *   5. --write 必须显式传入，否则只做 dry-run
+ *   5. CSV 层去重：已存在的行标记为 BLOCKED_DUPLICATE，不重复写入
+ *   6. 队列去重：同一 candidate 被多条 PQ 关联时标记为 BLOCKED_DUPLICATE_QUEUE
+ *   7. --write 必须显式传入，否则只做 dry-run
+ *   8. --mark-published 配合 --write 使用，写入成功后自动回写飞书 publish_status=已发布
  */
 const { execSync } = require("child_process");
 const fs = require("fs");
@@ -177,6 +181,69 @@ function containsForbiddenField(csvRow) {
   const forbidden = ["contact_info", "raw_text", "source", "imported_by", "review_note", "dedup_hash", "quality_score"];
   const str = JSON.stringify(csvRow);
   return forbidden.some(f => str.includes(f));
+}
+
+// ─── CSV 去重 ─────────────────────────────────────────
+
+/**
+ * 为 CSV 行生成去重 key
+ * 使用 community_name + layout + area + price_type + price + source_year
+ * @param {Object} csvRow - CSV 行对象
+ * @returns {string} 去重 key
+ */
+function buildCsvDuplicateKey(csvRow) {
+  return [
+    csvRow["小区名称"] || "",
+    csvRow["户型"] || "",
+    csvRow["面积(平)"] || "",
+    csvRow["租金价格(元/月)"] || "",
+    csvRow["价格类型"] || "",
+    csvRow["信息来源"] || "",
+    csvRow["录入时间"] || "",
+  ].join("|");
+}
+
+/**
+ * 读取现有 CSV 文件，提取所有行的去重 key 集合
+ * @param {string} csvPath - CSV 文件路径
+ * @returns {Set<string>} 已存在的去重 key 集合
+ */
+function loadExistingCsvKeys(csvPath) {
+  const keys = new Set();
+  if (!fs.existsSync(csvPath)) return keys;
+  const content = fs.readFileSync(csvPath, "utf8");
+  const lines = content.split("\n");
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    const cols = trimmed.split(",");
+    if (cols.length < 7) continue;
+    // CSV 列顺序: 小区名称,户型,面积(平),租金类型,租金价格(元/月),价格类型,...
+    const key = [cols[0], cols[1], cols[2], cols[4], cols[5], cols[9], cols[10]].join("|");
+    keys.add(key);
+  }
+  return keys;
+}
+
+/**
+ * 检测队列中同一 candidate 是否有多条待发布记录
+ * @param {Array<Object>} pendingRecords - 待发布记录数组
+ * @returns {Set<string>} 重复的 candidate ID 集合
+ */
+function findDuplicateCandidates(pendingRecords) {
+  const seen = new Map(); // candidateId → first PQ record
+  const dupes = new Set();
+  for (const pq of pendingRecords) {
+    const cids = (pq.candidate || []);
+    if (cids.length === 0) continue;
+    const cid = cids[0].id;
+    if (seen.has(cid)) {
+      dupes.add(cid);
+    } else {
+      seen.set(cid, pq);
+    }
+  }
+  return dupes;
 }
 
 // ─── 飞书 API 调用 ────────────────────────────────────
@@ -371,6 +438,7 @@ function parseRecordGetResult(getResult, recordId) {
 function main() {
   const args = process.argv.slice(2);
   const isWrite = args.includes("--write");
+  const isMarkPublished = args.includes("--mark-published");
   const isDryRun = args.includes("--dry-run") || !isWrite;
 
   // 环境变量校验
@@ -390,6 +458,9 @@ function main() {
   if (isWrite) {
     console.log("[WRITE] 写入模式：将通过 CSV 安全校验后追加到房源数据存档.csv\n");
   }
+  if (isMarkPublished) {
+    console.log("[MARK-PUBLISHED] 回写模式：将成功写入的记录回写飞书 publish_status\n");
+  }
 
   console.log("=== 飞书 Publish Queue → CSV 同步 ===\n");
 
@@ -407,7 +478,20 @@ function main() {
   });
 
   console.log(`  Publish Queue 总记录: ${allPqRecords.length}`);
-  console.log(`  待发布记录: ${pendingRecords.length}\n`);
+  console.log(`  待发布记录: ${pendingRecords.length}`);
+
+  // 2a. 队列内去重：同一 candidate 被多条 Publish Queue 关联
+  const dupeCids = findDuplicateCandidates(pendingRecords);
+  if (dupeCids.size > 0) {
+    console.log(`  [WARN] 检测到 ${dupeCids.size} 个 candidate 被多条待发布记录关联`);
+  }
+
+  // 2b. CSV 层去重：加载现有 CSV 行的 key 集合
+  const existingCsvKeys = loadExistingCsvKeys(CSV_PATH);
+  if (existingCsvKeys.size > 0) {
+    console.log(`  CSV 已有 ${existingCsvKeys.size} 行（用于去重检查）`);
+  }
+  console.log();
 
   if (pendingRecords.length === 0) {
     console.log("[完成] 当前无待发布记录。Publish Queue 为空或无 publish_status='待发布' 的记录。");
@@ -454,8 +538,23 @@ function main() {
     // CSV 安全校验
     const validation = validateCsvRow(csvRow);
     if (!validation.valid) {
-      blockedRows.push({ pq, csvRow, blocked: validation.blocked });
+      blockedRows.push({ pq, csvRow, blocked: validation.blocked, reason: "BLOCKED" });
       console.log(`  [BLOCKED] ${pq.community_name}: ${validation.blocked.map(b => `${b.field}(${b.reason})`).join(", ")}`);
+      continue;
+    }
+
+    // 队列内去重检查：同一 candidate 被多条 PQ 关联，只保留第一条
+    if (dupeCids.has(candidateId)) {
+      blockedRows.push({ pq, csvRow, blocked: [], reason: "BLOCKED_DUPLICATE_QUEUE" });
+      console.log(`  [BLOCKED_DUPLICATE_QUEUE] ${pq.community_name}: candidate ${candidateId} 被多条待发布记录关联`);
+      continue;
+    }
+
+    // CSV 层去重检查：行已存在于 CSV 中
+    const csvKey = buildCsvDuplicateKey(csvRow);
+    if (existingCsvKeys.has(csvKey)) {
+      blockedRows.push({ pq, csvRow, blocked: [], reason: "BLOCKED_DUPLICATE" });
+      console.log(`  [BLOCKED_DUPLICATE] ${pq.community_name}: CSV 中已存在相同行`);
       continue;
     }
 
@@ -463,9 +562,15 @@ function main() {
   }
 
   // 4. 输出预览
+  const blockedByDanger = blockedRows.filter(b => b.reason === "BLOCKED");
+  const blockedByCsvDup = blockedRows.filter(b => b.reason === "BLOCKED_DUPLICATE");
+  const blockedByQueueDup = blockedRows.filter(b => b.reason === "BLOCKED_DUPLICATE_QUEUE");
+
   console.log(`\n[3/4] 生成 CSV 行:`);
   console.log(`  可写入: ${previews.length} 条`);
-  console.log(`  BLOCKED: ${blockedRows.length} 条（含危险字符，需手动清洗）\n`);
+  console.log(`  BLOCKED (危险字符): ${blockedByDanger.length} 条`);
+  console.log(`  BLOCKED_DUPLICATE (CSV 已存在): ${blockedByCsvDup.length} 条`);
+  console.log(`  BLOCKED_DUPLICATE_QUEUE (队列重复): ${blockedByQueueDup.length} 条\n`);
 
   if (previews.length > 0) {
     console.log(`  CSV 表头: ${CSV_HEADERS.join(",")}\n`);
@@ -479,8 +584,12 @@ function main() {
 
   if (blockedRows.length > 0) {
     console.log("  --- BLOCKED 行（不写入）---");
-    for (const { pq, csvRow, blocked } of blockedRows) {
-      console.log(`  ${pq.community_name}: ${blocked.map(b => `"${b.field}" ${b.reason}`).join(", ")}`);
+    for (const { pq, reason, blocked } of blockedRows) {
+      if (reason === "BLOCKED") {
+        console.log(`  ${pq.community_name}: ${blocked.map(b => `"${b.field}" ${b.reason}`).join(", ")}`);
+      } else {
+        console.log(`  ${pq.community_name}: ${reason}`);
+      }
     }
     console.log();
   }
@@ -537,18 +646,38 @@ function main() {
     const lines = previews.map(p => csvRowToString(p.csvRow));
     const content = lines.join("\n") + "\n";
 
-    // 读取现有文件确认编码（UTF-8 / BOM）
-    let existing = "";
-    if (fs.existsSync(CSV_PATH)) {
-      existing = fs.readFileSync(CSV_PATH, "utf8");
-    }
-
     // 追加写入（保持 UTF-8，不加 BOM）
     fs.appendFileSync(CSV_PATH, content, "utf8");
     console.log(`  已追加 ${previews.length} 行到 ${CSV_PATH}`);
+
+    // ─── --mark-published: 写入成功后回写飞书状态 ──────────
+    if (isMarkPublished) {
+      console.log(`\n  [MARK-PUBLISHED] 回写飞书 publish_status...`);
+      let markSuccess = 0;
+      let markFail = 0;
+      for (const { pq } of previews) {
+        try {
+          callLarkCli(
+            `+record-upsert --base-token ${BASE_TOKEN} --table-id ${PUBLISH_QUEUE_TABLE} --record-id ${pq._record_id} --json '{"fields":{"publish_status":"已发布"}}'`
+          );
+          console.log(`    ${pq.community_name}: → 已发布`);
+          markSuccess++;
+        } catch (e) {
+          console.error(`    ${pq.community_name}: 回写失败 - ${e.message || e}`);
+          markFail++;
+        }
+      }
+      console.log(`  回写完成: ${markSuccess} 成功, ${markFail} 失败`);
+    }
+
     console.log(`\n=== 写入完成 ===`);
     console.log(`写入: ${previews.length} 条`);
     console.log(`BLOCKED: ${blockedRows.length} 条`);
+    if (isMarkPublished) {
+      console.log(`飞书回写: 已执行`);
+    } else {
+      console.log(`\n提示：使用 --mark-published 在写入后自动回写飞书状态`);
+    }
     console.log(`\n下一步：运行 node scripts/data/sync-csv.js --dry-run 验证同步结果`);
   } else {
     console.log(`=== ${isWrite ? "无可写入行" : "预览完成"} ===`);
@@ -556,6 +685,7 @@ function main() {
     console.log(`BLOCKED: ${blockedRows.length}`);
     if (isDryRun && previews.length > 0) {
       console.log(`\n提示：使用 --write 执行实际写入`);
+      console.log(`提示：配合 --mark-published 在写入后自动回写飞书状态`);
     }
     if (!isWrite) {
       console.log(`\n[DRY RUN] 未写入任何文件，未回写飞书状态`);
@@ -569,6 +699,7 @@ module.exports = {
   containsForbiddenField, CSV_HEADERS, parseRecordListResult, parseRecordGetResult,
   parseCliError, sanitizeCsvCell, validateCsvRow,
   normalizeCliError, validateFeishuEnv,
+  buildCsvDuplicateKey, loadExistingCsvKeys, findDuplicateCandidates,
 };
 
 // 仅在直接运行时执行 main

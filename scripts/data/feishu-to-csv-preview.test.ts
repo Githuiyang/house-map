@@ -12,6 +12,7 @@
  *   - parseRecordListResult / parseRecordGetResult 解析
  *   - parseCliError 多行 JSON 解析
  *   - sanitizeCsvCell / validateCsvRow CSV 安全校验
+ *   - buildCsvDuplicateKey / loadExistingCsvKeys / findDuplicateCandidates 去重
  */
 import { afterEach, describe, expect, it } from 'vitest';
 
@@ -30,6 +31,9 @@ const {
   validateCsvRow,
   normalizeCliError,
   validateFeishuEnv,
+  buildCsvDuplicateKey,
+  loadExistingCsvKeys,
+  findDuplicateCandidates,
 } = require('./feishu-to-csv-preview');
 
 // ─── contact_info 不进入 CSV ───────────────────────────
@@ -523,5 +527,159 @@ describe('validateFeishuEnv', () => {
     const result = validateFeishuEnv();
     expect(result.valid).toBe(false);
     expect(result.missing).toHaveLength(3);
+  });
+});
+
+// ─── buildCsvDuplicateKey ────────────────────────────
+describe('buildCsvDuplicateKey', () => {
+  it('builds key from core fields', () => {
+    const row = {
+      '小区名称': '测试小区',
+      '户型': '两室一厅',
+      '面积(平)': '70',
+      '租金价格(元/月)': '6800',
+      '价格类型': '总价',
+      '信息来源': 'Openclaw',
+      '录入时间': '2026',
+    };
+    const key = buildCsvDuplicateKey(row);
+    expect(key).toBe('测试小区|两室一厅|70|6800|总价|Openclaw|2026');
+  });
+
+  it('handles missing fields with empty strings', () => {
+    const row = { '小区名称': '测试小区' };
+    const key = buildCsvDuplicateKey(row);
+    expect(key).toBe('测试小区||||||');
+  });
+
+  it('produces same key for identical rows', () => {
+    const row1 = {
+      '小区名称': '测试小区',
+      '户型': '两室一厅',
+      '面积(平)': '70',
+      '租金价格(元/月)': '6800',
+      '价格类型': '总价',
+      '信息来源': 'Openclaw',
+      '录入时间': '2026',
+    };
+    const row2 = { ...row1 };
+    expect(buildCsvDuplicateKey(row1)).toBe(buildCsvDuplicateKey(row2));
+  });
+
+  it('produces different keys for different prices', () => {
+    const row1 = { '小区名称': '测试小区', '租金价格(元/月)': '6800', '价格类型': '总价', '信息来源': 'Openclaw', '录入时间': '2026' };
+    const row2 = { '小区名称': '测试小区', '租金价格(元/月)': '7000', '价格类型': '总价', '信息来源': 'Openclaw', '录入时间': '2026' };
+    expect(buildCsvDuplicateKey(row1)).not.toBe(buildCsvDuplicateKey(row2));
+  });
+
+  it('produces different keys for different layouts', () => {
+    const row1 = { '小区名称': '测试小区', '户型': '两室一厅', '信息来源': 'Openclaw', '录入时间': '2026' };
+    const row2 = { '小区名称': '测试小区', '户型': '三室一厅', '信息来源': 'Openclaw', '录入时间': '2026' };
+    expect(buildCsvDuplicateKey(row1)).not.toBe(buildCsvDuplicateKey(row2));
+  });
+});
+
+// ─── loadExistingCsvKeys ─────────────────────────────
+describe('loadExistingCsvKeys', () => {
+  it('returns empty set for non-existent file', () => {
+    const keys = loadExistingCsvKeys('/nonexistent/path.csv');
+    expect(keys.size).toBe(0);
+  });
+
+  it('parses CSV content into key set', () => {
+    // Simulate a temp CSV file
+    const fs = require('fs');
+    const os = require('os');
+    const tmpPath = `${os.tmpdir()}/test-csv-dedup-${Date.now()}.csv`;
+    const csvContent = `小区名称,户型,面积(平),租金类型,租金价格(元/月),价格类型,楼层,装修,特色标签,信息来源,录入时间,电梯,备注
+测试小区,两室一厅,70,整租,6800,总价,多层,,近地铁,Openclaw,2026,无电梯,
+其他小区,一室一厅,40,整租,4500,总价,多层,,,老大,2026,无电梯,`;
+    fs.writeFileSync(tmpPath, csvContent, 'utf8');
+
+    try {
+      const keys = loadExistingCsvKeys(tmpPath);
+      // Header line + 2 data lines = 2 keys (header skipped because cols[10] is "电梯" not a year)
+      // Actually header IS included because it has 13 cols >= 7
+      // But the key for header would be: "小区名称|户型|面积(平)|租金价格(元/月)|价格类型|信息来源|录入时间"
+      expect(keys.size).toBeGreaterThanOrEqual(2);
+      expect(keys.has('测试小区|两室一厅|70|6800|总价|Openclaw|2026')).toBe(true);
+      expect(keys.has('其他小区|一室一厅|40|4500|总价|老大|2026')).toBe(true);
+    } finally {
+      fs.unlinkSync(tmpPath);
+    }
+  });
+
+  it('skips empty lines and short lines', () => {
+    const fs = require('fs');
+    const os = require('os');
+    const tmpPath = `${os.tmpdir()}/test-csv-dedup-short-${Date.now()}.csv`;
+    const csvContent = `a,b,c
+测试小区,两室一厅,70,整租,6800,总价,多层,,近地铁,Openclaw,2026,无电梯,
+
+`;
+    fs.writeFileSync(tmpPath, csvContent, 'utf8');
+
+    try {
+      const keys = loadExistingCsvKeys(tmpPath);
+      // "a,b,c" only has 3 cols, skipped; 1 valid data line
+      expect(keys.size).toBe(1);
+    } finally {
+      fs.unlinkSync(tmpPath);
+    }
+  });
+});
+
+// ─── findDuplicateCandidates ─────────────────────────
+describe('findDuplicateCandidates', () => {
+  it('returns empty set when all candidates are unique', () => {
+    const records = [
+      { candidate: [{ id: 'c1' }], community_name: '小区A' },
+      { candidate: [{ id: 'c2' }], community_name: '小区B' },
+      { candidate: [{ id: 'c3' }], community_name: '小区C' },
+    ];
+    const dupes = findDuplicateCandidates(records);
+    expect(dupes.size).toBe(0);
+  });
+
+  it('detects duplicate candidate IDs', () => {
+    const records = [
+      { candidate: [{ id: 'c1' }], community_name: '小区A' },
+      { candidate: [{ id: 'c1' }], community_name: '小区A-重复' },
+      { candidate: [{ id: 'c2' }], community_name: '小区B' },
+    ];
+    const dupes = findDuplicateCandidates(records);
+    expect(dupes.size).toBe(1);
+    expect(dupes.has('c1')).toBe(true);
+    expect(dupes.has('c2')).toBe(false);
+  });
+
+  it('handles records without candidate', () => {
+    const records = [
+      { candidate: [], community_name: '小区A' },
+      { community_name: '小区B' },
+      { candidate: [{ id: 'c1' }], community_name: '小区C' },
+    ];
+    const dupes = findDuplicateCandidates(records);
+    expect(dupes.size).toBe(0);
+  });
+
+  it('handles multiple different duplicates', () => {
+    const records = [
+      { candidate: [{ id: 'c1' }], community_name: '小区A' },
+      { candidate: [{ id: 'c1' }], community_name: '小区A-重复' },
+      { candidate: [{ id: 'c2' }], community_name: '小区B' },
+      { candidate: [{ id: 'c2' }], community_name: '小区B-重复' },
+      { candidate: [{ id: 'c3' }], community_name: '小区C' },
+    ];
+    const dupes = findDuplicateCandidates(records);
+    expect(dupes.size).toBe(2);
+    expect(dupes.has('c1')).toBe(true);
+    expect(dupes.has('c2')).toBe(true);
+    expect(dupes.has('c3')).toBe(false);
+  });
+
+  it('returns empty set for empty input', () => {
+    const dupes = findDuplicateCandidates([]);
+    expect(dupes.size).toBe(0);
   });
 });

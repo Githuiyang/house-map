@@ -486,6 +486,8 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
             // Hover tooltip
             markerObj.on('mouseover', (e: unknown) => {
               if (previewCommunityRef.current?.id === community.id) return;
+              // Skip if tooltip already exists for this community
+              if (tooltipMarkersRef.current.has(`tooltip-${community.id}`)) return;
               const priceText = formatPricePerRoom(community.pricePerRoomStats?.avg)
                 ?? `¥${formatPrice(community.price.min, community.price.max)}/月`;
               const distText = community.commute
@@ -496,7 +498,7 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
                   const pos = (e as AMapEventWithTarget).target.getPosition();
                   return [pos.lng, pos.lat] as [number, number];
                 })(),
-                content: `<div class="${styles.hoverTooltip}"><div class="${styles.tooltipRow}">${distText}</div><div class="${styles.tooltipRow}">${priceText}</div></div>`,
+                content: `<div class="${styles.hoverTooltip}" style="pointer-events:none;"><div class="${styles.tooltipRow}" style="pointer-events:none;">${distText}</div><div class="${styles.tooltipRow}" style="pointer-events:none;">${priceText}</div></div>`,
                 offset: new AMap.Pixel(-60, -60),
                 zIndex: 9999,
               });
@@ -505,8 +507,13 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
             });
 
             markerObj.on('mouseout', () => {
-              const tm = tooltipMarkersRef.current.get(`tooltip-${community.id}`);
-              if (tm) { tm.setMap(null); tooltipMarkersRef.current.delete(`tooltip-${community.id}`); }
+              const cid = community.id;
+              const key = `tooltip-${cid}`;
+              // Short delay to avoid flicker when cursor briefly leaves and re-enters
+              setTimeout(() => {
+                const tm = tooltipMarkersRef.current.get(key);
+                if (tm) { tm.setMap(null); tooltipMarkersRef.current.delete(key); }
+              }, 80);
             });
 
             markerObj.on('click', () => {
@@ -557,6 +564,8 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
 
       marker.on('mouseover', (e: unknown) => {
         if (previewCommunityRef.current?.id === community.id) return;
+        // Skip if tooltip already exists for this community
+        if (tooltipMarkersRef.current.has(`tooltip-${community.id}`)) return;
         const priceText = formatPricePerRoom(community.pricePerRoomStats?.avg)
           ?? `¥${formatPrice(community.price.min, community.price.max)}/月`;
         const distText = community.commute
@@ -567,7 +576,7 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
             const pos = (e as AMapEventWithTarget).target.getPosition();
             return [pos.lng, pos.lat] as [number, number];
           })(),
-          content: `<div class="${styles.hoverTooltip}"><div class="${styles.tooltipRow}">${distText}</div><div class="${styles.tooltipRow}">${priceText}</div></div>`,
+          content: `<div class="${styles.hoverTooltip}" style="pointer-events:none;"><div class="${styles.tooltipRow}" style="pointer-events:none;">${distText}</div><div class="${styles.tooltipRow}" style="pointer-events:none;">${priceText}</div></div>`,
           offset: new AMap.Pixel(-60, -60),
           zIndex: 9999,
         });
@@ -576,8 +585,13 @@ export default function MapView({ communities, selectedCommunity, previewCommuni
       });
 
       marker.on('mouseout', () => {
-        const tm = tooltipMarkersRef.current.get(`tooltip-${community.id}`);
-        if (tm) { tm.setMap(null); tooltipMarkersRef.current.delete(`tooltip-${community.id}`); }
+        const cid = community.id;
+        const key = `tooltip-${cid}`;
+        // Short delay to avoid flicker when cursor briefly leaves and re-enters
+        setTimeout(() => {
+          const tm = tooltipMarkersRef.current.get(key);
+          if (tm) { tm.setMap(null); tooltipMarkersRef.current.delete(key); }
+        }, 80);
       });
 
       marker.on('click', () => {

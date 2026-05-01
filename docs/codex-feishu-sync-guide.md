@@ -67,9 +67,9 @@ node scripts/data/feishu-to-csv-preview.js --dry-run
 - `elevator` 布尔值 → `有电梯`/`无电梯`/空字符串
 - 禁止字段（`contact_info`、`raw_text`、`source` 等）绝不进入预览
 
-纯函数已导出供测试：`mapToCsvRow`、`extractSelect`、`derivePriceType`、`csvRowToString`、`containsForbiddenField`、`sanitizeCsvCell`、`validateCsvRow`、`parseRecordListResult`、`parseRecordGetResult`、`parseCliError`、`normalizeCliError`
+纯函数已导出供测试：`mapToCsvRow`、`extractSelect`、`derivePriceType`、`csvRowToString`、`containsForbiddenField`、`sanitizeCsvCell`、`validateCsvRow`、`parseRecordListResult`、`parseRecordGetResult`、`parseCliError`、`normalizeCliError`、`buildCsvDuplicateKey`、`loadExistingCsvKeys`、`findDuplicateCandidates`
 
-测试：`scripts/data/feishu-to-csv-preview.test.ts`（Vitest，52 个测试）
+测试：`scripts/data/feishu-to-csv-preview.test.ts`（Vitest，69 个测试）
 
 ### 步骤 3：写入 CSV
 
@@ -85,7 +85,26 @@ node scripts/data/feishu-to-csv-preview.js --dry-run
 ```bash
 # 使用 --write 标志执行实际写入
 node scripts/data/feishu-to-csv-preview.js --write
+
+# 写入 + 自动回写飞书状态为已发布（推荐）
+node scripts/data/feishu-to-csv-preview.js --write --mark-published
 ```
+
+**防重复发布保护**：
+
+脚本内置三层去重机制：
+
+| 层级 | 状态标记 | 说明 |
+|------|----------|------|
+| 飞书状态过滤 | — | 只读取 `publish_status = "待发布"` 的记录 |
+| CSV 层去重 | `BLOCKED_DUPLICATE` | 追加前检查 CSV 中是否已有相同行（社区+户型+面积+价格+价格类型+来源+年份） |
+| 队列内去重 | `BLOCKED_DUPLICATE_QUEUE` | 同一 candidate 被多条 Publish Queue 关联时，只保留第一条 |
+
+**`--mark-published` 回写机制**：
+
+- 配合 `--write` 使用，在 CSV 追加成功后自动回写飞书 `publish_status = "已发布"`
+- 逐条回写：成功计为成功数，失败仅记录但不回滚 CSV
+- 不使用 `--mark-published` 时，需手动回写飞书状态（步骤 7）
 
 ### 步骤 4：预览同步结果
 
@@ -117,6 +136,8 @@ npm run build
 任何一步失败则中止，进入错误处理。
 
 ### 步骤 7：回写飞书状态
+
+> 如果步骤 3 使用了 `--mark-published`，飞书状态已自动回写，可跳过本步。
 
 **执行前必须获得用户确认**（这是云端修改）。
 
