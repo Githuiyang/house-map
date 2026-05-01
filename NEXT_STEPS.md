@@ -20,8 +20,9 @@
 - 高德地图已恢复（域名白名单已配置，INVALID_USER_DOMAIN 已解决）
 - 线上网站：https://map.lihuiyang.xyz
 - **飞书租房后台方案已入库**（`docs/feishu-rental-workflow.md`），取代 Supabase 直连方案
-- **飞书 Base 已创建**（`租房线索管理`，token 通过 `FEISHU_BASE_TOKEN` 环境变量配置，3 张表 + 示例数据）
-- **飞书 Base 已核验**（P1.5 完成，字段与文档完全一致，Link 关系正确，P2 可开始）
+- **飞书 Base 已重建**（`租房线索管理`，2026-05-01，3 张表 + 完整字段 + 110 条历史数据已导入 Parsed Candidates）
+- 飞书 Base 访问方式：飞书客户端 / 本地私有记录（用户已获 full_access 权限）
+- `.env.local` 已配置 `FEISHU_BASE_TOKEN` + 3 个 `TABLE_ID`
 
 ---
 
